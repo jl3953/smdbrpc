@@ -1,0 +1,3 @@
+/home/jennifer/smdbrpc/cpp/cmake/build/CMakeFiles/rebuild_cache.dir
+/home/jennifer/smdbrpc/cpp/cmake/build/CMakeFiles/edit_cache.dir
+/home/jennifer/smdbrpc/cpp/cmake/build/CMakeFiles/hotshard_gateway_server.dir
