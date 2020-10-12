@@ -1,3 +1,4 @@
 hotshard_gateway_server
 cpp/cmake/build
 go/build/gen/*
+.idea
