@@ -22,6 +22,11 @@ option go_package="smdbrpc/build/gen";
 
 package smdbrpc;
 
+message HLCTimestamp {
+  int64 walltime = 1; // the 64 bit timestampe value
+  int64 logicaltime = 2; // the causality counter
+}
+
 // The greeting service definition.
 service HotshardGateway {
   // Sends a greeting
@@ -31,9 +36,13 @@ service HotshardGateway {
 // The request message containing the user's name.
 message HotshardRequest {
   string sqlstring = 1;
+
+  HLCTimestamp hlctimestamp = 2;  
 }
 
 // The response message containing the greetings
 message HotshardReply {
-  string status = 1;
+  bool is_committed = 1;
+
+  HLCTimestamp hlctimestamp = 2;
 }

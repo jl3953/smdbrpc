@@ -37,12 +37,15 @@ using grpc::Status;
 using smdbrpc::HotshardRequest;
 using smdbrpc::HotshardReply;
 using smdbrpc::HotshardGateway;
+using smdbrpc::HLCTimestamp;
 
 // Logic and data behind the server's behavior.
 class HotshardGatewayServiceImpl final : public HotshardGateway::Service {
   Status ContactHotshard(ServerContext* context, const HotshardRequest* request,
                   HotshardReply* reply) override {
-    reply->set_status("COMMIT");
+    reply->set_is_committed(true);
+    HLCTimestamp *hlcTimestamp = new HLCTimestamp(request->hlctimestamp());
+    reply->set_allocated_hlctimestamp(hlcTimestamp);
     return Status::OK;
   }
 };

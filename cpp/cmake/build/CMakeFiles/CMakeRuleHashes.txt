@@ -1,2 +1,0 @@
-# Hashes of file build rules.
-0d83cb4fcde1120e38b83d7e01f6d8b0 smdbrpc.pb.cc
