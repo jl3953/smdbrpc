@@ -17,7 +17,7 @@
  */
 
 // Package main implements a client for Greeter service.
-package main;
+package main
 
 import (
 	"context"
@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	address     = "localhost:50051"
+	address          = "localhost:50051"
 	defaultSQLString = "UPSERT INTO TABLE hot (0, 1994214)"
 )
 
