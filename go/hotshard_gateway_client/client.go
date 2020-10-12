@@ -17,13 +17,14 @@
  */
 
 // Package main implements a client for Greeter service.
-package main;
+package main
 
 import (
 	"context"
 	"log"
 	"os"
 	"time"
+	"unsafe"
 
 	"google.golang.org/grpc"
 	pb "smdbrpc/go/build/gen"
@@ -50,9 +51,19 @@ func main() {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.ContactHotshard(ctx, &pb.HotshardRequest{Sqlstring: sqlString})
+	hotshardRequest := pb.HotshardRequest{
+		Sqlstring:    sqlString,
+		Hlctimestamp: &pb.HLCTimestamp{
+			Walltime:    0,
+			Logicaltime: 0,
+		},
+	}
+	r, err := c.ContactHotshard(ctx, &hotshardRequest)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
+	} else {
+		log.Printf("sizeof(hotshardRequest):[%+v], sizeof(hotshardReply):[%+v]\n",
+			unsafe.Sizeof(hotshardRequest), unsafe.Sizeof(r))
 	}
 	log.Printf("Greeting: %s", r.GetStatus())
 }
