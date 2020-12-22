@@ -12,15 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-syntax = "proto3";
+syntax = "proto2";
 
 // option java_multiple_files = true;
 // option java_package = "io.grpc.examples.helloworld";
 // option java_outer_classname = "HelloWorldProto";
 // option objc_class_prefix = "HLW";
-option go_package="build/gen";
+option go_package="execinfrapb";
 
+//package cockroach.sql.distsqlrun;
 package smdbrpc;
+
+//import "gogoproto/gogo.proto";
+
+//message HLCTimestamp {
+//  optional int64 walltime = 1 [(gogoproto.nullable) = false]; // the 64 bit timestampe value
+//  optional int64 logicaltime = 2 [(gogoproto.nullable) = false]; // the causality counter
+//}
+
+message HLCTimestamp {
+  optional int64 walltime = 1; // the 64 bit timestampe value
+  optional int64 logicaltime = 2; // the causality counter
+}
 
 // The greeting service definition.
 service HotshardGateway {
@@ -29,11 +42,28 @@ service HotshardGateway {
 }
 
 // The request message containing the user's name.
+//message HotshardRequest {
+//  optional string sqlstring = 1 [(gogoproto.nullable) = false];
+//
+//  optional HLCTimestamp hlctimestamp = 2 [(gogoproto.nullable) = false];
+//}
+//
+//// The response message containing the greetings
+//message HotshardReply {
+//  optional bool is_committed = 1 [(gogoproto.nullable) = false];
+//
+//  optional HLCTimestamp hlctimestamp = 2 [(gogoproto.nullable) = false];
+//}
+
 message HotshardRequest {
-  string sqlstring = 1;
+  optional string sqlstring = 1;
+
+  optional HLCTimestamp hlctimestamp = 2;
 }
 
 // The response message containing the greetings
 message HotshardReply {
-  string status = 1;
+  optional bool is_committed = 1;
+
+  optional HLCTimestamp hlctimestamp = 2;
 }
