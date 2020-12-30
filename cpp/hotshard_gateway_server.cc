@@ -43,9 +43,35 @@ using smdbrpc::HLCTimestamp;
 class HotshardGatewayServiceImpl final : public HotshardGateway::Service {
   Status ContactHotshard(ServerContext* context, const HotshardRequest* request,
                   HotshardReply* reply) override {
+
+//      std::cout << "hlctimestamp(): " << request->hlctimestamp().walltime()
+//        << std::endl;
+//
+//      for (const smdbrpc::KVPair& kvPair : request->write_keyset()) {
+//          std::cout << "key:[" << kvPair.key()
+//            << "], value:[" << kvPair.value()
+//            << "]" << std::endl;
+//
+//      }
+//
+//      for (const std::string& key : request->read_keyset()) {
+//          std::cout << "key: " << key
+//            << std::endl;
+//      }
+
     reply->set_is_committed(true);
-    HLCTimestamp *hlcTimestamp = new HLCTimestamp(request->hlctimestamp());
-    reply->set_allocated_hlctimestamp(hlcTimestamp);
+
+    for (int i = 0; i < 245000; i++) {
+        smdbrpc::KVPair* kvPair = reply->add_read_valueset();
+        kvPair->set_key(std::to_string(i));
+        kvPair->set_value(std::to_string(i));
+    }
+
+
+//    smdbrpc::KVPair* jennBday = reply->add_read_valueset();
+//    jennBday->set_key("jennBday");
+//    jennBday->set_value("something");
+//
     return Status::OK;
   }
 };

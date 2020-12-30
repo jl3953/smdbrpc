@@ -22,16 +22,15 @@ package main
 import (
 	"context"
 	"log"
-	"os"
+	"strconv"
 	"time"
 
 	"google.golang.org/grpc"
-	pb "smdbrpc/go/build/gen"
+	smdbrpc "smdbrpc/go/build/gen"
 )
 
 const (
 	address          = "localhost:50051"
-	defaultSQLString = "UPSERT INTO TABLE hot (0, 1994214)"
 )
 
 func main() {
@@ -41,18 +40,52 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewHotshardGatewayClient(conn)
+	c := smdbrpc.NewHotshardGatewayClient(conn)
 
 	// Contact the server and print out its response.
-	sqlString := defaultSQLString
-	if len(os.Args) > 1 {
-		sqlString = os.Args[1]
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.ContactHotshard(ctx, &pb.HotshardRequest{Sqlstring: sqlString})
+
+	var walltime int64 = 20201229
+	request := smdbrpc.HotshardRequest{
+		Hlctimestamp: &smdbrpc.HLCTimestamp{
+			Walltime: &walltime,
+		},
+	}
+
+	for i := 0; i < 172500; i++ {
+		kvPair := smdbrpc.KVPair{
+			Key:   []byte(strconv.Itoa(i)),
+			Value: []byte(strconv.Itoa(i)),
+		}
+		request.WriteKeyset = append(request.WriteKeyset, &kvPair)
+		request.ReadKeyset = append(request.ReadKeyset, []byte(strconv.Itoa(i)))
+	}
+
+	r, err := c.ContactHotshard(
+		ctx, &request,
+		//&smdbrpc.HotshardRequest{
+		//	Hlctimestamp: &smdbrpc.HLCTimestamp{
+		//		Walltime: &walltime,
+		//	},
+		//	WriteKeyset: []*smdbrpc.KVPair{
+		//		{
+		//			Key:   []byte("jennkey1"),
+		//			Value: []byte("somethinghere"),
+		//		}, {
+		//			Key:   []byte("jennkey2"),
+		//			Value: []byte("somethingthere"),
+		//		},
+		//	},
+		//	ReadKeyset: [][]byte{[]byte("jennBday")},
+		//},
+	)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting: %s", r.GetStatus())
+	log.Printf("Greeting:[%+v]\n", *r.IsCommitted)
+	for _, kvPair := range r.ReadValueset {
+		log.Printf("key:[%+v], val:[%+v]\n",
+			string(kvPair.Key), string(kvPair.Value))
+	}
 }

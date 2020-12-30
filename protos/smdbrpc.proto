@@ -32,7 +32,20 @@ package smdbrpc;
 
 message HLCTimestamp {
   optional int64 walltime = 1; // the 64 bit timestampe value
-  optional int64 logicaltime = 2; // the causality counter
+  // optional int64 logicaltime = 2; // the causality counter
+}
+
+//message Key {
+//  optional bytes key = 1;
+//}
+//
+//message Value {
+//  optional bytes value = 1;
+//}
+
+message KVPair {
+  optional bytes key = 1;
+  optional bytes value = 2;
 }
 
 // The greeting service definition.
@@ -56,14 +69,21 @@ service HotshardGateway {
 //}
 
 message HotshardRequest {
-  optional string sqlstring = 1;
+  // optional string sqlstring = 1;
 
-  optional HLCTimestamp hlctimestamp = 2;
+  optional HLCTimestamp hlctimestamp = 1;
+
+  repeated KVPair write_keyset = 2;
+
+  repeated bytes read_keyset = 3;
+
 }
 
 // The response message containing the greetings
 message HotshardReply {
   optional bool is_committed = 1;
 
-  optional HLCTimestamp hlctimestamp = 2;
+  repeated KVPair read_valueset = 2;
+
+  // optional HLCTimestamp hlctimestamp = 2;
 }
