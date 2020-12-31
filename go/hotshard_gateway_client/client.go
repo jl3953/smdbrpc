@@ -22,7 +22,6 @@ package main
 import (
 	"context"
 	"log"
-	"strconv"
 	"time"
 
 	"google.golang.org/grpc"
@@ -47,38 +46,40 @@ func main() {
 	defer cancel()
 
 	var walltime int64 = 20201229
-	request := smdbrpc.HotshardRequest{
-		Hlctimestamp: &smdbrpc.HLCTimestamp{
-			Walltime: &walltime,
-		},
-	}
+	//request := smdbrpc.HotshardRequest{
+	//	Hlctimestamp: &smdbrpc.HLCTimestamp{
+	//		Walltime: &walltime,
+	//	},
+	//}
+	//
+	//for i := 0; i < 172500; i++ {
+	//	kvPair := smdbrpc.KVPair{
+	//		Key:   []byte(strconv.Itoa(i)),
+	//		Value: []byte(strconv.Itoa(i)),
+	//	}
+	//	request.WriteKeyset = append(request.WriteKeyset, &kvPair)
+	//	request.ReadKeyset = append(request.ReadKeyset, []byte(strconv.Itoa(i)))
+	//}
 
-	for i := 0; i < 172500; i++ {
-		kvPair := smdbrpc.KVPair{
-			Key:   []byte(strconv.Itoa(i)),
-			Value: []byte(strconv.Itoa(i)),
-		}
-		request.WriteKeyset = append(request.WriteKeyset, &kvPair)
-		request.ReadKeyset = append(request.ReadKeyset, []byte(strconv.Itoa(i)))
-	}
+	var jennbday, christmas uint64 = 1994214, 1225
 
 	r, err := c.ContactHotshard(
-		ctx, &request,
-		//&smdbrpc.HotshardRequest{
-		//	Hlctimestamp: &smdbrpc.HLCTimestamp{
-		//		Walltime: &walltime,
-		//	},
-		//	WriteKeyset: []*smdbrpc.KVPair{
-		//		{
-		//			Key:   []byte("jennkey1"),
-		//			Value: []byte("somethinghere"),
-		//		}, {
-		//			Key:   []byte("jennkey2"),
-		//			Value: []byte("somethingthere"),
-		//		},
-		//	},
-		//	ReadKeyset: [][]byte{[]byte("jennBday")},
-		//},
+		ctx, /* &request,*/
+		&smdbrpc.HotshardRequest{
+			Hlctimestamp: &smdbrpc.HLCTimestamp{
+				Walltime: &walltime,
+			},
+			WriteKeyset: []*smdbrpc.KVPair{
+				{
+					Key:   &jennbday,
+					Value: &jennbday,
+				}, {
+					Key:   &christmas,
+					Value: &christmas,
+				},
+			},
+			ReadKeyset: []uint64{1994214, 1225},
+		},
 	)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -86,6 +87,6 @@ func main() {
 	log.Printf("Greeting:[%+v]\n", *r.IsCommitted)
 	for _, kvPair := range r.ReadValueset {
 		log.Printf("key:[%+v], val:[%+v]\n",
-			string(kvPair.Key), string(kvPair.Value))
+			*kvPair.Key, *kvPair.Value)
 	}
 }

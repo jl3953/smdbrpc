@@ -44,34 +44,38 @@ class HotshardGatewayServiceImpl final : public HotshardGateway::Service {
   Status ContactHotshard(ServerContext* context, const HotshardRequest* request,
                   HotshardReply* reply) override {
 
-//      std::cout << "hlctimestamp(): " << request->hlctimestamp().walltime()
-//        << std::endl;
-//
-//      for (const smdbrpc::KVPair& kvPair : request->write_keyset()) {
-//          std::cout << "key:[" << kvPair.key()
-//            << "], value:[" << kvPair.value()
-//            << "]" << std::endl;
-//
-//      }
-//
-//      for (const std::string& key : request->read_keyset()) {
-//          std::cout << "key: " << key
-//            << std::endl;
-//      }
+      std::cout << "hlctimestamp(): " << request->hlctimestamp().walltime()
+        << std::endl;
+
+      for (const smdbrpc::KVPair& kvPair : request->write_keyset()) {
+          std::cout << "write key:[" << kvPair.key()
+            << "], value:[" << kvPair.value()
+            << "]" << std::endl;
+
+      }
+
+      for (uint64_t key : request->read_keyset()) {
+          std::cout << "read key: " << key
+            << std::endl;
+      }
 
     reply->set_is_committed(true);
 
-    for (int i = 0; i < 245000; i++) {
-        smdbrpc::KVPair* kvPair = reply->add_read_valueset();
-        kvPair->set_key(std::to_string(i));
-        kvPair->set_value(std::to_string(i));
-    }
+//    for (int i = 0; i < 245000; i++) {
+//        smdbrpc::KVPair* kvPair = reply->add_read_valueset();
+//        kvPair->set_key(std::to_string(i));
+//        kvPair->set_value(std::to_string(i));
+//    }
 
 
-//    smdbrpc::KVPair* jennBday = reply->add_read_valueset();
-//    jennBday->set_key("jennBday");
-//    jennBday->set_value("something");
-//
+    smdbrpc::KVPair* jennBday = reply->add_read_valueset();
+    jennBday->set_key(1994214);
+    jennBday->set_value(1994214);
+
+      smdbrpc::KVPair* halloween = reply->add_read_valueset();
+      halloween->set_key(20201031);
+      halloween->set_value(20201031);
+
     return Status::OK;
   }
 };
