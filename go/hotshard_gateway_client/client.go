@@ -22,6 +22,8 @@ package main
 import (
 	"context"
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"google.golang.org/grpc"
@@ -29,7 +31,7 @@ import (
 )
 
 const (
-	address          = "localhost:50051"
+	address = "localhost:50051"
 )
 
 func main() {
@@ -46,40 +48,45 @@ func main() {
 	defer cancel()
 
 	var walltime int64 = 20201229
-	//request := smdbrpc.HotshardRequest{
-	//	Hlctimestamp: &smdbrpc.HLCTimestamp{
-	//		Walltime: &walltime,
-	//	},
-	//}
-	//
-	//for i := 0; i < 172500; i++ {
-	//	kvPair := smdbrpc.KVPair{
-	//		Key:   []byte(strconv.Itoa(i)),
-	//		Value: []byte(strconv.Itoa(i)),
-	//	}
-	//	request.WriteKeyset = append(request.WriteKeyset, &kvPair)
-	//	request.ReadKeyset = append(request.ReadKeyset, []byte(strconv.Itoa(i)))
-	//}
+	request := smdbrpc.HotshardRequest{
+		Hlctimestamp: &smdbrpc.HLCTimestamp{
+			Walltime: &walltime,
+		},
+	}
 
-	var jennbday, christmas uint64 = 1994214, 1225
+	for i := 0; i < len(os.Args); i++ {
+		temp, _ := strconv.Atoi(os.Args[i])
+		var key = uint64(temp)
+		temp, _ = strconv.Atoi(os.Args[i])
+		var value = uint64(temp)
+
+		kvPair := smdbrpc.KVPair{
+			Key:   &key,
+			Value: &value,
+		}
+		request.WriteKeyset = append(request.WriteKeyset, &kvPair)
+		request.ReadKeyset = append(request.ReadKeyset, key)
+	}
+
+	//var jennbday, christmas uint64 = 1994214, 1225
 
 	r, err := c.ContactHotshard(
-		ctx, /* &request,*/
-		&smdbrpc.HotshardRequest{
-			Hlctimestamp: &smdbrpc.HLCTimestamp{
-				Walltime: &walltime,
-			},
-			WriteKeyset: []*smdbrpc.KVPair{
-				{
-					Key:   &jennbday,
-					Value: &jennbday,
-				}, {
-					Key:   &christmas,
-					Value: &christmas,
-				},
-			},
-			ReadKeyset: []uint64{1994214, 1225},
-		},
+		ctx, &request,
+		//&smdbrpc.HotshardRequest{
+		//	Hlctimestamp: &smdbrpc.HLCTimestamp{
+		//		Walltime: &walltime,
+		//	},
+		//	WriteKeyset: []*smdbrpc.KVPair{
+		//		{
+		//			Key:   &jennbday,
+		//			Value: &jennbday,
+		//		}, {
+		//			Key:   &christmas,
+		//			Value: &christmas,
+		//		},
+		//	},
+		//	ReadKeyset: []uint64{1994214, 1225},
+		//},
 	)
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
