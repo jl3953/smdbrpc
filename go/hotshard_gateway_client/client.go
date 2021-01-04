@@ -91,7 +91,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("Greeting:[%+v]\n", *r.IsCommitted)
+	log.Printf("isCommitted:[%+v]\n", *r.IsCommitted)
 	for _, kvPair := range r.ReadValueset {
 		log.Printf("key:[%+v], val:[%+v]\n",
 			*kvPair.Key, *kvPair.Value)
