@@ -47,7 +47,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	var walltime int64 = 20201229
+	var walltime int64 = time.Now().UnixNano()
 	request := smdbrpc.HotshardRequest{
 		Hlctimestamp: &smdbrpc.HLCTimestamp{
 			Walltime: &walltime,
