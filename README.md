@@ -3,7 +3,7 @@ Make sure this repo is located in $(go env GOPATH)/src.
 ## Generate go files from protobuf
 ```
 cd smdbrpc/protos
-protoc --go_out=../go --go-grpc_out=../go/build/gen *.proto
+protoc --go_out=../go/build/gen --go-grpc_out=../go/build/gen *.proto
 ```
 
 ## Generate cpp files from protobuf
