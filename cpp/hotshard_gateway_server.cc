@@ -44,20 +44,24 @@ class HotshardGatewayServiceImpl final : public HotshardGateway::Service {
   Status ContactHotshard(ServerContext* context, const HotshardRequest* request,
                   HotshardReply* reply) override {
 
-      std::cout << "hlctimestamp(): " << request->hlctimestamp().walltime()
-        << std::endl;
+      std::cout << "hlc.walltime:[" << request->hlctimestamp().walltime()
+        << "], logical:[" << request->hlctimestamp().logicaltime()
+        << "]" << std::endl;
 
+      std::cout << "writes:[";
       for (const smdbrpc::KVPair& kvPair : request->write_keyset()) {
-          std::cout << "write key:[" << kvPair.key()
-            << "], value:[" << kvPair.value()
-            << "]" << std::endl;
-
+          std::cout << "(" << kvPair.key()
+            << ", " << kvPair.value()
+            << "), ";
       }
+      std::cout << "]" << std::endl;
 
+      std::cout << "reads:[";
       for (uint64_t key : request->read_keyset()) {
-          std::cout << "read key: " << key
-            << std::endl;
+          std::cout << key << ", ";
       }
+      std::cout << "]\n"
+        << "===================" << std::endl;
 
     reply->set_is_committed(true);
 

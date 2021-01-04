@@ -48,13 +48,18 @@ func main() {
 	defer cancel()
 
 	var walltime int64 = time.Now().UnixNano()
+	var logicaltime int32 = 214
 	request := smdbrpc.HotshardRequest{
 		Hlctimestamp: &smdbrpc.HLCTimestamp{
 			Walltime: &walltime,
+			Logicaltime: &logicaltime,
 		},
+		WriteKeyset: make([]*smdbrpc.KVPair, 0),
+		ReadKeyset: make([]uint64, 0),
 	}
 
-	for i := 0; i < len(os.Args); i++ {
+	for i := 1; i < len(os.Args); i++ {
+		log.Printf("jenndebug os.Args[%d]:%+v\n", i, os.Args[i])
 		temp, _ := strconv.Atoi(os.Args[i])
 		var key = uint64(temp)
 		temp, _ = strconv.Atoi(os.Args[i])
