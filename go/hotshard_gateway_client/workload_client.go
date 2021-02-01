@@ -157,13 +157,13 @@ func main() {
 	keyspace := flag.Uint64("keyspace", 1000, "keyspace from 0 to specified")
 	port := flag.Int("port", 50051, "target port")
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
-	zipfianSkew := flag.Float64("s", 1.2, "zipfian skew s")
+	zipfianSkew := flag.Float64("s", 1.2, "zipfian skew s, must be greater than 1")
 	flag.Parse()
 
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	zipf := rand.NewZipf(r, *zipfianSkew, 1, *keyspace)
 	if nil == zipf {
-		log.Fatalf("nil zipf\n")
+		log.Fatalf("nil zipf, is your --s greater than 1?\n")
 	}
 	address := fmt.Sprintf("%s:%d", *host, *port)
 	var wg sync.WaitGroup
