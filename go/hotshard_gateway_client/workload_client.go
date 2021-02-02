@@ -20,8 +20,6 @@ const (
 	NUM_COUNTERS
 )
 
-
-
 func writeRequest(ctx context.Context, batch int,
 	client smdbrpc.HotshardGatewayClient, chooseKey func() uint64,
 	counter *sync.Map) bool {
@@ -34,8 +32,8 @@ func writeRequest(ctx context.Context, batch int,
 			Walltime:    &walltime,
 			Logicaltime: &logical,
 		},
-		WriteKeyset:  make([]*smdbrpc.KVPair, batch),
-		ReadKeyset:   nil,
+		WriteKeyset: make([]*smdbrpc.KVPair, batch),
+		ReadKeyset:  nil,
 	}
 
 	set := make(map[uint64]bool, 0)
@@ -80,7 +78,7 @@ func readRequest(ctx context.Context, batch int,
 			Walltime:    &walltime,
 			Logicaltime: &logical,
 		},
-		ReadKeyset:  make([]uint64, batch),
+		ReadKeyset: make([]uint64, batch),
 	}
 
 	// populate request keys
@@ -125,7 +123,7 @@ func worker(address string, batch int, duration time.Duration, readPercent int,
 	client := smdbrpc.NewHotshardGatewayClient(conn)
 
 	// I have no idea
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// query host only for set duration
@@ -174,7 +172,7 @@ func main() {
 			*batch,
 			*duration,
 			*readPercent,
-			func() uint64 {return zipf.Uint64()},
+			func() uint64 { return zipf.Uint64() },
 			&wg,
 			histogram)
 	}
