@@ -148,7 +148,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-  hotshard_gateway_server)
+  hotshard_gateway_server hotshard_gateway_async_server)
   add_executable(${_target} "${_target}.cc"
     ${hw_proto_srcs}
     ${hw_grpc_srcs})
