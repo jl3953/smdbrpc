@@ -129,7 +129,8 @@ public:
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service_);
 
-        auto parallelism = std::max(1u, std::thread::hardware_concurrency() / 4);
+        //auto parallelism = std::max(1u, std::thread::hardware_concurrency());
+	auto parallelism = 27;
         for (int i = 0; i < parallelism; i++) {
             cq_.emplace_back(builder.AddCompletionQueue());
         }
@@ -191,13 +192,13 @@ private:
 
 
                 reply_.set_is_committed(true);
-                smdbrpc::KVPair* jennBday = reply_.add_read_valueset();
-                jennBday->set_key(1994214);
-                jennBday->set_value(1994214);
+                //smdbrpc::KVPair* jennBday = reply_.add_read_valueset();
+                //jennBday->set_key(1994214);
+                //jennBday->set_value(1994214);
 
-                smdbrpc::KVPair* halloween = reply_.add_read_valueset();
-                halloween->set_key(20201031);
-                halloween->set_value(20201031);
+                //smdbrpc::KVPair* halloween = reply_.add_read_valueset();
+                //halloween->set_key(20201031);
+                //halloween->set_value(20201031);
 
                 status_ = FINISH;
                 responder_.Finish(reply_, Status::OK, this);
