@@ -123,23 +123,34 @@ func worker(address string, batch int, duration time.Duration, readPercent int,
 	client := smdbrpc.NewHotshardGatewayClient(conn)
 
 	// I have no idea
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	// query host only for set duration
 	ticker := time.NewTicker(duration)
+	//tickerSec := time.NewTicker(time.Second)
+	//i := 0
+	writeCounter := 0
+	readCounter := 0
 	for {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		if r := rand.Intn(100); r < readPercent {
 			//log.Printf("r %d\n", r)
 			readRequest(ctx, batch, client, chooseKey, &histogram[READ_COUNTER])
+			readCounter++
 		} else {
 			//log.Printf("r %d\n", r)
 			writeRequest(ctx, batch, client, chooseKey, &histogram[WRITE_COUNTER])
+			writeCounter++
 		}
+		cancel()
 		select {
 		case <-ticker.C:
-			log.Printf("%+v passed", duration)
+			//log.Printf("%+v passed", duration)
 			return
+		//case <-tickerSec.C:
+		//	log.Printf("second %d, read/write throughput %d/%d\n", i, readCounter, writeCounter)
+		//	i++
+		//	readCounter = 0
+		//	writeCounter = 0
 		default:
 
 		}
