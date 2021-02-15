@@ -112,43 +112,41 @@ class ServerImpl final {
 public:
     ~ServerImpl() {
         server_->Shutdown();
-        cq_->Shutdown();
+
+        for (auto& cq : cq_)
+            cq->Shutdown();
+
+        for (auto& thread : server_threads_) {
+            if (thread.joinable())
+                thread.join();
+        }
     }
 
-    void Run() {
+    [[noreturn]] void Run() {
         std::string server_address("0.0.0.0:50051");
 
         ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service_);
-        cq_ = builder.AddCompletionQueue();
+
+        auto parallelism = std::max(1u, std::thread::hardware_concurrency() / 4);
+        for (int i = 0; i < parallelism; i++) {
+            cq_.emplace_back(builder.AddCompletionQueue());
+        }
+
         server_ = builder.BuildAndStart();
         std::cout << "Server listening on " << server_address << std::endl;
 
-        int numThreads = std::thread::hardware_concurrency();
-        std::cout << numThreads << std::endl;
-        std::vector<std::thread> pool;
-        for (int i = 0; i < numThreads; i++) {
-            pool.push_back(std::thread(&ServerImpl::HandleRpcs, this));
+        for (int i = 0; i < parallelism; i++) {
+            server_threads_.emplace_back(std::thread([this, i] {this->HandleRpcs(i);}));
         }
 
-        for (int i = 0; i < numThreads; i++) {
-            pool[i].join();
-        }
+        for (;;) {}
+
 
     }
 
-    void HandleRpcs() {
-        new CallData(&service_, cq_.get());
-        void *tag;
-        bool ok;
-        while (true) {
-            GPR_ASSERT(cq_->Next(&tag, &ok));
-            GPR_ASSERT(ok);
-            static_cast<CallData*>(tag)->Proceed();
-        }
 
-    }
 
 private:
 
@@ -224,9 +222,22 @@ private:
         CallStatus status_;
     };
 
-    std::unique_ptr<ServerCompletionQueue> cq_;
+    void HandleRpcs(int i) {
+        new CallData(&service_, cq_[i].get());
+        void *tag;
+        bool ok;
+        while (true) {
+            GPR_ASSERT(cq_[i]->Next(&tag, &ok));
+            //GPR_ASSERT(ok);
+            static_cast<CallData*>(tag)->Proceed();
+        }
+
+    }
+
+    std::vector<std::unique_ptr<ServerCompletionQueue>> cq_;
     HotshardGateway::AsyncService service_;
     std::unique_ptr<Server> server_;
+    std::vector<std::thread> server_threads_;
 };
 
 int main(int argc, char** argv) {
