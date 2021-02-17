@@ -169,7 +169,7 @@ private:
                                                  cq_, cq_, this);
 
             } else if (status_ == PROCESS) {
-                //new CallData(service_, cq_);
+                new CallData(service_, cq_);
 
                 reply_.set_is_committed(true);
 
