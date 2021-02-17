@@ -156,9 +156,9 @@ private:
 
     class CallData {
     public:
-        CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq)
+        CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq, int i)
         : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
-            tag_ = std::rand() % 1000000;
+            tag_ = i;
             Proceed();
         }
 
@@ -167,15 +167,15 @@ private:
                 status_ = PROCESS;
 
                 service_->RequestContactHotshard(&ctx_, &request_, &responder_,
-                                                 cq_, cq_, (void*)tag_);
+                                                 cq_, cq_, this + tag_);
 
             } else if (status_ == PROCESS) {
-                new CallData(service_, cq_);
+                new CallData(service_, cq_, (tag_ + 1)%100000);
 
                 reply_.set_is_committed(true);
 
                 status_ = CREATE;
-                responder_.Finish(reply_, Status::OK, (void *)tag_);
+                responder_.Finish(reply_, Status::OK, this + tag_);
 
             } else {
                 status_ = CREATE;
@@ -200,7 +200,7 @@ private:
     };
 
     void HandleRpcs(int i) {
-        new CallData(&service_, cq_vec_[i].get());
+        new CallData(&service_, cq_vec_[i].get(), 0);
         void *tag;
         bool ok;
         while (true) {
