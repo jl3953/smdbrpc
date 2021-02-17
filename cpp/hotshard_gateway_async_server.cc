@@ -170,7 +170,7 @@ private:
                                                  cq_, cq_, this + tag_);
 
             } else if (status_ == PROCESS) {
-                new CallData(service_, cq_, (tag_ + 1)%100000);
+                new CallData(service_, cq_, (tag_ + 0)%100000);
 
                 reply_.set_is_committed(true);
 
