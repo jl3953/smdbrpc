@@ -169,14 +169,15 @@ private:
                                                  cq_, cq_, this);
 
             } else if (status_ == PROCESS) {
-                new CallData(service_, cq_);
+                //new CallData(service_, cq_);
 
                 reply_.set_is_committed(true);
 
-                status_ = FINISH;
+                status_ = CREATE;
                 responder_.Finish(reply_, Status::OK, this);
 
             } else {
+                status_ = CREATE;
                 GPR_ASSERT(status_ == FINISH);
                 //delete this;
             }
