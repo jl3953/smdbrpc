@@ -199,7 +199,7 @@ private:
     };
 
     void HandleRpcs(int i) {
-        new CallData(&service_, cq_vec_[i].get(), 0);
+        new CallData(&service_, cq_vec_[i].get(), 1);
         void *tag;
         bool ok;
         while (true) {
