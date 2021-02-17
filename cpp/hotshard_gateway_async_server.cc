@@ -174,11 +174,10 @@ private:
 
                 reply_.set_is_committed(true);
 
-                status_ = CREATE;
+                status_ = FINISH;
                 responder_.Finish(reply_, Status::OK, this + tag_);
 
             } else {
-                status_ = CREATE;
                 GPR_ASSERT(status_ == FINISH);
                 delete this;
             }
