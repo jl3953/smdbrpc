@@ -178,7 +178,7 @@ private:
 
             } else {
                 status_ = CREATE;
-                GPR_ASSERT(status_ == FINISH);
+                //GPR_ASSERT(status_ == FINISH);
                 //delete this;
             }
         }
