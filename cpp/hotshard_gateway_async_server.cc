@@ -113,7 +113,7 @@ public:
     ~ServerImpl() {
         server_->Shutdown();
 
-        for (auto& cq : cq_)
+        for (auto& cq : cq_vec_)
             cq->Shutdown();
 
         for (auto& thread : server_threads_) {
@@ -122,7 +122,7 @@ public:
         }
     }
 
-    [[noreturn]] void Run() {
+    void Run() {
         std::string server_address("0.0.0.0:50051");
 
         ServerBuilder builder;
@@ -130,20 +130,23 @@ public:
         builder.RegisterService(&service_);
 
         //auto parallelism = std::max(1u, std::thread::hardware_concurrency());
-	auto parallelism = 27;
+	    auto parallelism = 27;
         for (int i = 0; i < parallelism; i++) {
-            cq_.emplace_back(builder.AddCompletionQueue());
+            cq_vec_.emplace_back(builder.AddCompletionQueue());
         }
 
         server_ = builder.BuildAndStart();
         std::cout << "Server listening on " << server_address << std::endl;
 
         for (int i = 0; i < parallelism; i++) {
-            server_threads_.emplace_back(std::thread([this, i] {this->HandleRpcs(i);}));
+            server_threads_.emplace_back(std::thread(
+                    [this, i] {
+                        this->HandleRpcs(i);
+                    }));
         }
 
-        for (;;) {}
-
+        for (auto& thread : server_threads_)
+            thread.join();
 
     }
 
@@ -156,56 +159,26 @@ private:
         CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq)
         : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
             Proceed();
-//            std::cout << "gotcha" << std::endl;
         }
 
         void Proceed() {
             if (status_ == CREATE) {
                 status_ = PROCESS;
 
-
                 service_->RequestContactHotshard(&ctx_, &request_, &responder_,
                                                  cq_, cq_, this);
 
-
             } else if (status_ == PROCESS) {
-                new CallData(service_, cq_);
-
-//                std::cout << "hlc.walltime:[" << request_.hlctimestamp().walltime()
-//                << "], logical:[" << request_.hlctimestamp().logicaltime()
-//                << "]" << std::endl;
-//
-//                std::cout << "writes:[";
-//                for (const smdbrpc::KVPair& kvPair : request_.write_keyset()) {
-//                    std::cout << "(" << kvPair.key()
-//                    << ", " << kvPair.value()
-//                    << "), ";
-//                }
-//                std::cout << "]" << std::endl;
-//
-//                std::cout << "reads:[";
-//                for (uint64_t key : request_.read_keyset()) {
-//                    std::cout << key << ", ";
-//                }
-//                std::cout << "]\n"
-//                << "===================" << std::endl;
-
+                //new CallData(service_, cq_);
 
                 reply_.set_is_committed(true);
-                //smdbrpc::KVPair* jennBday = reply_.add_read_valueset();
-                //jennBday->set_key(1994214);
-                //jennBday->set_value(1994214);
-
-                //smdbrpc::KVPair* halloween = reply_.add_read_valueset();
-                //halloween->set_key(20201031);
-                //halloween->set_value(20201031);
 
                 status_ = FINISH;
                 responder_.Finish(reply_, Status::OK, this);
 
             } else {
                 GPR_ASSERT(status_ == FINISH);
-                delete this;
+                //delete this;
             }
         }
 
@@ -224,18 +197,19 @@ private:
     };
 
     void HandleRpcs(int i) {
-        new CallData(&service_, cq_[i].get());
+        new CallData(&service_, cq_vec_[i].get());
         void *tag;
         bool ok;
         while (true) {
-            GPR_ASSERT(cq_[i]->Next(&tag, &ok));
+            GPR_ASSERT(cq_vec_[i]->Next(&tag, &ok));
             //GPR_ASSERT(ok);
             static_cast<CallData*>(tag)->Proceed();
         }
 
     }
 
-    std::vector<std::unique_ptr<ServerCompletionQueue>> cq_;
+    std::vector<std::unique_ptr<ServerCompletionQueue>> cq_vec_;
+    std::unique_ptr<ServerCompletionQueue> notifq_;
     HotshardGateway::AsyncService service_;
     std::unique_ptr<Server> server_;
     std::vector<std::thread> server_threads_;
