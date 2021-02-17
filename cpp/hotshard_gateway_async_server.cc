@@ -158,6 +158,7 @@ private:
     public:
         CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq)
         : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
+            tag_ = std::rand() % 1000000;
             Proceed();
         }
 
@@ -166,24 +167,25 @@ private:
                 status_ = PROCESS;
 
                 service_->RequestContactHotshard(&ctx_, &request_, &responder_,
-                                                 cq_, cq_, this);
+                                                 cq_, cq_, (void*)tag_);
 
             } else if (status_ == PROCESS) {
-                //new CallData(service_, cq_);
+                new CallData(service_, cq_);
 
                 reply_.set_is_committed(true);
 
                 status_ = CREATE;
-                responder_.Finish(reply_, Status::OK, this);
+                responder_.Finish(reply_, Status::OK, (void *)tag_);
 
             } else {
                 status_ = CREATE;
-                //GPR_ASSERT(status_ == FINISH);
-                //delete this;
+                GPR_ASSERT(status_ == FINISH);
+                delete this;
             }
         }
 
     private:
+        int tag_;
         HotshardGateway::AsyncService* service_;
         ServerCompletionQueue* cq_;
         ServerContext ctx_;
@@ -210,7 +212,6 @@ private:
     }
 
     std::vector<std::unique_ptr<ServerCompletionQueue>> cq_vec_;
-    std::unique_ptr<ServerCompletionQueue> notifq_;
     HotshardGateway::AsyncService service_;
     std::unique_ptr<Server> server_;
     std::vector<std::thread> server_threads_;
