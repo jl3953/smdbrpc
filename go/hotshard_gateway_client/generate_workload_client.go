@@ -156,6 +156,7 @@ func main() {
 	host := flag.String("host", "localhost", "target host")
 	keyspace := flag.Uint64("keyspace", 1000, "keyspace from 0 to specified")
 	port := flag.Int("port", 50051, "target port")
+	numPorts := flag.Int("numPorts", 1, "number of ports")
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
 	zipfianSkew := flag.Float64("s", 1.2, "zipfian skew s, must be greater than 1")
 	timeout := flag.Duration("timeout", 500*time.Millisecond, "timeout for request")
@@ -170,8 +171,6 @@ func main() {
 
 	var wg sync.WaitGroup // wait group
 
-	address := fmt.Sprintf("%s:%d", *host, *port) // server addr
-
 	// keeping elapsed times of all requests across workers
 	ticksAcrossWorkersRead := make([][]time.Duration, *concurrency)
 	ticksAcrossWorkersWrite := make([][]time.Duration, *concurrency)
@@ -179,6 +178,8 @@ func main() {
 	// spin off workers
 	for i := 0; i < *concurrency; i++ {
 		wg.Add(1)
+
+		address := fmt.Sprintf("%s:%d", *host, *port+rand.Intn(*numPorts)) // server addr
 		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
 		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
 		go worker(address,
