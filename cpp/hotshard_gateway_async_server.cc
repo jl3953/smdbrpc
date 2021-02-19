@@ -122,8 +122,8 @@ public:
         }
     }
 
-    void Run() {
-        std::string server_address("0.0.0.0:50051");
+    void Run(const std::string& port) {
+        std::string server_address("0.0.0.0:" + port);
 
         ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
@@ -199,7 +199,7 @@ private:
     };
 
     void HandleRpcs(int i) {
-        new CallData(&service_, cq_vec_[i].get(), 1);
+        new CallData(&service_, cq_vec_[i].get(), 0);
         void *tag;
         bool ok;
         while (true) {
@@ -217,8 +217,10 @@ private:
 };
 
 int main(int argc, char** argv) {
+
+    const std::string& port = argv[2];
     ServerImpl server;
-    server.Run();
+    server.Run(port);
 
 
   return 0;
