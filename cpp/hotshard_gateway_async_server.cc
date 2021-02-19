@@ -123,7 +123,6 @@ public:
     }
 
     void Run(const std::string& port) {
-        auto
         std::string server_address("0.0.0.0:" + port);
 
         ServerBuilder builder;
