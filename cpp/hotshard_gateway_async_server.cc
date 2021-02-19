@@ -113,13 +113,8 @@ public:
     ~ServerImpl() {
         server_->Shutdown();
 
-        for (auto& cq : cq_vec_)
-            cq->Shutdown();
+        cq_->Shutdown();
 
-        for (auto& thread : server_threads_) {
-            if (thread.joinable())
-                thread.join();
-        }
     }
 
     void Run(const std::string& port) {
@@ -130,24 +125,12 @@ public:
         builder.RegisterService(&service_);
 
         //auto parallelism = std::max(1u, std::thread::hardware_concurrency());
-	    auto parallelism = 27;
-        for (int i = 0; i < parallelism; i++) {
-            cq_vec_.emplace_back(builder.AddCompletionQueue());
-        }
+        cq_ = builder.AddCompletionQueue();
 
         server_ = builder.BuildAndStart();
         std::cout << "Server listening on " << server_address << std::endl;
 
-        for (int i = 0; i < parallelism; i++) {
-            server_threads_.emplace_back(std::thread(
-                    [this, i] {
-                        this->HandleRpcs(i);
-                    }));
-        }
-
-        for (auto& thread : server_threads_)
-            thread.join();
-
+        HandleRpcs();
     }
 
 
@@ -156,9 +139,8 @@ private:
 
     class CallData {
     public:
-        CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq, int i)
+        CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq)
         : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
-            tag_ = i;
             Proceed();
         }
 
@@ -167,15 +149,14 @@ private:
                 status_ = PROCESS;
 
                 service_->RequestContactHotshard(&ctx_, &request_, &responder_,
-                                                 cq_, cq_, this + tag_);
-
+                                                 cq_, cq_, this);
             } else if (status_ == PROCESS) {
-                new CallData(service_, cq_, (tag_ + 0)%100000);
+                new CallData(service_, cq_);
 
                 reply_.set_is_committed(true);
 
                 status_ = FINISH;
-                responder_.Finish(reply_, Status::OK, this + tag_);
+                responder_.Finish(reply_, Status::OK, this);
 
             } else {
                 GPR_ASSERT(status_ == FINISH);
@@ -184,7 +165,6 @@ private:
         }
 
     private:
-        int tag_;
         HotshardGateway::AsyncService* service_;
         ServerCompletionQueue* cq_;
         ServerContext ctx_;
@@ -198,30 +178,37 @@ private:
         CallStatus status_;
     };
 
-    void HandleRpcs(int i) {
-        new CallData(&service_, cq_vec_[i].get(), 0);
+    [[noreturn]] void HandleRpcs() {
+        new CallData(&service_, cq_.get());
         void *tag;
         bool ok;
         while (true) {
-            GPR_ASSERT(cq_vec_[i]->Next(&tag, &ok));
-            //GPR_ASSERT(ok);
-            static_cast<CallData*>(tag)->Proceed();
+            cq_->Next(&tag, &ok);
+            static_cast<CallData *>(tag)->Proceed();
         }
 
     }
 
-    std::vector<std::unique_ptr<ServerCompletionQueue>> cq_vec_;
+    std::unique_ptr<ServerCompletionQueue> cq_;
     HotshardGateway::AsyncService service_;
     std::unique_ptr<Server> server_;
-    std::vector<std::thread> server_threads_;
 };
 
 int main(int argc, char** argv) {
 
-    std::string port = argv[1];
-    ServerImpl server;
-    server.Run(port);
+    int parallelism = atoi(argv[1]);
+    std::list<std::thread> pool;
 
+    for (int i = 0; i < parallelism; i++) {
+        int port = 50051 + i;
+
+        pool.emplace_back(std::thread(&ServerImpl::Run,
+                                      new ServerImpl(),
+                                      std::to_string(port)));
+    }
+
+    for (auto& thread : pool)
+        thread.join();
 
   return 0;
 }
