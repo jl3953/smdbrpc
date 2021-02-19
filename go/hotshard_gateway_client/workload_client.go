@@ -167,6 +167,7 @@ func main() {
 	host := flag.String("host", "localhost", "target host")
 	keyspace := flag.Uint64("keyspace", 1000, "keyspace from 0 to specified")
 	port := flag.Int("port", 50051, "target port")
+	numPorts := flag.Int("numPorts", 1, "number of ports")
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
 	zipfianSkew := flag.Float64("s", 1.2, "zipfian skew s, must be greater than 1")
 	flag.Parse()
@@ -176,7 +177,8 @@ func main() {
 	if nil == zipf {
 		log.Fatalf("nil zipf, is your --s greater than 1?\n")
 	}
-	address := fmt.Sprintf("%s:%d", *host, *port)
+
+	address := fmt.Sprintf("%s:%d", *host, *port + rand.Intn(*numPorts))
 	var wg sync.WaitGroup
 	histogram := make([]sync.Map, NUM_COUNTERS)
 	for i := 0; i < *concurrency; i++ {
