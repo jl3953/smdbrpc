@@ -123,6 +123,7 @@ public:
     }
 
     void Run(const std::string& port) {
+        auto
         std::string server_address("0.0.0.0:" + port);
 
         ServerBuilder builder;
@@ -218,7 +219,7 @@ private:
 
 int main(int argc, char** argv) {
 
-    const std::string& port = argv[2];
+    std::string port = argv[1];
     ServerImpl server;
     server.Run(port);
 
