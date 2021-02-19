@@ -178,10 +178,13 @@ func main() {
 		log.Fatalf("nil zipf, is your --s greater than 1?\n")
 	}
 
-	address := fmt.Sprintf("%s:%d", *host, *port + rand.Intn(*numPorts))
 	var wg sync.WaitGroup
 	histogram := make([]sync.Map, NUM_COUNTERS)
 	for i := 0; i < *concurrency; i++ {
+		port_int := *port + rand.Intn(*numPorts)
+		fmt.Printf("port_int %d\n", port_int)
+		address := fmt.Sprintf("%s:%d", *host, port_int)
+
 		wg.Add(1)
 		go worker(address,
 			*batch,
