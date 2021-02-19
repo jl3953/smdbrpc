@@ -181,7 +181,7 @@ func main() {
 	var wg sync.WaitGroup
 	histogram := make([]sync.Map, NUM_COUNTERS)
 	for i := 0; i < *concurrency; i++ {
-		port_int := *port + rand.Intn(*numPorts)
+		port_int := *port + *numPorts%i
 		fmt.Printf("port_int %d\n", port_int)
 		address := fmt.Sprintf("%s:%d", *host, port_int)
 
