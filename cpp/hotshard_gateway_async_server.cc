@@ -127,7 +127,7 @@ public:
         //auto parallelism = std::max(1u, std::thread::hardware_concurrency());
         cq_ = builder.AddCompletionQueue().release();
 
-        server_ = builder.BuildAndStart();
+        server_ = builder.BuildAndStart().release();
         std::cout << "Server listening on " << server_address << std::endl;
 
         HandleRpcs();
@@ -190,7 +190,7 @@ private:
 
     ServerCompletionQueue* cq_;
     HotshardGateway::AsyncService service_;
-    std::unique_ptr<Server> server_;
+    Server* server_;
 };
 
 int main(int argc, char** argv) {
