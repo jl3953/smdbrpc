@@ -125,7 +125,7 @@ public:
         builder.RegisterService(&service_);
 
         //auto parallelism = std::max(1u, std::thread::hardware_concurrency());
-        cq_ = builder.AddCompletionQueue();
+        cq_ = builder.AddCompletionQueue().release();
 
         server_ = builder.BuildAndStart();
         std::cout << "Server listening on " << server_address << std::endl;
@@ -179,7 +179,7 @@ private:
     };
 
     [[noreturn]] void HandleRpcs() {
-        new CallData(&service_, cq_.get());
+        new CallData(&service_, cq_);
         void *tag;
         bool ok;
         while (true) {
@@ -189,7 +189,7 @@ private:
 
     }
 
-    std::unique_ptr<ServerCompletionQueue> cq_;
+    ServerCompletionQueue* cq_;
     HotshardGateway::AsyncService service_;
     std::unique_ptr<Server> server_;
 };
