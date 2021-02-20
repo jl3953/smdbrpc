@@ -113,24 +113,31 @@ public:
     ~ServerImpl() {
         server_->Shutdown();
 
-        cq_->Shutdown();
-
+        for (auto& cq: cq_vec_)
+            cq->Shutdown();
     }
 
-    void Run(const std::string& port) {
+    void Run(const std::string& port, int concurrency) {
         std::string server_address("0.0.0.0:" + port);
 
         ServerBuilder builder;
         builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
         builder.RegisterService(&service_);
 
-        //auto parallelism = std::max(1u, std::thread::hardware_concurrency());
-        cq_ = builder.AddCompletionQueue().release();
+        for (int i = 0; i < concurrency; i++) {
+            cq_vec_.emplace_back(builder.AddCompletionQueue().release());
+        }
 
         server_ = builder.BuildAndStart().release();
         std::cout << "Server listening on " << server_address << std::endl;
 
-        HandleRpcs();
+        for (int i = 0; i < concurrency; i++) {
+            server_threads_.emplace_back(std::thread([this, i]{HandleRpcs(i);}));
+        }
+
+        for (auto& thread: server_threads_)
+            thread.join();
+
     }
 
 
@@ -147,18 +154,14 @@ private:
         void Proceed() {
             if (status_ == CREATE) {
                 status_ = PROCESS;
-
                 service_->RequestContactHotshard(&ctx_, &request_, &responder_,
                                                  cq_, cq_, this);
             } else if (status_ == PROCESS) {
-                new CallData(service_, cq_);
-
                 reply_.set_is_committed(true);
-
                 status_ = FINISH;
                 responder_.Finish(reply_, Status::OK, this);
-
             } else {
+                new CallData(service_, cq_);
                 delete this;
             }
         }
@@ -177,37 +180,40 @@ private:
         CallStatus status_;
     };
 
-    [[noreturn]] void HandleRpcs() {
-        new CallData(&service_, cq_);
+    [[noreturn]] void HandleRpcs(int i) {
+        new CallData(&service_, cq_vec_[i]);
         void *tag;
         bool ok;
         while (true) {
-            cq_->Next(&tag, &ok);
+            cq_vec_[i]->Next(&tag, &ok);
             static_cast<CallData *>(tag)->Proceed();
         }
 
     }
 
-    ServerCompletionQueue* cq_;
+    std::vector<ServerCompletionQueue*> cq_vec_;
     HotshardGateway::AsyncService service_;
     Server* server_;
+    std::list<std::thread> server_threads_;
 };
 
 int main(int argc, char** argv) {
 
-    int parallelism = atoi(argv[1]);
-    std::list<std::thread> pool;
+    // concurrency
+    int concurrency = static_cast<int>(std::thread::hardware_concurrency());
+    char *temp;
+    std::cout << concurrency << std::endl;
+    if (argc >= 2)
+        //concurrency = atoi(argv[1]);
+        concurrency = static_cast<int>(strtol(argv[1], &temp, 10));
 
-    for (int i = 0; i < parallelism; i++) {
-        int port = 50051 + i;
+    // port
+    std::string port = "50051";
+    if (argc >= 3)
+        port = argv[2];
 
-        pool.emplace_back(std::thread(&ServerImpl::Run,
-                                      new ServerImpl(),
-                                      std::to_string(port)));
-    }
-
-    for (auto& thread : pool)
-        thread.join();
+    ServerImpl server;
+    server.Run(port, concurrency);
 
   return 0;
 }
