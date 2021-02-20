@@ -209,7 +209,6 @@ func main() {
 	ticksAcrossWorkersWrite := make([][]time.Duration, *concurrency)
 
 	// spin off workers
-	log.Println("start testing!")
 	for i := 0; i < *concurrency; i++ {
 		wg.Add(1)
 
