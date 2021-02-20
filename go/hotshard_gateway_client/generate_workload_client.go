@@ -85,7 +85,8 @@ func worker(address string,
 	timeout time.Duration,
 	durationsRead *[]time.Duration,
 	durationsWrite *[]time.Duration,
-	instantaneousStats bool) {
+	instantaneousStats bool,
+	warmup time.Duration) {
 
 	// decrement wait group at the end
 	defer wg.Done()
@@ -100,7 +101,25 @@ func worker(address string,
 	defer conn.Close()
 	client := smdbrpc.NewHotshardGatewayClient(conn)
 
-	ticker := time.NewTicker(duration)
+	ticker := time.NewTicker(warmup)
+L:
+	for {
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		if r := rand.Intn(100); r < readPercent {
+			_, _ = sendRequest(ctx, batch, client, chooseKey, true)
+		} else {
+			_, _ = sendRequest(ctx, batch, client, chooseKey, false)
+		}
+		cancel()
+		select {
+		case <-ticker.C:
+			break L
+		default:
+
+		}
+	}
+
+	ticker = time.NewTicker(duration)
 	tickerInstant := time.NewTicker(time.Second)
 	i := 0
 	readTicks := make([]time.Duration, 0)
@@ -189,25 +208,6 @@ func main() {
 	ticksAcrossWorkersRead := make([][]time.Duration, *concurrency)
 	ticksAcrossWorkersWrite := make([][]time.Duration, *concurrency)
 
-	log.Println("start warmup!")
-	for i := 0; i < *concurrency; i++ {
-		wg.Add(1)
-		address := fmt.Sprintf("%s:%d", *host, *port+rand.Intn(*numPorts)) // server addr
-		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
-		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
-		go worker(address,
-			*batch,
-			*warmup,
-			*readPercent,
-			func() uint64 { return rand.Uint64() % *keyspace },
-			&wg,
-			*timeout,
-			&ticksAcrossWorkersRead[i],
-			&ticksAcrossWorkersWrite[i],
-			false)
-	}
-	wg.Wait()
-
 	// spin off workers
 	log.Println("start testing!")
 	for i := 0; i < *concurrency; i++ {
@@ -225,7 +225,8 @@ func main() {
 			*timeout,
 			&ticksAcrossWorkersRead[i],
 			&ticksAcrossWorkersWrite[i],
-			*instantaneousStats)
+			*instantaneousStats,
+			*warmup)
 	}
 	wg.Wait()
 
