@@ -180,6 +180,7 @@ func main() {
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
 	timeout := flag.Duration("timeout", 500*time.Millisecond, "timeout for request")
 	instantaneousStats := flag.Bool("instantaneousStats", false, "show per second stats")
+	warmup := flag.Duration("warmup", 30*time.Second, "warmup duration")
 	flag.Parse()
 
 	var wg sync.WaitGroup // wait group
@@ -188,7 +189,27 @@ func main() {
 	ticksAcrossWorkersRead := make([][]time.Duration, *concurrency)
 	ticksAcrossWorkersWrite := make([][]time.Duration, *concurrency)
 
+	log.Println("start warmup!")
+	for i := 0; i < *concurrency; i++ {
+		wg.Add(1)
+		address := fmt.Sprintf("%s:%d", *host, *port+rand.Intn(*numPorts)) // server addr
+		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
+		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
+		go worker(address,
+			*batch,
+			*warmup,
+			*readPercent,
+			func() uint64 { return rand.Uint64() % *keyspace },
+			&wg,
+			*timeout,
+			&ticksAcrossWorkersRead[i],
+			&ticksAcrossWorkersWrite[i],
+			false)
+	}
+	wg.Wait()
+
 	// spin off workers
+	log.Println("start testing!")
 	for i := 0; i < *concurrency; i++ {
 		wg.Add(1)
 
