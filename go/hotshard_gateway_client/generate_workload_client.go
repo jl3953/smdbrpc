@@ -178,17 +178,9 @@ func main() {
 	port := flag.Int("port", 50051, "target port")
 	numPorts := flag.Int("numPorts", 1, "number of ports")
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
-	zipfianSkew := flag.Float64("s", 1.2, "zipfian skew s, must be greater than 1")
 	timeout := flag.Duration("timeout", 500*time.Millisecond, "timeout for request")
 	instantaneousStats := flag.Bool("instantaneousStats", false, "show per second stats")
 	flag.Parse()
-
-	// zipfian rng
-	if *zipfianSkew <= 1 {
-		log.Fatalf("is your --s greater than 1?\n")
-	}
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	zipf := rand.NewZipf(r, *zipfianSkew, 1, *keyspace)
 
 	var wg sync.WaitGroup // wait group
 
@@ -207,7 +199,7 @@ func main() {
 			*batch,
 			*duration,
 			*readPercent,
-			func() uint64 { return zipf.Uint64() },
+			func() uint64 { return rand.Uint64() % *keyspace },
 			&wg,
 			*timeout,
 			&ticksAcrossWorkersRead[i],
