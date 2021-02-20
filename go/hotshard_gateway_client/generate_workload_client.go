@@ -101,54 +101,45 @@ func worker(address string,
 	defer conn.Close()
 	client := smdbrpc.NewHotshardGatewayClient(conn)
 
-	ticker := time.NewTicker(warmup)
-L:
-	for {
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		if r := rand.Intn(100); r < readPercent {
-			_, _ = sendRequest(ctx, batch, client, chooseKey, true)
-		} else {
-			_, _ = sendRequest(ctx, batch, client, chooseKey, false)
-		}
-		cancel()
-		select {
-		case <-ticker.C:
-			break L
-		default:
-
-		}
-	}
-
-	ticker = time.NewTicker(duration)
+	tickerWarmup := time.NewTicker(warmup)
+	ticker := time.NewTicker(warmup + duration)
 	tickerInstant := time.NewTicker(time.Second)
 	i := 0
 	readTicks := make([]time.Duration, 0)
 	writeTicks := make([]time.Duration, 0)
+	warmupOver := false
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		if r := rand.Intn(100); r < readPercent {
 			if ok, elapsed := sendRequest(ctx, batch, client,
 				chooseKey, true); ok {
-				readTicks = append(readTicks, elapsed)
+				if warmupOver {
+					readTicks = append(readTicks, elapsed)
+				}
 			} else {
 				log.Println("read request failed")
 			}
 		} else {
 			if ok, elapsed := sendRequest(ctx, batch, client,
 				chooseKey, false); ok {
-				writeTicks = append(writeTicks, elapsed)
+				if warmupOver {
+					writeTicks = append(writeTicks, elapsed)
+				}
 			} else {
 				log.Println("write request failed")
 			}
 		}
 		cancel()
 		select {
+		case <-tickerWarmup.C:
+			warmupOver = true
+			tickerWarmup.Stop()
 		case <-ticker.C:
 			return
 		case <-tickerInstant.C:
 			*durationsRead = append(*durationsRead, readTicks...)
 			*durationsWrite = append(*durationsWrite, writeTicks...)
-			if instantaneousStats {
+			if instantaneousStats && warmupOver {
 				rtp, rp50, rp99 := extractStats([][]time.Duration{readTicks}, time.Second)
 				wtp, wp50, wp99 := extractStats([][]time.Duration{writeTicks}, time.Second)
 				log.Printf("second %+v: r %+v qps / %+v / %+v || w %+v qps / %+v / %+v\n",
