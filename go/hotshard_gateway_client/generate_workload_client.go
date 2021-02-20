@@ -84,7 +84,8 @@ func worker(address string,
 	wg *sync.WaitGroup,
 	timeout time.Duration,
 	durationsRead *[]time.Duration,
-	durationsWrite *[]time.Duration) {
+	durationsWrite *[]time.Duration,
+	instantaneousStats bool) {
 
 	// decrement wait group at the end
 	defer wg.Done()
@@ -100,19 +101,23 @@ func worker(address string,
 	client := smdbrpc.NewHotshardGatewayClient(conn)
 
 	ticker := time.NewTicker(duration)
+	tickerInstant := time.NewTicker(time.Second)
+	i := 0
+	readTicks := make([]time.Duration, 0)
+	writeTicks := make([]time.Duration, 0)
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		if r := rand.Intn(100); r < readPercent {
 			if ok, elapsed := sendRequest(ctx, batch, client,
 				chooseKey, true); ok {
-				*durationsRead = append(*durationsRead, elapsed)
+				readTicks = append(readTicks, elapsed)
 			} else {
 				log.Println("read request failed")
 			}
 		} else {
 			if ok, elapsed := sendRequest(ctx, batch, client,
 				chooseKey, false); ok {
-				*durationsWrite = append(*durationsWrite, elapsed)
+				writeTicks = append(writeTicks, elapsed)
 			} else {
 				log.Println("write request failed")
 			}
@@ -121,6 +126,21 @@ func worker(address string,
 		select {
 		case <-ticker.C:
 			return
+		case <-tickerInstant.C:
+			*durationsRead = append(*durationsRead, readTicks...)
+			*durationsWrite = append(*durationsWrite, writeTicks...)
+			if instantaneousStats {
+				rtp, rp50, rp99 := extractStats([][]time.Duration{readTicks}, time.Second)
+				wtp, wp50, wp99 := extractStats([][]time.Duration{writeTicks}, time.Second)
+				log.Printf("second %+v: r %+v qps / %+v / %+v || w %+v qps / %+v / %+v\n",
+					time.Duration(i)*time.Second,
+					rtp, rp50, rp99,
+					wtp, wp50, wp99)
+				i++
+			}
+			readTicks, writeTicks = []time.Duration{}, []time.Duration{}
+		default:
+
 		}
 	}
 }
@@ -160,6 +180,7 @@ func main() {
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
 	zipfianSkew := flag.Float64("s", 1.2, "zipfian skew s, must be greater than 1")
 	timeout := flag.Duration("timeout", 500*time.Millisecond, "timeout for request")
+	instantaneousStats := flag.Bool("instantaneousStats", false, "show per second stats")
 	flag.Parse()
 
 	// zipfian rng
@@ -190,7 +211,8 @@ func main() {
 			&wg,
 			*timeout,
 			&ticksAcrossWorkersRead[i],
-			&ticksAcrossWorkersWrite[i])
+			&ticksAcrossWorkersWrite[i],
+			*instantaneousStats)
 	}
 	wg.Wait()
 
