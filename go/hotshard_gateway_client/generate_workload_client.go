@@ -207,11 +207,12 @@ func main() {
 		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
 		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
 		rng := rand.New(rand.NewSource(int64(i)))
+		zipf := rand.NewZipf(rng, 1.2, 1, *keyspace)
 		go worker(address,
 			*batch,
 			*duration,
 			*readPercent,
-			func() uint64 { return rng.Uint64() % *keyspace },
+			func() uint64 { return zipf.Uint64() },
 			&wg,
 			*timeout,
 			&ticksAcrossWorkersRead[i],
