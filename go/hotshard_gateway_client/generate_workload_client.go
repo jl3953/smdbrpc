@@ -206,11 +206,12 @@ func main() {
 		address := fmt.Sprintf("%s:%d", *host, *port+rand.Intn(*numPorts)) // server addr
 		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
 		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
+		rng := rand.New(rand.NewSource(int64(i)))
 		go worker(address,
 			*batch,
 			*duration,
 			*readPercent,
-			func() uint64 { return rand.Uint64() % *keyspace },
+			func() uint64 { return rng.Uint64() % *keyspace },
 			&wg,
 			*timeout,
 			&ticksAcrossWorkersRead[i],
