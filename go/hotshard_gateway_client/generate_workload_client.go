@@ -16,10 +16,10 @@ import (
 
 func sendRequest(ctx context.Context, batch int,
 	client smdbrpc.HotshardGatewayClient, chooseKey func() uint64,
-	isRead bool) (bool, time.Duration) {
+	isRead bool, logicalTime int32) (bool, time.Duration) {
 
 	var walltime = time.Now().UnixNano()
-	var logical int32 = 214
+	var logical int32 = logicalTime
 
 	request := smdbrpc.HotshardRequest{
 		Hlctimestamp: &smdbrpc.HLCTimestamp{
@@ -86,7 +86,8 @@ func worker(address string,
 	durationsRead *[]time.Duration,
 	durationsWrite *[]time.Duration,
 	instantaneousStats bool,
-	warmup time.Duration) {
+	warmup time.Duration,
+	workerNum int) {
 
 	// decrement wait group at the end
 	defer wg.Done()
@@ -112,7 +113,7 @@ func worker(address string,
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		if r := rand.Intn(100); r < readPercent {
 			if ok, elapsed := sendRequest(ctx, batch, client,
-				chooseKey, true); ok {
+				chooseKey, true, int32(workerNum)); ok {
 				if warmupOver {
 					readTicks = append(readTicks, elapsed)
 				}
@@ -121,7 +122,7 @@ func worker(address string,
 			}
 		} else {
 			if ok, elapsed := sendRequest(ctx, batch, client,
-				chooseKey, false); ok {
+				chooseKey, false, int32(workerNum)); ok {
 				if warmupOver {
 					writeTicks = append(writeTicks, elapsed)
 				}
@@ -218,7 +219,8 @@ func main() {
 			&ticksAcrossWorkersRead[i],
 			&ticksAcrossWorkersWrite[i],
 			*instantaneousStats,
-			*warmup)
+			*warmup,
+			i)
 	}
 	wg.Wait()
 
