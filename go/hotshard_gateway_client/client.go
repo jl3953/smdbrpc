@@ -76,11 +76,12 @@ func main() {
 	kvpair := makeKVPair(&key, &val)
 	writeset := []*smdbrpc.KVPair{&kvpair}
 
+	log.Printf("=========CASE 1=========\n")
 	/* Case 1:
 	txn1: write(1994214) = 1994214, ts = now
 	txn2: write(1994214) = 2020, ts = now + 1
 	txn3: read(1994214) = 2020, ts = now + 2
-	 */
+	*/
 	request := makeRequest(writeset, nil, &walltime, &logicaltime)
 	r, err := c.ContactHotshard(ctx, &request)
 	if err != nil {
@@ -116,6 +117,7 @@ func main() {
 	}
 	log.Printf("expected: (1994214, 2020)\n")
 
+	log.Printf("=========CASE 2========\n")
 	/* Case 2:
 	txn1: write(1994214) = 1994214, ts = now
 	txn2: write(1994214) = 2020, ts = now + 5
@@ -160,6 +162,7 @@ func main() {
 	}
 	log.Printf("expected: (1994214, 1994214)\n")
 
+	log.Printf("=========CASE 3=========\n")
 	/* Case 3:
 	txn1: write(1994214) = 1994214, ts = now
 	txn2: write(1994214) = 2020, ts = now - 10 FAIL
@@ -204,6 +207,7 @@ func main() {
 	}
 	log.Printf("expected: (1994214, 1994214)\n")
 
+	log.Printf("=========CASE 4=========\n")
 	/* Case 4:
 	txn1: write(1994214) = 1994214, ts = now, 0
 	txn2: write(1994214) = 2020, ts = now, 1
@@ -245,6 +249,7 @@ func main() {
 	}
 	log.Printf("expected: (1994214, 2020)\n")
 
+	log.Printf("=========CASE 5=========\n")
 	/* Case 5:
 	txn1: write(1994214) = 1994214, ts = now, 0
 	txn2: write(1994214) = 2020, ts = now, 10
@@ -289,6 +294,7 @@ func main() {
 	}
 	log.Printf("expected: (1994214, 1994214)\n")
 
+	log.Printf("=========CASE 6=========\n")
 	/* Case 6:
 	txn1: write(1994214) = 1994214, ts = now, 100
 	txn2: write(1994214) = 2020, ts = now, 90 FAIL
