@@ -187,9 +187,9 @@ func main() {
 	request = makeRequest(writeset, nil, &walltime2, &logicaltime)
 	r, err = c.ContactHotshard(ctx, &request)
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Printf("could not greet: %v", err)
 	}
-	log.Printf("isCommitted:[%+v]\n", *r.IsCommitted)
+	//log.Printf("isCommitted:[%+v]\n", *r.IsCommitted)
 	log.Printf("EXPECTED: false\n")
 
 	walltime3 = walltime + 2
@@ -319,9 +319,9 @@ func main() {
 	request = makeRequest(writeset, nil, &walltime, &logicaltime2)
 	r, err = c.ContactHotshard(ctx, &request)
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Printf("could not greet: %v", err)
 	}
-	log.Printf("isCommitted:[%+v]\n", *r.IsCommitted)
+	//log.Printf("isCommitted:[%+v]\n", *r.IsCommitted)
 	log.Printf("EXPECTED: false\n")
 
 	logicaltime3 = logicaltime + 2
