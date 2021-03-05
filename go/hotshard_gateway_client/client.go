@@ -124,7 +124,7 @@ func main() {
 	txn3: read(1994214) = 1994214, ts = now + 2
 	*/
 	walltime, logicaltime = time.Now().UnixNano(), 0
-	key, val = 1994214, 1994214
+	key, val = 1994812, 1994812
 	kvpair = makeKVPair(&key, &val)
 	writeset = []*smdbrpc.KVPair{&kvpair}
 	request = makeRequest(writeset, nil, &walltime, &logicaltime)
@@ -160,7 +160,7 @@ func main() {
 		log.Printf("key:[%+v], val:[%+v]\n",
 			*kvPair.Key, *kvPair.Value)
 	}
-	log.Printf("expected: (1994214, 1994214)\n")
+	log.Printf("expected: (1994812, 1994812)\n")
 
 	log.Printf("=========CASE 3=========\n")
 	/* Case 3:
@@ -169,7 +169,7 @@ func main() {
 	txn3: read(1994214) = 1994214, ts = now + 1
 	*/
 	walltime, logicaltime = time.Now().UnixNano(), 0
-	key, val = 1994214, 1994214
+	key, val = 19941224, 19941224
 	kvpair = makeKVPair(&key, &val)
 	writeset = []*smdbrpc.KVPair{&kvpair}
 	request = makeRequest(writeset, nil, &walltime, &logicaltime)
@@ -205,7 +205,7 @@ func main() {
 		log.Printf("key:[%+v], val:[%+v]\n",
 			*kvPair.Key, *kvPair.Value)
 	}
-	log.Printf("expected: (1994214, 1994214)\n")
+	log.Printf("expected: (19941224, 19941224)\n")
 
 	log.Printf("=========CASE 4=========\n")
 	/* Case 4:
@@ -214,6 +214,9 @@ func main() {
 	txn3: read(1994214) = 2020, ts = now, 2
 	*/
 	walltime, logicaltime = time.Now().UnixNano(), 0
+	key, val = 2021214, 2021214
+	kvpair = makeKVPair(&key, &val)
+	writeset = []*smdbrpc.KVPair{&kvpair}
 	request = makeRequest(writeset, nil, &walltime, &logicaltime)
 	r, err = c.ContactHotshard(ctx, &request)
 	if err != nil {
@@ -256,7 +259,7 @@ func main() {
 	txn3: read(1994214) = 1994214, ts = now, 5
 	*/
 	walltime, logicaltime = time.Now().UnixNano(), 0
-	key, val = 1994214, 1994214
+	key, val = 2021812, 2021812
 	kvpair = makeKVPair(&key, &val)
 	writeset = []*smdbrpc.KVPair{&kvpair}
 	request = makeRequest(writeset, nil, &walltime, &logicaltime)
@@ -292,7 +295,7 @@ func main() {
 		log.Printf("key:[%+v], val:[%+v]\n",
 			*kvPair.Key, *kvPair.Value)
 	}
-	log.Printf("expected: (1994214, 1994214)\n")
+	log.Printf("expected: (2021812, 2021812)\n")
 
 	log.Printf("=========CASE 6=========\n")
 	/* Case 6:
@@ -301,7 +304,7 @@ func main() {
 	txn3: read(1994214) = 1994214, ts = now, 101
 	*/
 	walltime, logicaltime = time.Now().UnixNano(), 100
-	key, val = 1994214, 1994214
+	key, val = 20211224, 20211224
 	kvpair = makeKVPair(&key, &val)
 	writeset = []*smdbrpc.KVPair{&kvpair}
 	request = makeRequest(writeset, nil, &walltime, &logicaltime)
@@ -337,5 +340,5 @@ func main() {
 		log.Printf("key:[%+v], val:[%+v]\n",
 			*kvPair.Key, *kvPair.Value)
 	}
-	log.Printf("expected: (1994214, 1994214)\n")
+	log.Printf("expected: (20211224, 20211224)\n")
 }
