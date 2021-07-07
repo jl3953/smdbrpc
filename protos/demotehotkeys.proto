@@ -20,19 +20,19 @@ syntax = "proto2";
 // option objc_class_prefix = "HLW";
 option go_package="execinfrapb";
 
-//package cockroach.sql.distsqlrun;
 package smdbrpc;
 
 import "smdbrpc.proto";
 
 message KVVersion {
-  optional KVPair kv = 1;
-  optional HLCTimestamp timestamp = 2;
-  optional int64 hotness = 3;
+  optional string key = 1;
+  optional bytes value = 2;
+  optional HLCTimestamp timestamp = 3;
+  optional int64 hotness = 4;
 }
 
 message KVDemotionStatus {
-  optional KVPair kv = 1;
+  optional string key = 1;
   optional bool is_successfully_demoted = 2;
 }
 
