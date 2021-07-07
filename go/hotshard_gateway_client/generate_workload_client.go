@@ -95,7 +95,8 @@ func worker(address string,
 	// connecting to server
 	conn, err := grpc.Dial(address,
 		grpc.WithInsecure(),
-		grpc.WithBlock())
+		//grpc.WithBlock(),
+        )
 	if err != nil {
 		log.Fatalf("did not connect: %+v\n", err)
 	}
@@ -191,7 +192,7 @@ func main() {
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
 	timeout := flag.Duration("timeout", 500*time.Millisecond, "timeout for request")
 	instantaneousStats := flag.Bool("instantaneousStats", false, "show per second stats")
-	warmup := flag.Duration("warmup", 30*time.Second, "warmup duration")
+	warmup := flag.Duration("warmup", 1*time.Second, "warmup duration")
 	flag.Parse()
 
 	var wg sync.WaitGroup // wait group
