@@ -158,6 +158,19 @@ private:
                                                  cq_, cq_, this);
             } else if (status_ == PROCESS) {
                 reply_.set_is_committed(true);
+
+                for (uint64_t key : request_.read_keyset()) {
+                    smdbrpc::KVPair *kvPair = reply_.add_read_valueset();
+                    kvPair->set_key(key);
+                    uint64_t val = 1994214;
+                    kvPair->set_value(val);
+
+
+                    std::cout << "key, val ("
+                        << key << ", " << val
+                        << ")" << std::endl;
+                }
+
                 status_ = FINISH;
                 responder_.Finish(reply_, Status::OK, this);
             } else {
@@ -201,6 +214,9 @@ int main(int argc, char** argv) {
 
     // concurrency
     int concurrency = static_cast<int>(std::thread::hardware_concurrency());
+    if (argc > 1) {
+        concurrency = atol(argv[1]);
+    }
     char *temp;
     std::cout << concurrency << std::endl;
     if (argc >= 2)
