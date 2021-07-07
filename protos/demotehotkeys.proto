@@ -1,0 +1,50 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+// option java_multiple_files = true;
+// option java_package = "io.grpc.examples.helloworld";
+// option java_outer_classname = "HelloWorldProto";
+// option objc_class_prefix = "HLW";
+option go_package="execinfrapb";
+
+//package cockroach.sql.distsqlrun;
+package smdbrpc;
+
+import "smdbrpc.proto";
+
+message KVVersion {
+  optional KVPair kv = 1;
+  optional HLCTimestamp timestamp = 2;
+  optional int64 hotness = 3;
+}
+
+message KVDemotionStatus {
+  optional KVPair kv = 1;
+  optional bool is_successfully_demoted = 2;
+}
+
+service DemoteHotkeysGateway {
+  rpc DemoteHotkeys (DemoteHotkeysRequest) returns (DemoteHotkeysReply) {}
+}
+
+message DemoteHotkeysRequest {
+  repeated KVVersion keyset = 1;
+}
+
+message DemoteHotkeysReply {
+  repeated KVDemotionStatus are_successfully_demoted = 1;
+}
+
