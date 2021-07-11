@@ -1,30 +1,39 @@
 package main
 
 import (
-	"context"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
 
 	demotehotkeys "smdbrpc/go/build/gen"
 )
 
-func (s *server) demoteHotkeys(
-	_ context.Context,
-	in *demotehotkeys.DemoteHotkeysRequest) (*demotehotkeys.DemoteHotkeysReply, error) {
+func (s *server) DemoteHotkeys(stream demotehotkeys.DemoteHotkeysGateway_DemoteHotkeysServer) error {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
 
-	log.Printf("Received %+v", in.String())
-	key := "jennifer"
-	isSuccessfullyDemoted := true
-	return &demotehotkeys.DemoteHotkeysReply{
-		AreSuccessfullyDemoted: []*demotehotkeys.KVDemotionStatus{
-			{
-				Key:                   &key,
-				IsSuccessfullyDemoted: &isSuccessfullyDemoted,
-			},
-		},
-	}, nil
+		key := in.GetKey()
+		log.Printf("%+v, %+v, (%+v, %+v), %+v\n",
+			key, in.GetValue(), *in.GetTimestamp().Walltime,
+			*in.GetTimestamp().Logicaltime, in.GetHotness())
 
+		isSuccessfullyDemoted := true
+
+		demotionStatus := demotehotkeys.KVDemotionStatus{
+			Key:                   &key,
+			IsSuccessfullyDemoted: &isSuccessfullyDemoted,
+		}
+		if err := stream.Send(&demotionStatus); err != nil {
+			return err
+		}
+	}
 }
 
 type server struct {
