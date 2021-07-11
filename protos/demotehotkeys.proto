@@ -37,14 +37,6 @@ message KVDemotionStatus {
 }
 
 service DemoteHotkeysGateway {
-  rpc DemoteHotkeys (DemoteHotkeysRequest) returns (DemoteHotkeysReply) {}
-}
-
-message DemoteHotkeysRequest {
-  repeated KVVersion keyset = 1;
-}
-
-message DemoteHotkeysReply {
-  repeated KVDemotionStatus are_successfully_demoted = 1;
+  rpc DemoteHotkeys (stream KVVersion) returns (stream KVDemotionStatus) {}
 }
 
