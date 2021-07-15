@@ -22,6 +22,7 @@ option go_package="execinfrapb";
 
 package smdbrpc;
 
+//import "smdbrpc/protos/smdbrpc.proto"; // CRDB version has this
 import "smdbrpc.proto";
 
 message KVVersion {
