@@ -36,7 +36,7 @@ KVVersion MakeKVVersion(const std::string& key,
 
 class DemoteHotkeysGatewayClient {
 public:
-  DemoteHotkeysGatewayClient(std::shared_ptr<Channel> channel) : stub_(DemoteHotkeysGateway::NewStub(channel)) {}
+  explicit DemoteHotkeysGatewayClient(const std::shared_ptr<Channel>& channel) : stub_(DemoteHotkeysGateway::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
