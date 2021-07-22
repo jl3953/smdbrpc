@@ -14,8 +14,8 @@ using smdbrpc::KVVersion;
 using smdbrpc::KVDemotionStatus;
 using smdbrpc::HLCTimestamp;
 
-KVVersion MakeKVVersion(const std::string& key,
-                        const std::string& value,
+KVVersion MakeKVVersion(uint64_t key,
+                        uint64_t value,
                         int64_t walltime,
                         int32_t logicaltime,
                         int64_t hotness) {
@@ -51,8 +51,8 @@ public:
 
     std::thread writer([stream]() {
       std::vector<KVVersion> kvVersions{
-          MakeKVVersion("1994214", "jennifer", 1994214, 1, 214),
-          MakeKVVersion("1994812", "jeff", 1994812, 2, 812)
+          MakeKVVersion(1994214, 1994214, 1994214, 1, 214),
+          MakeKVVersion(1994812, 1994812, 1994812, 2, 812)
       };
 
         std::cout << "make vector" << std::endl;

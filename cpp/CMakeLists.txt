@@ -127,31 +127,39 @@ endif()
 # Proto file
 get_filename_component(hw_proto "../protos/smdbrpc.proto" ABSOLUTE)
 get_filename_component(hw_proto_path "${hw_proto}" PATH)
+get_filename_component(hw_proto_trigger "../protos/triggerdemotion.proto" ABSOLUTE)
+get_filename_component(hw_proto_path_trigger "${hw_proto_trigger}" PATH)
 
 # Generated sources
 set(hw_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/smdbrpc.pb.cc")
 set(hw_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/smdbrpc.pb.h")
 set(hw_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/smdbrpc.grpc.pb.cc")
 set(hw_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/smdbrpc.grpc.pb.h")
+set(hw_proto_srcs_trigger "${CMAKE_CURRENT_BINARY_DIR}/triggerdemotion.pb.cc")
+set(hw_proto_hdrs_trigger "${CMAKE_CURRENT_BINARY_DIR}/triggerdemotion.pb.h")
+set(hw_grpc_srcs_trigger "${CMAKE_CURRENT_BINARY_DIR}/triggerdemotion.grpc.pb.cc")
+set(hw_grpc_hdrs_trigger "${CMAKE_CURRENT_BINARY_DIR}/triggerdemotion.grpc.pb.h")
 add_custom_command(
-      OUTPUT "${hw_proto_srcs}" "${hw_proto_hdrs}" "${hw_grpc_srcs}" "${hw_grpc_hdrs}"
+      OUTPUT "${hw_proto_srcs}" "${hw_proto_hdrs}" "${hw_grpc_srcs}" "${hw_grpc_hdrs}" "${hw_proto_srcs_trigger}" "${hw_proto_hdrs_trigger}" "${hw_grpc_srcs_trigger}" "${hw_grpc_hdrs_trigger}"
       COMMAND ${_PROTOBUF_PROTOC}
       ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
         --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
-        -I "${hw_proto_path}"
+        -I "${hw_proto_path}" -I "${hw_proto_path_trigger}"
         --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
-        "${hw_proto}"
-      DEPENDS "${hw_proto}")
+        "${hw_proto}" "${hw_proto_trigger}"
+      DEPENDS "${hw_proto}" "${hw_proto_trigger}")
 
 # Include generated *.pb.h files
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-  hotshard_gateway_server hotshard_gateway_async_server)
+  hotshard_gateway_server hotshard_gateway_async_server trigger_demotion_server)
   add_executable(${_target} "${_target}.cc"
     ${hw_proto_srcs}
-    ${hw_grpc_srcs})
+    ${hw_grpc_srcs}
+      ${hw_proto_srcs_trigger}
+      ${hw_grpc_srcs_trigger})
   target_link_libraries(${_target}
     ${_REFLECTION}
     ${_GRPC_GRPCPP}

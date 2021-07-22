@@ -100,7 +100,9 @@ func worker(address string,
 	if err != nil {
 		log.Fatalf("did not connect: %+v\n", err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		_ = conn.Close()
+	}(conn)
 	client := smdbrpc.NewHotshardGatewayClient(conn)
 
 	tickerWarmup := time.NewTicker(warmup)
@@ -113,8 +115,12 @@ func worker(address string,
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		if r := rand.Intn(100); r < readPercent {
-			if ok, elapsed := sendRequest(ctx, batch, client,
-				chooseKey, true, int32(workerNum)); ok {
+			if ok, elapsed := sendRequest(ctx,
+				batch,
+				client,
+				chooseKey,
+				true,
+				int32(workerNum)); ok {
 				if warmupOver {
 					readTicks = append(readTicks, elapsed)
 				}
