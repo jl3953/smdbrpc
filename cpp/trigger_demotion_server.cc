@@ -1,9 +1,6 @@
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include "trigger_demotion_server.h"
 
-int add(int x, int y) {
-  return x + y;
-}
 
 int main(int argc, char** argv) {
 
@@ -22,9 +19,9 @@ int main(int argc, char** argv) {
   if (argc >= 3)
     port = argv[2];
 
-  //TriggerDemotionServerImpl server;
+  TriggerDemotionServerImpl server;
   std::thread triggerDemotionServer(&TriggerDemotionServerImpl::Run,
-                                    TriggerDemotionServerImpl(),
+                                    &server,
                                     port, concurrency);
   triggerDemotionServer.join();
 

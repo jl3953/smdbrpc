@@ -36,11 +36,6 @@ public:
 
     TriggerDemotionServerImpl(TriggerDemotionServerImpl &&) = default;
 
-    void hello() {
-      std::cout << "hello" << server_ << std::endl;
-    }
-
-
     void Run(const std::string& port, int concurrency) {
       std::string server_address("0.0.0.0:" + port);
 
