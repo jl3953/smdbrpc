@@ -52,21 +52,21 @@ message KVPair {
 service HotshardGateway {
   // Sends a greeting
   rpc ContactHotshard (HotshardRequest) returns (HotshardReply) {}
+  rpc TriggerDemotion (TriggerDemotionRequest) returns (TriggerDemotionReply) {}
 }
 
-// The request message containing the user's name.
-//message HotshardRequest {
-//  optional string sqlstring = 1 [(gogoproto.nullable) = false];
-//
-//  optional HLCTimestamp hlctimestamp = 2 [(gogoproto.nullable) = false];
-//}
-//
-//// The response message containing the greetings
-//message HotshardReply {
-//  optional bool is_committed = 1 [(gogoproto.nullable) = false];
-//
-//  optional HLCTimestamp hlctimestamp = 2 [(gogoproto.nullable) = false];
-//}
+message TriggerDemotionRequest {
+  repeated uint64 keys = 1;
+}
+
+message TriggerDemotionStatus {
+  optional uint64 key = 1;
+  optional bool isDemotionTriggered = 2;
+}
+
+message TriggerDemotionReply {
+  repeated TriggerDemotionStatus triggerDemotionStatuses = 1;
+}
 
 message HotshardRequest {
   // optional string sqlstring = 1;

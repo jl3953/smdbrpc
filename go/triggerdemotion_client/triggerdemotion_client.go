@@ -9,7 +9,7 @@ import (
 )
 
 const(
-	address = "localhost: 50053"
+	address = "localhost: 50051"
 )
 
 func main() {
@@ -18,8 +18,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	defer conn.Close()
-	c := smdbrpc.NewTriggerDemotionGatewayClient(conn)
+	defer func(conn *grpc.ClientConn) {
+		_ = conn.Close()
+	}(conn)
+	c := smdbrpc.NewHotshardGatewayClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()

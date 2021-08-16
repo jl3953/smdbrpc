@@ -31,6 +31,9 @@
 #include "smdbrpc.grpc.pb.h"
 #endif
 
+#include "HotshardCallData.h"
+#include "TriggerDemotionCallData.h"
+
 using grpc::Server;
 using grpc::ServerAsyncResponseWriter;
 using grpc::ServerBuilder;
@@ -132,7 +135,9 @@ public:
         std::cout << "Server listening on " << server_address << std::endl;
 
         for (int i = 0; i < concurrency; i++) {
-            server_threads_.emplace_back(std::thread([this, i]{HandleRpcs(i);}));
+          new HotshardCallData(&service_, cq_vec_[i].get());
+          new TriggerDemotionCallData(&service_, cq_vec_[i].get());
+          server_threads_.emplace_back(std::thread([this, i]{HandleRpcs(i);}));
         }
 
         for (auto& thread: server_threads_)
@@ -141,70 +146,20 @@ public:
     }
 
 
-
 private:
 
-    class CallData {
-    public:
-        CallData(HotshardGateway::AsyncService* service, ServerCompletionQueue* cq)
-        : service_(service), cq_(cq), responder_(&ctx_), status_(CREATE) {
-            Proceed();
-        }
-
-        void Proceed() {
-            if (status_ == CREATE) {
-                status_ = PROCESS;
-                service_->RequestContactHotshard(&ctx_, &request_, &responder_,
-                                                 cq_, cq_, this);
-            } else if (status_ == PROCESS) {
-                reply_.set_is_committed(true);
-
-                for (uint64_t key : request_.read_keyset()) {
-                    smdbrpc::KVPair *kvPair = reply_.add_read_valueset();
-                    kvPair->set_key(key);
-                    uint64_t val = 1994214;
-                    kvPair->set_value(val);
-
-
-                    std::cout << "key, val ("
-                        << key << ", " << val
-                        << ")" << std::endl;
-                }
-
-                status_ = FINISH;
-                responder_.Finish(reply_, Status::OK, this);
-            } else {
-                new CallData(service_, cq_);
-                delete this;
-            }
-        }
-
-    private:
-        HotshardGateway::AsyncService* service_;
-        ServerCompletionQueue* cq_;
-        ServerContext ctx_;
-
-        HotshardRequest request_;
-        HotshardReply reply_;
-
-        ServerAsyncResponseWriter<HotshardReply> responder_;
-
-        enum CallStatus {CREATE, PROCESS, FINISH};
-        CallStatus status_;
-    };
-
-    [[noreturn]] void HandleRpcs(int i) {
-        new CallData(&service_, cq_vec_[i]);
-        void *tag;
-        bool ok;
-        while (true) {
-            cq_vec_[i]->Next(&tag, &ok);
-            static_cast<CallData *>(tag)->Proceed();
-        }
-
+    void HandleRpcs(int i) {
+//      new HotshardCallData(&service_, cq_vec_[i].get());
+      void *tag;
+      bool ok;
+      while (cq_vec_[i]->Next(&tag, &ok)) {
+//        auto proceed = static_cast<std::function<void(void)>*>(tag);
+//        (*proceed)();
+        static_cast<Call*>(tag)->Proceed();
+      }
     }
 
-    std::vector<ServerCompletionQueue*> cq_vec_;
+    std::vector<std::unique_ptr<ServerCompletionQueue>> cq_vec_;
     HotshardGateway::AsyncService service_;
     Server* server_;
     std::list<std::thread> server_threads_;
