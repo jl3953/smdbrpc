@@ -1,4 +1,4 @@
-#include "rebalancehotkeys_server.h"
+#include "RebalanceHotkeysCallData.h"
 
 int main(int argc, char** argv) {
 

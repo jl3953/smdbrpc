@@ -18,7 +18,7 @@ func main() {
 	defer func(conn *grpc.ClientConn) {
 		_ = conn.Close()
 	}(conn)
-	c := execinfrapb.NewRebalanceHotkeysGatewayClient(conn)
+	c := execinfrapb.NewHotshardGatewayClient(conn)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -35,7 +35,7 @@ func main() {
 			crdbKeyStat.GetWriteQps())
 	}
 
-	conn, err = grpc.Dial("localhost:50054",
+	conn, err = grpc.Dial("localhost:50051",
 		grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect %+v", err)
@@ -43,7 +43,7 @@ func main() {
 	defer func(conn *grpc.ClientConn) {
 		_ = conn.Close()
 	}(conn)
-	c = execinfrapb.NewRebalanceHotkeysGatewayClient(conn)
+	c = execinfrapb.NewHotshardGatewayClient(conn)
 
 	cicadaR, err := c.RequestCicadaStats(ctx, &request)
 	if err != nil {

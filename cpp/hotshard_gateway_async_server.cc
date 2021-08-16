@@ -33,6 +33,7 @@
 
 #include "HotshardCallData.h"
 #include "TriggerDemotionCallData.h"
+#include "RebalanceHotkeysCallData.h"
 
 using grpc::Server;
 using grpc::ServerAsyncResponseWriter;
@@ -137,6 +138,7 @@ public:
         for (int i = 0; i < concurrency; i++) {
           new HotshardCallData(&service_, cq_vec_[i].get());
           new TriggerDemotionCallData(&service_, cq_vec_[i].get());
+          new RebalanceHotkeysCallData(&service_, cq_vec_[i].get());
           server_threads_.emplace_back(std::thread([this, i]{HandleRpcs(i);}));
         }
 

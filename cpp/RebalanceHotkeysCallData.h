@@ -7,7 +7,7 @@
 
 #include <grpcpp/grpcpp.h>
 #include <thread>
-#include "rebalancehotkeys.grpc.pb.h"
+#include "smdbrpc.grpc.pb.h"
 #include "Call.h"
 
 using grpc::Server;
@@ -18,7 +18,7 @@ using grpc::ServerCompletionQueue;
 using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::Status;
-using smdbrpc::RebalanceHotkeysGateway;
+using smdbrpc::HotshardGateway;
 using smdbrpc::KeyStatsRequest;
 using smdbrpc::CicadaStatsResponse;
 using smdbrpc::KeyStat;
@@ -26,7 +26,7 @@ using smdbrpc::KeyStat;
 class RebalanceHotkeysCallData final : public Call{
 
 public:
-    RebalanceHotkeysCallData(RebalanceHotkeysGateway::AsyncService
+    RebalanceHotkeysCallData(HotshardGateway::AsyncService
     * service,
     ServerCompletionQueue *cq
     )
@@ -68,7 +68,7 @@ public:
 
 
 private:
-    RebalanceHotkeysGateway::AsyncService *service_;
+    HotshardGateway::AsyncService *service_;
     ServerCompletionQueue *cq_;
     ServerContext ctx_;
 

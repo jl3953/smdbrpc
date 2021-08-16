@@ -35,14 +35,6 @@ message HLCTimestamp {
   optional int32 logicaltime = 2; // the causality counter
 }
 
-//message Key {
-//  optional bytes key = 1;
-//}
-//
-//message Value {
-//  optional bytes value = 1;
-//}
-
 message KVPair {
   optional uint64 key = 1;
   optional uint64 value = 2;
@@ -53,19 +45,8 @@ service HotshardGateway {
   // Sends a greeting
   rpc ContactHotshard (HotshardRequest) returns (HotshardReply) {}
   rpc TriggerDemotion (TriggerDemotionRequest) returns (TriggerDemotionReply) {}
-}
-
-message TriggerDemotionRequest {
-  repeated uint64 keys = 1;
-}
-
-message TriggerDemotionStatus {
-  optional uint64 key = 1;
-  optional bool isDemotionTriggered = 2;
-}
-
-message TriggerDemotionReply {
-  repeated TriggerDemotionStatus triggerDemotionStatuses = 1;
+  rpc RequestCRDBKeyStats(KeyStatsRequest) returns (CRDBKeyStatsResponse) {}
+  rpc RequestCicadaStats (KeyStatsRequest) returns (CicadaStatsResponse) {}
 }
 
 message HotshardRequest {
@@ -86,4 +67,37 @@ message HotshardReply {
   repeated KVPair read_valueset = 2;
 
   // optional HLCTimestamp hlctimestamp = 2;
+}
+
+message TriggerDemotionRequest {
+  repeated uint64 keys = 1;
+}
+
+message TriggerDemotionStatus {
+  optional uint64 key = 1;
+  optional bool isDemotionTriggered = 2;
+}
+
+message TriggerDemotionReply {
+  repeated TriggerDemotionStatus triggerDemotionStatuses = 1;
+}
+
+message KeyStat {
+  optional uint64 key = 1;
+  optional uint64 qps = 2;
+  optional uint64 writeQps = 3;
+}
+
+message KeyStatsRequest {
+  optional bool placeholder = 1;
+}
+
+message CRDBKeyStatsResponse {
+  repeated KeyStat keystats = 1;
+}
+
+message CicadaStatsResponse {
+  repeated KeyStat keystats = 1;
+  optional uint64 cpuusage = 2;
+  optional uint64 memusage = 3;
 }

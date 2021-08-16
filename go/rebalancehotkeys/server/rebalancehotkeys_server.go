@@ -37,7 +37,7 @@ func (s *server) RequestCicadaStats(_ context.Context,
 }
 
 type server struct {
-	execinfrapb.UnimplementedRebalanceHotkeysGatewayServer
+	execinfrapb.UnimplementedHotshardGatewayServer
 }
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 		log.Fatalf("failed to listen %+v\n", err)
 	}
 	s := grpc.NewServer()
-	execinfrapb.RegisterRebalanceHotkeysGatewayServer(s, &server{})
+	execinfrapb.RegisterHotshardGatewayServer(s, &server{})
 	log.Printf("rebalancehotkeys serving!")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve rebalancehotkeys %+v\n", err)
