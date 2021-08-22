@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=b'Z\013execinfrapb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rsmdbrpc.proto\x12\x07smdbrpc\"5\n\x0cHLCTimestamp\x12\x10\n\x08walltime\x18\x01 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x02 \x01(\x05\"$\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\x04\x12\r\n\x05value\x18\x02 \x01(\x04\"z\n\x0fHotshardRequest\x12+\n\x0chlctimestamp\x18\x01 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12%\n\x0cwrite_keyset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x13\n\x0bread_keyset\x18\x03 \x03(\x04\"M\n\rHotshardReply\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12&\n\rread_valueset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair2X\n\x0fHotshardGateway\x12\x45\n\x0f\x43ontactHotshard\x12\x18.smdbrpc.HotshardRequest\x1a\x16.smdbrpc.HotshardReply\"\x00\x42\rZ\x0b\x65xecinfrapb'
+  serialized_pb=b'\n\rsmdbrpc.proto\x12\x07smdbrpc\"5\n\x0cHLCTimestamp\x12\x10\n\x08walltime\x18\x01 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x02 \x01(\x05\"$\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\x04\x12\r\n\x05value\x18\x02 \x01(\x04\"\xa2\x01\n\x12\x43\x61lculateCicadaReq\x12\x12\n\ncpu_target\x18\x01 \x01(\x02\x12\x13\n\x0b\x63pu_ceiling\x18\x02 \x01(\x02\x12\x11\n\tcpu_floor\x18\x03 \x01(\x02\x12\x12\n\nmem_target\x18\x04 \x01(\x02\x12\x13\n\x0bmem_ceiling\x18\x05 \x01(\x02\x12\x11\n\tmem_floor\x18\x06 \x01(\x02\x12\x14\n\x0cpercentile_n\x18\x07 \x01(\x02\"\x97\x01\n\x18\x43\x61lculateCicadaStatsResp\x12\x15\n\rdemotion_only\x18\x01 \x01(\x08\x12\x1f\n\x17qps_avail_for_promotion\x18\x02 \x01(\x04\x12$\n\x1cnum_keys_avail_for_promotion\x18\x03 \x01(\x04\x12\x1d\n\x15qps_at_nth_percentile\x18\x04 \x01(\x02\"]\n\x13\x43icadaStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\x12\x10\n\x08\x63puusage\x18\x02 \x01(\x04\x12\x10\n\x08memusage\x18\x03 \x01(\x04\":\n\x14\x43RDBKeyStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\"z\n\x0fHotshardRequest\x12+\n\x0chlctimestamp\x18\x01 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12%\n\x0cwrite_keyset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x13\n\x0bread_keyset\x18\x03 \x03(\x04\"M\n\rHotshardReply\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12&\n\rread_valueset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"b\n\tKVVersion\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12(\n\ttimestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0f\n\x07hotness\x18\x04 \x01(\x04\"C\n\x12KeyMigrationStatus\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12 \n\x18is_successfully_migrated\x18\x02 \x01(\x08\"5\n\x07KeyStat\x12\x0b\n\x03key\x18\x01 \x01(\x04\x12\x0b\n\x03qps\x18\x02 \x01(\x04\x12\x10\n\x08writeQps\x18\x03 \x01(\x04\"&\n\x0fKeyStatsRequest\x12\x13\n\x0bplaceholder\x18\x01 \x01(\x08\"2\n\x0ePromoteKeysReq\x12 \n\x04keys\x18\x01 \x03(\x0b\x32\x12.smdbrpc.KVVersion\"R\n\x0fPromoteKeysResp\x12?\n\x1awere_successfully_migrated\x18\x01 \x03(\x0b\x32\x1b.smdbrpc.KeyMigrationStatus\"M\n\x18TriggerDemotionByNumsReq\x12\x15\n\rqps_in_excess\x18\x01 \x01(\x04\x12\x1a\n\x12num_keys_in_excess\x18\x02 \x01(\x04\"=\n\x19TriggerDemotionByNumsResp\x12 \n\x18were_demotions_triggered\x18\x01 \x01(\x08\"&\n\x16TriggerDemotionRequest\x12\x0c\n\x04keys\x18\x01 \x03(\x0c\"W\n\x14TriggerDemotionReply\x12?\n\x17triggerDemotionStatuses\x18\x01 \x03(\x0b\x32\x1e.smdbrpc.TriggerDemotionStatus\"A\n\x15TriggerDemotionStatus\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x1b\n\x13isDemotionTriggered\x18\x02 \x01(\x08\x32\xc4\x04\n\x0fHotshardGateway\x12X\n\x14\x43\x61lculateCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a!.smdbrpc.CalculateCicadaStatsResp\"\x00\x12\x45\n\x0f\x43ontactHotshard\x12\x18.smdbrpc.HotshardRequest\x1a\x16.smdbrpc.HotshardReply\"\x00\x12\x43\n\nDemoteKeys\x12\x12.smdbrpc.KVVersion\x1a\x1b.smdbrpc.KeyMigrationStatus\"\x00(\x01\x30\x01\x12\x42\n\x0bPromoteKeys\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12P\n\x13RequestCRDBKeyStats\x12\x18.smdbrpc.KeyStatsRequest\x1a\x1d.smdbrpc.CRDBKeyStatsResponse\"\x00\x12`\n\x15TriggerDemotionByNums\x12!.smdbrpc.TriggerDemotionByNumsReq\x1a\".smdbrpc.TriggerDemotionByNumsResp\"\x00\x12S\n\x0fTriggerDemotion\x12\x1f.smdbrpc.TriggerDemotionRequest\x1a\x1d.smdbrpc.TriggerDemotionReply\"\x00\x42\rZ\x0b\x65xecinfrapb'
 )
 
 
@@ -103,6 +103,211 @@ _KVPAIR = _descriptor.Descriptor(
 )
 
 
+_CALCULATECICADAREQ = _descriptor.Descriptor(
+  name='CalculateCicadaReq',
+  full_name='smdbrpc.CalculateCicadaReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='cpu_target', full_name='smdbrpc.CalculateCicadaReq.cpu_target', index=0,
+      number=1, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='cpu_ceiling', full_name='smdbrpc.CalculateCicadaReq.cpu_ceiling', index=1,
+      number=2, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='cpu_floor', full_name='smdbrpc.CalculateCicadaReq.cpu_floor', index=2,
+      number=3, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='mem_target', full_name='smdbrpc.CalculateCicadaReq.mem_target', index=3,
+      number=4, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='mem_ceiling', full_name='smdbrpc.CalculateCicadaReq.mem_ceiling', index=4,
+      number=5, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='mem_floor', full_name='smdbrpc.CalculateCicadaReq.mem_floor', index=5,
+      number=6, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='percentile_n', full_name='smdbrpc.CalculateCicadaReq.percentile_n', index=6,
+      number=7, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=120,
+  serialized_end=282,
+)
+
+
+_CALCULATECICADASTATSRESP = _descriptor.Descriptor(
+  name='CalculateCicadaStatsResp',
+  full_name='smdbrpc.CalculateCicadaStatsResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='demotion_only', full_name='smdbrpc.CalculateCicadaStatsResp.demotion_only', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='qps_avail_for_promotion', full_name='smdbrpc.CalculateCicadaStatsResp.qps_avail_for_promotion', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='num_keys_avail_for_promotion', full_name='smdbrpc.CalculateCicadaStatsResp.num_keys_avail_for_promotion', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='qps_at_nth_percentile', full_name='smdbrpc.CalculateCicadaStatsResp.qps_at_nth_percentile', index=3,
+      number=4, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=285,
+  serialized_end=436,
+)
+
+
+_CICADASTATSRESPONSE = _descriptor.Descriptor(
+  name='CicadaStatsResponse',
+  full_name='smdbrpc.CicadaStatsResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='keystats', full_name='smdbrpc.CicadaStatsResponse.keystats', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='cpuusage', full_name='smdbrpc.CicadaStatsResponse.cpuusage', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='memusage', full_name='smdbrpc.CicadaStatsResponse.memusage', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=438,
+  serialized_end=531,
+)
+
+
+_CRDBKEYSTATSRESPONSE = _descriptor.Descriptor(
+  name='CRDBKeyStatsResponse',
+  full_name='smdbrpc.CRDBKeyStatsResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='keystats', full_name='smdbrpc.CRDBKeyStatsResponse.keystats', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=533,
+  serialized_end=591,
+)
+
+
 _HOTSHARDREQUEST = _descriptor.Descriptor(
   name='HotshardRequest',
   full_name='smdbrpc.HotshardRequest',
@@ -144,8 +349,8 @@ _HOTSHARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=119,
-  serialized_end=241,
+  serialized_start=593,
+  serialized_end=715,
 )
 
 
@@ -183,17 +388,446 @@ _HOTSHARDREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=243,
-  serialized_end=320,
+  serialized_start=717,
+  serialized_end=794,
 )
 
+
+_KVVERSION = _descriptor.Descriptor(
+  name='KVVersion',
+  full_name='smdbrpc.KVVersion',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.KVVersion.key', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='smdbrpc.KVVersion.value', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='timestamp', full_name='smdbrpc.KVVersion.timestamp', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='hotness', full_name='smdbrpc.KVVersion.hotness', index=3,
+      number=4, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=796,
+  serialized_end=894,
+)
+
+
+_KEYMIGRATIONSTATUS = _descriptor.Descriptor(
+  name='KeyMigrationStatus',
+  full_name='smdbrpc.KeyMigrationStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.KeyMigrationStatus.key', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_successfully_migrated', full_name='smdbrpc.KeyMigrationStatus.is_successfully_migrated', index=1,
+      number=2, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=896,
+  serialized_end=963,
+)
+
+
+_KEYSTAT = _descriptor.Descriptor(
+  name='KeyStat',
+  full_name='smdbrpc.KeyStat',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.KeyStat.key', index=0,
+      number=1, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='qps', full_name='smdbrpc.KeyStat.qps', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='writeQps', full_name='smdbrpc.KeyStat.writeQps', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=965,
+  serialized_end=1018,
+)
+
+
+_KEYSTATSREQUEST = _descriptor.Descriptor(
+  name='KeyStatsRequest',
+  full_name='smdbrpc.KeyStatsRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='placeholder', full_name='smdbrpc.KeyStatsRequest.placeholder', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1020,
+  serialized_end=1058,
+)
+
+
+_PROMOTEKEYSREQ = _descriptor.Descriptor(
+  name='PromoteKeysReq',
+  full_name='smdbrpc.PromoteKeysReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='keys', full_name='smdbrpc.PromoteKeysReq.keys', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1060,
+  serialized_end=1110,
+)
+
+
+_PROMOTEKEYSRESP = _descriptor.Descriptor(
+  name='PromoteKeysResp',
+  full_name='smdbrpc.PromoteKeysResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='were_successfully_migrated', full_name='smdbrpc.PromoteKeysResp.were_successfully_migrated', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1112,
+  serialized_end=1194,
+)
+
+
+_TRIGGERDEMOTIONBYNUMSREQ = _descriptor.Descriptor(
+  name='TriggerDemotionByNumsReq',
+  full_name='smdbrpc.TriggerDemotionByNumsReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='qps_in_excess', full_name='smdbrpc.TriggerDemotionByNumsReq.qps_in_excess', index=0,
+      number=1, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='num_keys_in_excess', full_name='smdbrpc.TriggerDemotionByNumsReq.num_keys_in_excess', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1196,
+  serialized_end=1273,
+)
+
+
+_TRIGGERDEMOTIONBYNUMSRESP = _descriptor.Descriptor(
+  name='TriggerDemotionByNumsResp',
+  full_name='smdbrpc.TriggerDemotionByNumsResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='were_demotions_triggered', full_name='smdbrpc.TriggerDemotionByNumsResp.were_demotions_triggered', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1275,
+  serialized_end=1336,
+)
+
+
+_TRIGGERDEMOTIONREQUEST = _descriptor.Descriptor(
+  name='TriggerDemotionRequest',
+  full_name='smdbrpc.TriggerDemotionRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='keys', full_name='smdbrpc.TriggerDemotionRequest.keys', index=0,
+      number=1, type=12, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1338,
+  serialized_end=1376,
+)
+
+
+_TRIGGERDEMOTIONREPLY = _descriptor.Descriptor(
+  name='TriggerDemotionReply',
+  full_name='smdbrpc.TriggerDemotionReply',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='triggerDemotionStatuses', full_name='smdbrpc.TriggerDemotionReply.triggerDemotionStatuses', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1378,
+  serialized_end=1465,
+)
+
+
+_TRIGGERDEMOTIONSTATUS = _descriptor.Descriptor(
+  name='TriggerDemotionStatus',
+  full_name='smdbrpc.TriggerDemotionStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.TriggerDemotionStatus.key', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='isDemotionTriggered', full_name='smdbrpc.TriggerDemotionStatus.isDemotionTriggered', index=1,
+      number=2, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1467,
+  serialized_end=1532,
+)
+
+_CICADASTATSRESPONSE.fields_by_name['keystats'].message_type = _KEYSTAT
+_CRDBKEYSTATSRESPONSE.fields_by_name['keystats'].message_type = _KEYSTAT
 _HOTSHARDREQUEST.fields_by_name['hlctimestamp'].message_type = _HLCTIMESTAMP
 _HOTSHARDREQUEST.fields_by_name['write_keyset'].message_type = _KVPAIR
 _HOTSHARDREPLY.fields_by_name['read_valueset'].message_type = _KVPAIR
+_KVVERSION.fields_by_name['timestamp'].message_type = _HLCTIMESTAMP
+_PROMOTEKEYSREQ.fields_by_name['keys'].message_type = _KVVERSION
+_PROMOTEKEYSRESP.fields_by_name['were_successfully_migrated'].message_type = _KEYMIGRATIONSTATUS
+_TRIGGERDEMOTIONREPLY.fields_by_name['triggerDemotionStatuses'].message_type = _TRIGGERDEMOTIONSTATUS
 DESCRIPTOR.message_types_by_name['HLCTimestamp'] = _HLCTIMESTAMP
 DESCRIPTOR.message_types_by_name['KVPair'] = _KVPAIR
+DESCRIPTOR.message_types_by_name['CalculateCicadaReq'] = _CALCULATECICADAREQ
+DESCRIPTOR.message_types_by_name['CalculateCicadaStatsResp'] = _CALCULATECICADASTATSRESP
+DESCRIPTOR.message_types_by_name['CicadaStatsResponse'] = _CICADASTATSRESPONSE
+DESCRIPTOR.message_types_by_name['CRDBKeyStatsResponse'] = _CRDBKEYSTATSRESPONSE
 DESCRIPTOR.message_types_by_name['HotshardRequest'] = _HOTSHARDREQUEST
 DESCRIPTOR.message_types_by_name['HotshardReply'] = _HOTSHARDREPLY
+DESCRIPTOR.message_types_by_name['KVVersion'] = _KVVERSION
+DESCRIPTOR.message_types_by_name['KeyMigrationStatus'] = _KEYMIGRATIONSTATUS
+DESCRIPTOR.message_types_by_name['KeyStat'] = _KEYSTAT
+DESCRIPTOR.message_types_by_name['KeyStatsRequest'] = _KEYSTATSREQUEST
+DESCRIPTOR.message_types_by_name['PromoteKeysReq'] = _PROMOTEKEYSREQ
+DESCRIPTOR.message_types_by_name['PromoteKeysResp'] = _PROMOTEKEYSRESP
+DESCRIPTOR.message_types_by_name['TriggerDemotionByNumsReq'] = _TRIGGERDEMOTIONBYNUMSREQ
+DESCRIPTOR.message_types_by_name['TriggerDemotionByNumsResp'] = _TRIGGERDEMOTIONBYNUMSRESP
+DESCRIPTOR.message_types_by_name['TriggerDemotionRequest'] = _TRIGGERDEMOTIONREQUEST
+DESCRIPTOR.message_types_by_name['TriggerDemotionReply'] = _TRIGGERDEMOTIONREPLY
+DESCRIPTOR.message_types_by_name['TriggerDemotionStatus'] = _TRIGGERDEMOTIONSTATUS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 HLCTimestamp = _reflection.GeneratedProtocolMessageType('HLCTimestamp', (_message.Message,), {
@@ -210,6 +844,34 @@ KVPair = _reflection.GeneratedProtocolMessageType('KVPair', (_message.Message,),
   })
 _sym_db.RegisterMessage(KVPair)
 
+CalculateCicadaReq = _reflection.GeneratedProtocolMessageType('CalculateCicadaReq', (_message.Message,), {
+  'DESCRIPTOR' : _CALCULATECICADAREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.CalculateCicadaReq)
+  })
+_sym_db.RegisterMessage(CalculateCicadaReq)
+
+CalculateCicadaStatsResp = _reflection.GeneratedProtocolMessageType('CalculateCicadaStatsResp', (_message.Message,), {
+  'DESCRIPTOR' : _CALCULATECICADASTATSRESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.CalculateCicadaStatsResp)
+  })
+_sym_db.RegisterMessage(CalculateCicadaStatsResp)
+
+CicadaStatsResponse = _reflection.GeneratedProtocolMessageType('CicadaStatsResponse', (_message.Message,), {
+  'DESCRIPTOR' : _CICADASTATSRESPONSE,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.CicadaStatsResponse)
+  })
+_sym_db.RegisterMessage(CicadaStatsResponse)
+
+CRDBKeyStatsResponse = _reflection.GeneratedProtocolMessageType('CRDBKeyStatsResponse', (_message.Message,), {
+  'DESCRIPTOR' : _CRDBKEYSTATSRESPONSE,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.CRDBKeyStatsResponse)
+  })
+_sym_db.RegisterMessage(CRDBKeyStatsResponse)
+
 HotshardRequest = _reflection.GeneratedProtocolMessageType('HotshardRequest', (_message.Message,), {
   'DESCRIPTOR' : _HOTSHARDREQUEST,
   '__module__' : 'smdbrpc_pb2'
@@ -224,6 +886,83 @@ HotshardReply = _reflection.GeneratedProtocolMessageType('HotshardReply', (_mess
   })
 _sym_db.RegisterMessage(HotshardReply)
 
+KVVersion = _reflection.GeneratedProtocolMessageType('KVVersion', (_message.Message,), {
+  'DESCRIPTOR' : _KVVERSION,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.KVVersion)
+  })
+_sym_db.RegisterMessage(KVVersion)
+
+KeyMigrationStatus = _reflection.GeneratedProtocolMessageType('KeyMigrationStatus', (_message.Message,), {
+  'DESCRIPTOR' : _KEYMIGRATIONSTATUS,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.KeyMigrationStatus)
+  })
+_sym_db.RegisterMessage(KeyMigrationStatus)
+
+KeyStat = _reflection.GeneratedProtocolMessageType('KeyStat', (_message.Message,), {
+  'DESCRIPTOR' : _KEYSTAT,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.KeyStat)
+  })
+_sym_db.RegisterMessage(KeyStat)
+
+KeyStatsRequest = _reflection.GeneratedProtocolMessageType('KeyStatsRequest', (_message.Message,), {
+  'DESCRIPTOR' : _KEYSTATSREQUEST,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.KeyStatsRequest)
+  })
+_sym_db.RegisterMessage(KeyStatsRequest)
+
+PromoteKeysReq = _reflection.GeneratedProtocolMessageType('PromoteKeysReq', (_message.Message,), {
+  'DESCRIPTOR' : _PROMOTEKEYSREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.PromoteKeysReq)
+  })
+_sym_db.RegisterMessage(PromoteKeysReq)
+
+PromoteKeysResp = _reflection.GeneratedProtocolMessageType('PromoteKeysResp', (_message.Message,), {
+  'DESCRIPTOR' : _PROMOTEKEYSRESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.PromoteKeysResp)
+  })
+_sym_db.RegisterMessage(PromoteKeysResp)
+
+TriggerDemotionByNumsReq = _reflection.GeneratedProtocolMessageType('TriggerDemotionByNumsReq', (_message.Message,), {
+  'DESCRIPTOR' : _TRIGGERDEMOTIONBYNUMSREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.TriggerDemotionByNumsReq)
+  })
+_sym_db.RegisterMessage(TriggerDemotionByNumsReq)
+
+TriggerDemotionByNumsResp = _reflection.GeneratedProtocolMessageType('TriggerDemotionByNumsResp', (_message.Message,), {
+  'DESCRIPTOR' : _TRIGGERDEMOTIONBYNUMSRESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.TriggerDemotionByNumsResp)
+  })
+_sym_db.RegisterMessage(TriggerDemotionByNumsResp)
+
+TriggerDemotionRequest = _reflection.GeneratedProtocolMessageType('TriggerDemotionRequest', (_message.Message,), {
+  'DESCRIPTOR' : _TRIGGERDEMOTIONREQUEST,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.TriggerDemotionRequest)
+  })
+_sym_db.RegisterMessage(TriggerDemotionRequest)
+
+TriggerDemotionReply = _reflection.GeneratedProtocolMessageType('TriggerDemotionReply', (_message.Message,), {
+  'DESCRIPTOR' : _TRIGGERDEMOTIONREPLY,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.TriggerDemotionReply)
+  })
+_sym_db.RegisterMessage(TriggerDemotionReply)
+
+TriggerDemotionStatus = _reflection.GeneratedProtocolMessageType('TriggerDemotionStatus', (_message.Message,), {
+  'DESCRIPTOR' : _TRIGGERDEMOTIONSTATUS,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.TriggerDemotionStatus)
+  })
+_sym_db.RegisterMessage(TriggerDemotionStatus)
+
 
 DESCRIPTOR._options = None
 
@@ -234,16 +973,76 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=322,
-  serialized_end=410,
+  serialized_start=1535,
+  serialized_end=2115,
   methods=[
+  _descriptor.MethodDescriptor(
+    name='CalculateCicadaStats',
+    full_name='smdbrpc.HotshardGateway.CalculateCicadaStats',
+    index=0,
+    containing_service=None,
+    input_type=_CALCULATECICADAREQ,
+    output_type=_CALCULATECICADASTATSRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
   _descriptor.MethodDescriptor(
     name='ContactHotshard',
     full_name='smdbrpc.HotshardGateway.ContactHotshard',
-    index=0,
+    index=1,
     containing_service=None,
     input_type=_HOTSHARDREQUEST,
     output_type=_HOTSHARDREPLY,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='DemoteKeys',
+    full_name='smdbrpc.HotshardGateway.DemoteKeys',
+    index=2,
+    containing_service=None,
+    input_type=_KVVERSION,
+    output_type=_KEYMIGRATIONSTATUS,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='PromoteKeys',
+    full_name='smdbrpc.HotshardGateway.PromoteKeys',
+    index=3,
+    containing_service=None,
+    input_type=_PROMOTEKEYSREQ,
+    output_type=_PROMOTEKEYSRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='RequestCRDBKeyStats',
+    full_name='smdbrpc.HotshardGateway.RequestCRDBKeyStats',
+    index=4,
+    containing_service=None,
+    input_type=_KEYSTATSREQUEST,
+    output_type=_CRDBKEYSTATSRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='TriggerDemotionByNums',
+    full_name='smdbrpc.HotshardGateway.TriggerDemotionByNums',
+    index=5,
+    containing_service=None,
+    input_type=_TRIGGERDEMOTIONBYNUMSREQ,
+    output_type=_TRIGGERDEMOTIONBYNUMSRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='TriggerDemotion',
+    full_name='smdbrpc.HotshardGateway.TriggerDemotion',
+    index=6,
+    containing_service=None,
+    input_type=_TRIGGERDEMOTIONREQUEST,
+    output_type=_TRIGGERDEMOTIONREPLY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

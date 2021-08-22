@@ -8,6 +8,32 @@ import smdbrpc_pb2_grpc
 import unittest
 
 
+class TestCalculateStats(unittest.TestCase):
+    def setUp(self):
+        self.channel = grpc.insecure_channel("localhost:50051")
+        self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
+        self.now = time.time_ns()
+
+    def tearDown(self) -> None:
+        self.channel.close()
+
+    def testBasicFunctionality(self):
+        print("jenndebug")
+        response = self.stub.CalculateCicadaStats(smdbrpc_pb2.CalculateCicadaReq(
+            cpu_target=0.75,
+            cpu_ceiling=0.85,
+            cpu_floor=0.65,
+            mem_target=0.75,
+            mem_ceiling=0.85,
+            mem_floor=0.65,
+            percentile_n=0.25,
+        ))
+        print("jenndebug finished")
+        self.assertFalse(response.demotion_only)
+        self.assertLess(0, response.qps_avail_for_promotion)
+        self.assertLess(0, response.num_keys_avail_for_promotion)
+
+
 class TestCicadaSingleKeyTxns(unittest.TestCase):
 
     def setUp(self):
