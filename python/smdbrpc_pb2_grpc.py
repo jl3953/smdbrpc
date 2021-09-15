@@ -7,6 +7,7 @@ import smdbrpc_pb2 as smdbrpc__pb2
 
 class HotshardGatewayStub(object):
     """The greeting service definition.
+    Sends a greeting
     """
 
     def __init__(self, channel):
@@ -25,20 +26,35 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.HotshardRequest.SerializeToString,
                 response_deserializer=smdbrpc__pb2.HotshardReply.FromString,
                 )
-        self.DemoteKeys = channel.stream_stream(
+        self.DemoteKey = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/DemoteKey',
+                request_serializer=smdbrpc__pb2.KeyMigrationReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.KeyMigrationStatus.FromString,
+                )
+        self.DemoteKeys = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/DemoteKeys',
-                request_serializer=smdbrpc__pb2.KVVersion.SerializeToString,
+                request_serializer=smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.MultiKeyMigrationStatus.FromString,
+                )
+        self.PromoteKey = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/PromoteKey',
+                request_serializer=smdbrpc__pb2.KeyMigrationReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.KeyMigrationStatus.FromString,
                 )
         self.PromoteKeys = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/PromoteKeys',
-                request_serializer=smdbrpc__pb2.PromoteKeysReq.SerializeToString,
-                response_deserializer=smdbrpc__pb2.PromoteKeysResp.FromString,
+                request_serializer=smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.MultiKeyMigrationStatus.FromString,
                 )
         self.RequestCRDBKeyStats = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/RequestCRDBKeyStats',
                 request_serializer=smdbrpc__pb2.KeyStatsRequest.SerializeToString,
                 response_deserializer=smdbrpc__pb2.CRDBKeyStatsResponse.FromString,
+                )
+        self.SendTxn = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/SendTxn',
+                request_serializer=smdbrpc__pb2.TxnReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.TxnResp.FromString,
                 )
         self.TriggerDemotionByNums = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/TriggerDemotionByNums',
@@ -54,22 +70,40 @@ class HotshardGatewayStub(object):
 
 class HotshardGatewayServicer(object):
     """The greeting service definition.
+    Sends a greeting
     """
 
     def CalculateCicadaStats(self, request, context):
-        """Sends a greeting
+        """Asks Cicada whether it will 1) only demote keys, 2) only request CRDB promotions,
+        or 3) ask CRDB to trigger demotions and promotions
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ContactHotshard(self, request, context):
+        """a txn to the hotshard
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DemoteKey(self, request, context):
+        """(singular) Demotes a key from Cicada to CRDB
+        (multiple) Demotes multiple keys from Cicada to CRDB (this essentially calls
+        DemoteKey, but the asynchronous batching is handled on Cicada's side
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DemoteKeys(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def DemoteKeys(self, request_iterator, context):
+    def PromoteKey(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -82,6 +116,12 @@ class HotshardGatewayServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def RequestCRDBKeyStats(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def SendTxn(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -112,20 +152,35 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     request_deserializer=smdbrpc__pb2.HotshardRequest.FromString,
                     response_serializer=smdbrpc__pb2.HotshardReply.SerializeToString,
             ),
-            'DemoteKeys': grpc.stream_stream_rpc_method_handler(
+            'DemoteKey': grpc.unary_unary_rpc_method_handler(
+                    servicer.DemoteKey,
+                    request_deserializer=smdbrpc__pb2.KeyMigrationReq.FromString,
+                    response_serializer=smdbrpc__pb2.KeyMigrationStatus.SerializeToString,
+            ),
+            'DemoteKeys': grpc.unary_unary_rpc_method_handler(
                     servicer.DemoteKeys,
-                    request_deserializer=smdbrpc__pb2.KVVersion.FromString,
+                    request_deserializer=smdbrpc__pb2.MultiKeyMigrationReq.FromString,
+                    response_serializer=smdbrpc__pb2.MultiKeyMigrationStatus.SerializeToString,
+            ),
+            'PromoteKey': grpc.unary_unary_rpc_method_handler(
+                    servicer.PromoteKey,
+                    request_deserializer=smdbrpc__pb2.KeyMigrationReq.FromString,
                     response_serializer=smdbrpc__pb2.KeyMigrationStatus.SerializeToString,
             ),
             'PromoteKeys': grpc.unary_unary_rpc_method_handler(
                     servicer.PromoteKeys,
-                    request_deserializer=smdbrpc__pb2.PromoteKeysReq.FromString,
-                    response_serializer=smdbrpc__pb2.PromoteKeysResp.SerializeToString,
+                    request_deserializer=smdbrpc__pb2.MultiKeyMigrationReq.FromString,
+                    response_serializer=smdbrpc__pb2.MultiKeyMigrationStatus.SerializeToString,
             ),
             'RequestCRDBKeyStats': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestCRDBKeyStats,
                     request_deserializer=smdbrpc__pb2.KeyStatsRequest.FromString,
                     response_serializer=smdbrpc__pb2.CRDBKeyStatsResponse.SerializeToString,
+            ),
+            'SendTxn': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendTxn,
+                    request_deserializer=smdbrpc__pb2.TxnReq.FromString,
+                    response_serializer=smdbrpc__pb2.TxnResp.SerializeToString,
             ),
             'TriggerDemotionByNums': grpc.unary_unary_rpc_method_handler(
                     servicer.TriggerDemotionByNums,
@@ -146,6 +201,7 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class HotshardGateway(object):
     """The greeting service definition.
+    Sends a greeting
     """
 
     @staticmethod
@@ -183,7 +239,7 @@ class HotshardGateway(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def DemoteKeys(request_iterator,
+    def DemoteKey(request,
             target,
             options=(),
             channel_credentials=None,
@@ -193,8 +249,42 @@ class HotshardGateway(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/smdbrpc.HotshardGateway/DemoteKeys',
-            smdbrpc__pb2.KVVersion.SerializeToString,
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/DemoteKey',
+            smdbrpc__pb2.KeyMigrationReq.SerializeToString,
+            smdbrpc__pb2.KeyMigrationStatus.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DemoteKeys(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/DemoteKeys',
+            smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
+            smdbrpc__pb2.MultiKeyMigrationStatus.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def PromoteKey(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/PromoteKey',
+            smdbrpc__pb2.KeyMigrationReq.SerializeToString,
             smdbrpc__pb2.KeyMigrationStatus.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -211,8 +301,8 @@ class HotshardGateway(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/PromoteKeys',
-            smdbrpc__pb2.PromoteKeysReq.SerializeToString,
-            smdbrpc__pb2.PromoteKeysResp.FromString,
+            smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
+            smdbrpc__pb2.MultiKeyMigrationStatus.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -230,6 +320,23 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/RequestCRDBKeyStats',
             smdbrpc__pb2.KeyStatsRequest.SerializeToString,
             smdbrpc__pb2.CRDBKeyStatsResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def SendTxn(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/SendTxn',
+            smdbrpc__pb2.TxnReq.SerializeToString,
+            smdbrpc__pb2.TxnResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
