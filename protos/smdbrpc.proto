@@ -60,15 +60,27 @@ service HotshardGateway {
   rpc DemoteKeys (MultiKeyMigrationReq) returns (MultiKeyMigrationStatus) {}
 
   rpc PromoteKey (KeyMigrationReq) returns (KeyMigrationStatus) {}
-  rpc PromoteKeys (MultiKeyMigrationReq) returns (MultiKeyMigrationStatus) {}
+  rpc PromoteKeys (PromoteKeysReq) returns (PromoteKeysResp) {}
 
   rpc RequestCRDBKeyStats(KeyStatsRequest) returns (CRDBKeyStatsResponse) {}
   rpc SendTxn(TxnReq) returns (TxnResp) {}
   rpc TriggerDemotionByNums (TriggerDemotionByNumsReq) returns (TriggerDemotionByNumsResp) {}
   rpc TriggerDemotion (TriggerDemotionRequest) returns (TriggerDemotionReply) {}
 
+  rpc TestAddKeyToPromotionMap (TestPromotionKeyReq) returns (TestPromotionKeyResp) {}
+  rpc TestIsKeyInPromotionMap(TestPromotionKeyReq) returns (TestPromotionKeyResp) {}
+
   //rpc RequestCicadaStats (KeyStatsRequest) returns (CicadaStatsResponse) {}
 
+}
+
+message TestPromotionKeyReq {
+  optional bytes key = 1;
+  optional HLCTimestamp promotionTimestamp = 2;
+}
+
+message TestPromotionKeyResp {
+  optional bool isKeyIn = 1;
 }
 
 enum Cmd {
@@ -195,11 +207,11 @@ message TriggerDemotionStatus {
   optional bool isDemotionTriggered = 2;
 }
 
-//message PromoteKeysReq {
-//  repeated KVVersion keys = 1;
-//}
-//
-//message PromoteKeysResp {
-//  repeated KeyMigrationStatus were_successfully_migrated = 1;
-//}
+message PromoteKeysReq {
+  repeated KVVersion keys = 1;
+}
+
+message PromoteKeysResp {
+  repeated KeyMigrationStatus were_successfully_migrated = 1;
+}
 

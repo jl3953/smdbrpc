@@ -43,8 +43,8 @@ class HotshardGatewayStub(object):
                 )
         self.PromoteKeys = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/PromoteKeys',
-                request_serializer=smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
-                response_deserializer=smdbrpc__pb2.MultiKeyMigrationStatus.FromString,
+                request_serializer=smdbrpc__pb2.PromoteKeysReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.PromoteKeysResp.FromString,
                 )
         self.RequestCRDBKeyStats = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/RequestCRDBKeyStats',
@@ -65,6 +65,16 @@ class HotshardGatewayStub(object):
                 '/smdbrpc.HotshardGateway/TriggerDemotion',
                 request_serializer=smdbrpc__pb2.TriggerDemotionRequest.SerializeToString,
                 response_deserializer=smdbrpc__pb2.TriggerDemotionReply.FromString,
+                )
+        self.TestAddKeyToPromotionMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/TestAddKeyToPromotionMap',
+                request_serializer=smdbrpc__pb2.TestPromotionKeyReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.TestPromotionKeyResp.FromString,
+                )
+        self.TestIsKeyInPromotionMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/TestIsKeyInPromotionMap',
+                request_serializer=smdbrpc__pb2.TestPromotionKeyReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.TestPromotionKeyResp.FromString,
                 )
 
 
@@ -139,6 +149,18 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def TestAddKeyToPromotionMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def TestIsKeyInPromotionMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_HotshardGatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -169,8 +191,8 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
             ),
             'PromoteKeys': grpc.unary_unary_rpc_method_handler(
                     servicer.PromoteKeys,
-                    request_deserializer=smdbrpc__pb2.MultiKeyMigrationReq.FromString,
-                    response_serializer=smdbrpc__pb2.MultiKeyMigrationStatus.SerializeToString,
+                    request_deserializer=smdbrpc__pb2.PromoteKeysReq.FromString,
+                    response_serializer=smdbrpc__pb2.PromoteKeysResp.SerializeToString,
             ),
             'RequestCRDBKeyStats': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestCRDBKeyStats,
@@ -191,6 +213,16 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.TriggerDemotion,
                     request_deserializer=smdbrpc__pb2.TriggerDemotionRequest.FromString,
                     response_serializer=smdbrpc__pb2.TriggerDemotionReply.SerializeToString,
+            ),
+            'TestAddKeyToPromotionMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.TestAddKeyToPromotionMap,
+                    request_deserializer=smdbrpc__pb2.TestPromotionKeyReq.FromString,
+                    response_serializer=smdbrpc__pb2.TestPromotionKeyResp.SerializeToString,
+            ),
+            'TestIsKeyInPromotionMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.TestIsKeyInPromotionMap,
+                    request_deserializer=smdbrpc__pb2.TestPromotionKeyReq.FromString,
+                    response_serializer=smdbrpc__pb2.TestPromotionKeyResp.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -301,8 +333,8 @@ class HotshardGateway(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/PromoteKeys',
-            smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
-            smdbrpc__pb2.MultiKeyMigrationStatus.FromString,
+            smdbrpc__pb2.PromoteKeysReq.SerializeToString,
+            smdbrpc__pb2.PromoteKeysResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -371,5 +403,39 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/TriggerDemotion',
             smdbrpc__pb2.TriggerDemotionRequest.SerializeToString,
             smdbrpc__pb2.TriggerDemotionReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def TestAddKeyToPromotionMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/TestAddKeyToPromotionMap',
+            smdbrpc__pb2.TestPromotionKeyReq.SerializeToString,
+            smdbrpc__pb2.TestPromotionKeyResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def TestIsKeyInPromotionMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/TestIsKeyInPromotionMap',
+            smdbrpc__pb2.TestPromotionKeyReq.SerializeToString,
+            smdbrpc__pb2.TestPromotionKeyResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

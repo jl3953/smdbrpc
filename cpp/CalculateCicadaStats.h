@@ -50,7 +50,7 @@ public:
       status_ = FINISH;
       responder_.Finish(reply_, Status::OK, this);
     } else {
-      new HotshardCallData(service_, cq_);
+      new CalculcateCicadaStats(service_, cq_);
       delete this;
     }
   }

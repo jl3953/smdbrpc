@@ -72,13 +72,13 @@ class HotshardGatewayServiceImpl final : public HotshardGateway::Service {
 //    }
 
 
-    smdbrpc::KVPair* jennBday = reply->add_read_valueset();
-    jennBday->set_key(1994214);
-    jennBday->set_value(1994214);
-
-      smdbrpc::KVPair* halloween = reply->add_read_valueset();
-      halloween->set_key(20201031);
-      halloween->set_value(20201031);
+//    smdbrpc::KVPair* jennBday = reply->add_read_valueset();
+//    jennBday->set_key(1994214);
+//    jennBday->set_value(1994214);
+//
+//      smdbrpc::KVPair* halloween = reply->add_read_valueset();
+//      halloween->set_key(20201031);
+//      halloween->set_value(20201031);
 
     return Status::OK;
   }

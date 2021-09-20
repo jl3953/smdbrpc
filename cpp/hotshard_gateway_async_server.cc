@@ -31,8 +31,9 @@
 #include "smdbrpc.grpc.pb.h"
 #endif
 
-#include "HotshardCallData.h"
+//#include "HotshardCallData.h"
 #include "CalculateCicadaStats.h"
+#include "PromoteKeys.h"
 //#include "TriggerDemotionCallData.h"
 //#include "RebalanceHotkeysCallData.h"
 
@@ -137,8 +138,9 @@ public:
         std::cout << "Server listening on " << server_address << std::endl;
 
         for (int i = 0; i < concurrency; i++) {
-          new HotshardCallData(&service_, cq_vec_[i].get());
+//          new HotshardCallData(&service_, cq_vec_[i].get());
           new CalculcateCicadaStats(&service_, cq_vec_[i].get());
+          new PromoteKeys(&service_, cq_vec_[i].get());
           //new TriggerDemotionCallData(&service_, cq_vec_[i].get());
           //new RebalanceHotkeysCallData(&service_, cq_vec_[i].get());
           server_threads_.emplace_back(std::thread([this, i]{HandleRpcs(i);}));
