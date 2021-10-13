@@ -8,32 +8,6 @@ import smdbrpc_pb2_grpc
 import unittest
 
 
-# class TestCalculateStats(unittest.TestCase):
-#     def setUp(self):
-#         self.channel = grpc.insecure_channel("localhost:50051")
-#         self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
-#         self.now = time.time_ns()
-#
-#     def tearDown(self) -> None:
-#         self.channel.close()
-#
-#     def testBasicFunctionality(self):
-#         print("jenndebug")
-#         response = self.stub.CalculateCicadaStats(smdbrpc_pb2.CalculateCicadaReq(
-#             cpu_target=0.75,
-#             cpu_ceiling=0.85,
-#             cpu_floor=0.65,
-#             mem_target=0.75,
-#             mem_ceiling=0.85,
-#             mem_floor=0.65,
-#             percentile_n=0.25,
-#         ))
-#         print("jenndebug finished")
-#         self.assertFalse(response.demotion_only)
-#         self.assertLess(0, response.qps_avail_for_promotion)
-#         self.assertLess(0, response.num_keys_avail_for_promotion)
-
-
 class TestCicadaSingleKeyTxns(unittest.TestCase):
 
     def setUp(self):
@@ -408,7 +382,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         self.assertTrue(response.is_committed)
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+200,
+                walltime=self.now + 200,
                 logicaltime=0,
             ),
             ops=[
@@ -418,14 +392,14 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                     index=1,
                     key_cols=[key1],
                     key=str(key1).encode(),
-                    value=str(key1+1).encode(),
+                    value=str(key1 + 1).encode(),
                 )
             ]
         ))
         self.assertTrue(response.is_committed)
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+150,
+                walltime=self.now + 150,
                 logicaltime=0,
             ),
             ops=[
@@ -455,7 +429,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         key2 = 200606
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+100,
+                walltime=self.now + 100,
                 logicaltime=0,
             ),
             ops=[
@@ -480,7 +454,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         self.assertTrue(response.is_committed)
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+200,
+                walltime=self.now + 200,
                 logicaltime=0,
             ),
             ops=[
@@ -490,14 +464,14 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                     index=1,
                     key_cols=[key1],
                     key=str(key1).encode(),
-                    value=str(key1+1).encode()
+                    value=str(key1 + 1).encode()
                 ),
             ]
         ))
         self.assertTrue(response.is_committed)
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+300,
+                walltime=self.now + 300,
                 logicaltime=0,
             ),
             ops=[
@@ -527,7 +501,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         key2 = 200607
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+100,
+                walltime=self.now + 100,
                 logicaltime=0,
             ),
             ops=[
@@ -550,9 +524,9 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
             ]
         ))
         self.assertTrue(response.is_committed)
-        response= self.stub.SendTxn(smdbrpc_pb2.TxnReq(
+        response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+200,
+                walltime=self.now + 200,
                 logicaltime=0,
             ),
             ops=[
@@ -562,14 +536,14 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                     index=1,
                     key_cols=[key1],
                     key=str(key1).encode(),
-                    value=str(key1+1).encode(),
+                    value=str(key1 + 1).encode(),
                 )
             ]
         ))
         self.assertTrue(response.is_committed)
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+150,
+                walltime=self.now + 150,
                 logicaltime=0,
             ),
             ops=[
@@ -579,7 +553,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                     index=1,
                     key_cols=[key1],
                     key=str(key1).encode(),
-                    value=str(key1+10).encode(),
+                    value=str(key1 + 10).encode(),
 
                 ),
                 smdbrpc_pb2.Op(
@@ -588,14 +562,14 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                     index=1,
                     key_cols=[key2],
                     key=str(key2).encode(),
-                    value=str(key2+10).encode(),
+                    value=str(key2 + 10).encode(),
                 )
             ]
         ))
         self.assertFalse(response.is_committed)
         response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now+300,
+                walltime=self.now + 300,
                 logicaltime=0,
             ),
             ops=[
