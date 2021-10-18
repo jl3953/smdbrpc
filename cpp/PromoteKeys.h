@@ -31,7 +31,7 @@ public:
       service_->RequestPromoteKeys(&ctx_, &request_, &responder_,
                                             cq_, cq_, this);
     } else if (status_ == PROCESS) {
-      smdbrpc::KeyMigrationStatus* status = reply_
+      smdbrpc::KeyMigrationResp* status = reply_
         .add_were_successfully_migrated();
       status->set_is_successfully_migrated(true);
       

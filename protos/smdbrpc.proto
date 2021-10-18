@@ -56,10 +56,10 @@ service HotshardGateway {
   // (singular) Demotes a key from Cicada to CRDB
   // (multiple) Demotes multiple keys from Cicada to CRDB (this essentially calls
   // DemoteKey, but the asynchronous batching is handled on Cicada's side
-  rpc DemoteKey (KeyMigrationReq) returns (KeyMigrationStatus) {}
-  rpc DemoteKeys (MultiKeyMigrationReq) returns (MultiKeyMigrationStatus) {}
+  rpc DemoteKey (KeyMigrationReq) returns (KeyMigrationResp) {}
+  rpc DemoteKeys (MultiKeyMigrationReq) returns (MultiKeyMigrationResp) {}
 
-  rpc PromoteKey (KeyMigrationReq) returns (KeyMigrationStatus) {}
+  rpc PromoteKey (KeyMigrationReq) returns (KeyMigrationResp) {}
   rpc PromoteKeys (PromoteKeysReq) returns (PromoteKeysResp) {}
 
   rpc RequestCRDBKeyStats(KeyStatsRequest) returns (CRDBKeyStatsResponse) {}
@@ -69,9 +69,20 @@ service HotshardGateway {
 
   rpc TestAddKeyToPromotionMap (TestPromotionKeyReq) returns (TestPromotionKeyResp) {}
   rpc TestIsKeyInPromotionMap(TestPromotionKeyReq) returns (TestPromotionKeyResp) {}
+  rpc TestSendTxn(CRDBTxnReq) returns (CRDBTxnResp) {}
 
-  //rpc RequestCicadaStats (KeyStatsRequest) returns (CicadaStatsResponse) {}
+  rpc RequestCicadaStats (CalculateCicadaReq) returns (CicadaStatsResponse) {}
 
+}
+
+message CRDBTxnReq {
+  repeated Op ops = 1;
+  optional HLCTimestamp timestamp = 2;
+}
+
+message CRDBTxnResp {
+  optional bool is_committed = 1;
+  repeated KVPair responses = 2;
 }
 
 message TestPromotionKeyReq {
@@ -118,13 +129,14 @@ message TxnResp {
 }
 
 message CalculateCicadaReq {
-  optional double cpu_target = 1; // ideal % cpu usage
-  optional double cpu_ceiling = 2; // max allowable % cpu usage
-  optional double cpu_floor = 3; // min allowable % cpu usage
-  optional double mem_target = 4; // ideal mem usage
-  optional double mem_ceiling = 5; // max allowable mem usage
-  optional double mem_floor = 6; // min allowable mem usage
-  optional double percentile_n = 7; // the percentile of keys newly promoted keys have to beat
+  optional double cpu_target = 1;		// ideal % cpu usage
+  optional double cpu_ceiling = 2; 		// max allowable % cpu usage
+  optional double cpu_floor = 3; 		// min allowable % cpu usage
+  optional double mem_target = 4; 		// ideal mem usage
+  optional double mem_ceiling = 5; 		// max allowable mem usage
+  optional double mem_floor = 6; 		// min allowable mem usage
+  optional double percentile_n = 7; 	// the percentile of keys newly promoted keys have to beat
+  optional HLCTimestamp timestamp = 8;
 }
 
 message CalculateCicadaStatsResp {
@@ -167,13 +179,16 @@ message KVVersion {
 }
 
 message KeyMigrationReq {
-  optional bytes key = 1;
+  optional Key key = 1;
+  optional bytes value = 2;
+  optional bool isTest = 3;
 }
 
 
-message KeyMigrationStatus {
-  optional bytes key = 1;
-  optional bool is_successfully_migrated = 2;
+message KeyMigrationResp {
+//  optional bytes key = 1;
+//  optional bool is_successfully_migrated = 2;
+  optional bool is_successfully_migrated = 1;
 }
 
 message KeyStat {
@@ -190,21 +205,25 @@ message MultiKeyMigrationReq {
   repeated bytes keys = 1;
 }
 
-message MultiKeyMigrationStatus {
-  repeated KeyMigrationStatus statuses = 1;
+message MultiKeyMigrationResp {
+  repeated KeyMigrationResp statuses = 1;
 }
 
 message TriggerDemotionByNumsReq {
   optional uint64 qps_in_excess = 1;
   optional uint64 num_keys_in_excess = 2;
+  optional HLCTimestamp demotion_timestamp = 3;
+  optional bool isTest = 4;
 }
 
 message TriggerDemotionByNumsResp {
   optional bool were_demotions_triggered = 1;
+  optional uint64 qps_demoted = 2;
+  optional uint64 num_keys_demoted = 3;
 }
 
 message TriggerDemotionRequest {
-  repeated Key keys = 1;
+  optional Key key = 1;
   optional bool testLocking = 2;
 }
 
@@ -222,6 +241,6 @@ message PromoteKeysReq {
 }
 
 message PromoteKeysResp {
-  repeated KeyMigrationStatus were_successfully_migrated = 1;
+  repeated KeyMigrationResp were_successfully_migrated = 1;
 }
 

@@ -8,6 +8,59 @@ import smdbrpc_pb2_grpc
 import unittest
 
 
+class TestTriggerDemotionByNums(unittest.TestCase):
+    def setUp(self):
+        self.channel = grpc.insecure_channel("localhost:50051")
+        self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
+
+    def tearDown(self) -> None:
+        self.channel.close()
+
+    def testNoDemotionWhenZeroExtraResources(self):
+        zeroQpsReq = smdbrpc_pb2.TriggerDemotionByNumsReq(
+            qps_in_excess=0,
+            num_keys_in_excess=100,
+            demotion_timestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=time.time_ns(),
+                logicaltime=0,
+            ),
+            isTest=True,
+        )
+        zeroQpsResp = self.stub.TriggerDemotionByNums(zeroQpsReq)
+        self.assertTrue(zeroQpsResp.were_demotions_triggered)
+        self.assertEqual(0, zeroQpsResp.qps_demoted)
+        self.assertEqual(0, zeroQpsResp.num_keys_demoted)
+
+        zeroMemReq = smdbrpc_pb2.TriggerDemotionByNumsReq(
+            qps_in_excess=100,
+            num_keys_in_excess=0,
+            demotion_timestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=time.time_ns(),
+                logicaltime=0,
+            ),
+            isTest=True,
+        )
+        zeroMemResp = self.stub.TriggerDemotionByNums(zeroMemReq)
+        self.assertTrue(zeroMemResp.were_demotions_triggered)
+        self.assertEqual(0, zeroMemResp.qps_demoted)
+        self.assertEqual(0, zeroMemResp.num_keys_demoted)
+
+    def testDemotesAtAll(self):
+        req = smdbrpc_pb2.TriggerDemotionByNumsReq(
+            qps_in_excess=100,
+            num_keys_in_excess=100,
+            demotion_timestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=time.time_ns(),
+                logicaltime=0,
+            ),
+            isTest=True,
+        )
+        resp = self.stub.TriggerDemotionByNums(req)
+        self.assertTrue(resp.were_demotions_triggered)
+        self.assertLess(0, resp.qps_demoted)
+        self.assertLess(0, resp.num_keys_demoted)
+
+
 class TestTriggerDemotion(unittest.TestCase):
     def setUp(self):
         self.channel = grpc.insecure_channel("localhost:50051")
@@ -50,7 +103,7 @@ class TestTriggerDemotion(unittest.TestCase):
         # demote the key
         response = self.stub.TriggerDemotion(
             smdbrpc_pb2.TriggerDemotionRequest(
-                keys=[self.key],
+                key=self.key,
                 testLocking=False,
             )
         )
@@ -194,7 +247,7 @@ class TestTriggerDemotionLock(unittest.TestCase):
 
         _ = stub.TriggerDemotion(
             smdbrpc_pb2.TriggerDemotionRequest(
-                keys=[self.lockedKey],
+                key=self.lockedKey,
                 testLocking=True,
             )
         )
@@ -229,7 +282,7 @@ class TestTriggerDemotionLock(unittest.TestCase):
             stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
             _ = stub.TriggerDemotion(
                 smdbrpc_pb2.TriggerDemotionRequest(
-                    keys=[self.lockedKey],
+                    key=self.lockedKey,
                     testLocking=True,
                 )
             )
@@ -270,7 +323,7 @@ class TestTriggerDemotionLock(unittest.TestCase):
         # send a trigger demotion request with a single key
         demotionLockResponse = self.stub.TriggerDemotion(
             smdbrpc_pb2.TriggerDemotionRequest(
-                keys=[self.lockedKey],
+                key=self.lockedKey,
                 testLocking=True,
             )
         )
@@ -326,6 +379,7 @@ class TestCalculateStats(unittest.TestCase):
     def setUp(self):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
+        self.now = time.time_ns()
 
     def tearDown(self) -> None:
         self.channel.close()
@@ -339,6 +393,10 @@ class TestCalculateStats(unittest.TestCase):
             mem_ceiling=0.1,
             mem_floor=0.0,
             percentile_n=0.25,
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=self.now,
+                logicaltime=0,
+            )
         ))
         self.assertTrue(response.demotion_only)
 
