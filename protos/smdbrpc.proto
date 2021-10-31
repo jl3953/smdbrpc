@@ -121,6 +121,8 @@ message TxnReq {
   repeated Op ops = 1;
   optional HLCTimestamp timestamp = 2;
   optional bool is_promotion = 3;
+  optional bool is_test = 4;
+  optional bool is_demoted_test_field = 5;
 }
 
 message TxnResp {

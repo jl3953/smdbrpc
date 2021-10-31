@@ -41,6 +41,51 @@ class TestCicadaSingleKeyTxns(unittest.TestCase):
         self.assertTrue(response.is_committed)
         self.assertEqual(0, len(response.responses))
 
+    def test_demote_write(self):
+        key = 994812
+        val = "DEMOTION_VALUE".encode()
+        op = smdbrpc_pb2.Op(
+            cmd=smdbrpc_pb2.PUT,
+            table=53,
+            index=1,
+            key_cols=[key],
+            key="hello".encode(),
+            value=val,
+        )
+        timestamp = smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+        )
+        response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
+            ops=[op],
+            timestamp=timestamp,
+            is_test=False,
+            is_demoted_test_field=True,
+        ))
+
+    def test_write(self):
+        key = 994812
+        val = "testing".encode()
+        op = smdbrpc_pb2.Op(
+            cmd=smdbrpc_pb2.PUT,
+            table=53,
+            index=1,
+            key_cols=[key],
+            key="hello".encode(),
+            value=val,
+        )
+        timestamp = smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now + 10000,
+            logicaltime=0,
+        )
+        response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
+            ops=[op],
+            timestamp=timestamp,
+            is_test=True,
+        ))
+
+
+
     def test_simple_write(self):
         key = 994215
         val = "hello".encode()
@@ -49,7 +94,7 @@ class TestCicadaSingleKeyTxns(unittest.TestCase):
             table=53,
             index=1,
             key_cols=[key],
-            key=val,
+            key="hello".encode(),
             value=val,
         )
         timestamp = smdbrpc_pb2.HLCTimestamp(
@@ -61,6 +106,24 @@ class TestCicadaSingleKeyTxns(unittest.TestCase):
             timestamp=timestamp,
         ))
         self.assertTrue(response.is_committed)
+
+        op = smdbrpc_pb2.Op(
+            cmd=smdbrpc_pb2.GET,
+            table=53,
+            index=1,
+            key_cols=[key],
+            key=val,
+        )
+        response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
+            ops=[op],
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=self.now + 200,
+                logicaltime=0,
+            ),
+        ))
+        self.assertTrue(response.is_committed)
+        self.assertEqual(1, len(response.responses))
+        self.assertEqual(val, response.responses[0].value)
 
         op = smdbrpc_pb2.Op(
             cmd=smdbrpc_pb2.GET,
