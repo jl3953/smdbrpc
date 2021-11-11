@@ -20,17 +20,17 @@ func sendRequest(ctx context.Context, batch int,
 
 	var walltime = time.Now().UnixNano()
 	var logical int32 = logicalTime
+	f := false
 
-	request := smdbrpc.HotshardRequest{
-		Hlctimestamp: &smdbrpc.HLCTimestamp{
+	request := smdbrpc.TxnReq{
+		Ops: make([]*smdbrpc.Op, batch),
+		Timestamp: &smdbrpc.HLCTimestamp{
 			Walltime:    &walltime,
 			Logicaltime: &logical,
 		},
-	}
-	if isRead {
-		request.ReadKeyset = make([]uint64, batch)
-	} else {
-		request.WriteKeyset = make([]*smdbrpc.KVPair, batch)
+		IsPromotion:        &f,
+		IsTest:             &f,
+		IsDemotedTestField: &f,
 	}
 
 	isDuplicate := make(map[uint64]bool, 0)
@@ -44,35 +44,105 @@ func sendRequest(ctx context.Context, batch int,
 		isDuplicate[key] = true
 
 		// populate read or write request list
+		var table, index int64 = 53, 1
+		keyCols := []int64{int64(key)}
+		keyBytes := []byte("key")
 		if isRead {
-			request.ReadKeyset[i] = key
+			cmd := smdbrpc.Cmd_GET
+			request.Ops[i] = &smdbrpc.Op{
+				Cmd:     &cmd,
+				Table:   &table,
+				Index:   &index,
+				KeyCols: keyCols,
+				Key:     keyBytes,
+			}
 		} else {
-			val := key
-			request.WriteKeyset[i] = &smdbrpc.KVPair{
-				Key:   &key,
-				Value: &val,
+			cmd := smdbrpc.Cmd_PUT
+			valBytes := []byte("val")
+			request.Ops[i] = &smdbrpc.Op{
+				Cmd:     &cmd,
+				Table:   &table,
+				Index:   &index,
+				KeyCols: keyCols,
+				Key:     keyBytes,
+				Value:   valBytes,
 			}
 		}
 	}
 
-	if isRead {
-		sort.Slice(request.ReadKeyset, func(i, j int) bool {
-			return request.ReadKeyset[i] < request.ReadKeyset[j]
-		})
-	} else {
-		sort.Slice(request.WriteKeyset, func(i, j int) bool {
-			return request.WriteKeyset[i].GetKey() < request.WriteKeyset[j].GetKey()
-		})
-	}
+	sort.Slice(request.Ops, func(i, j int) bool {
+		return request.Ops[i].KeyCols[0] < request.Ops[i].KeyCols[0]
+	})
 
 	start := time.Now()
-	reply, err := client.ContactHotshard(ctx, &request)
+	reply, err := client.SendTxn(ctx, &request)
 	elapsed := time.Since(start)
 	if err != nil {
 		log.Printf("Oops, request failed, err %+v\n", err)
 		return false, -1
 	} else {
 		return reply.GetIsCommitted(), elapsed
+	}
+}
+
+func sendPromotion(ctx context.Context, batch int,
+	client smdbrpc.HotshardGatewayClient, chooseKey func() uint64,
+	logicalTime int32) (bool, time.Duration) {
+
+	var walltime = time.Now().UnixNano()
+	var logical int32 = logicalTime
+
+	request := smdbrpc.PromoteKeysToCicadaReq{
+		Keys: make([]*smdbrpc.Key, batch),
+	}
+
+	isDuplicate := make(map[uint64]bool, 0)
+	for i := 0; i < batch; i++ {
+
+		// choose key
+		key := chooseKey()
+		for isDuplicate[key] {
+			key = chooseKey()
+		}
+		isDuplicate[key] = true
+
+		// populate read or write request list
+		var table, index int64 = 53, 1
+		keyCols := []int64{int64(key)}
+		keyBytes := []byte("key")
+		valBytes := []byte("val")
+		request.Keys[i] = &smdbrpc.Key{
+			Table:   &table,
+			Index:   &index,
+			KeyCols: keyCols,
+			Key:     keyBytes,
+			Timestamp: &smdbrpc.HLCTimestamp{
+				Walltime:    &walltime,
+				Logicaltime: &logical,
+			},
+			Value:   valBytes,
+		}
+	}
+
+	sort.Slice(request.Keys, func(i, j int) bool {
+		return request.Keys[i].KeyCols[0] < request.Keys[i].KeyCols[0]
+	})
+
+	start := time.Now()
+	reply, err := client.PromoteKeysToCicada(ctx, &request)
+	elapsed := time.Since(start)
+	if err != nil {
+		log.Printf("Oops, request failed, err %+v\n", err)
+		return false, -1
+	} else {
+		succeeded := true
+		for _, didKeySucceed := range reply.GetSuccessfullyPromoted()  {
+			if !didKeySucceed {
+				succeeded = false
+				break
+			}
+		}
+		return succeeded, elapsed
 	}
 }
 
@@ -87,7 +157,8 @@ func worker(address string,
 	durationsWrite *[]time.Duration,
 	instantaneousStats bool,
 	warmup time.Duration,
-	workerNum int) {
+	workerNum int,
+	testPromotion bool) {
 
 	// decrement wait group at the end
 	defer wg.Done()
@@ -96,7 +167,7 @@ func worker(address string,
 	conn, err := grpc.Dial(address,
 		grpc.WithInsecure(),
 		//grpc.WithBlock(),
-        )
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %+v\n", err)
 	}
@@ -114,7 +185,19 @@ func worker(address string,
 	warmupOver := false
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		if r := rand.Intn(100); r < readPercent {
+		if testPromotion {
+			if ok, elapsed := sendPromotion(ctx,
+				batch,
+				client,
+				chooseKey,
+				int32(workerNum)); ok {
+				if warmupOver {
+					readTicks = append(readTicks, elapsed)
+				}
+			} else {
+				log.Println("promotion request failed")
+			}
+		} else if r := rand.Intn(100); r < readPercent {
 			if ok, elapsed := sendRequest(ctx,
 				batch,
 				client,
@@ -148,8 +231,8 @@ func worker(address string,
 			*durationsRead = append(*durationsRead, readTicks...)
 			*durationsWrite = append(*durationsWrite, writeTicks...)
 			if instantaneousStats && warmupOver {
-				rtp, rp50, rp99 := extractStats([][]time.Duration{readTicks}, time.Second)
-				wtp, wp50, wp99 := extractStats([][]time.Duration{writeTicks}, time.Second)
+				rtp, rp50, rp99 := extractStats([][]time.Duration{readTicks}, time.Second, batch)
+				wtp, wp50, wp99 := extractStats([][]time.Duration{writeTicks}, time.Second, batch)
 				log.Printf("second %+v: r %+v qps / %+v / %+v || w %+v qps / %+v / %+v\n",
 					time.Duration(i)*time.Second,
 					rtp, rp50, rp99,
@@ -164,7 +247,7 @@ func worker(address string,
 }
 
 func extractStats(ticksAcrossWorkers [][]time.Duration,
-	duration time.Duration) (throughput float64, p50, p99 time.Duration) {
+	duration time.Duration, batch int) (throughput float64, p50, p99 time.Duration) {
 
 	// calculate throughput, p50, p99
 	allTicks := make([]float64, 0)
@@ -182,7 +265,7 @@ func extractStats(ticksAcrossWorkers [][]time.Duration,
 	p50 = time.Duration(p50_us) * time.Microsecond
 	p99 = time.Duration(p99_us) * time.Microsecond
 
-	return throughput, p50, p99
+	return throughput * float64(batch), p50, p99
 }
 
 func main() {
@@ -197,8 +280,9 @@ func main() {
 	numPorts := flag.Int("numPorts", 1, "number of ports")
 	readPercent := flag.Int("read_percent", 0, "read percentage, int")
 	timeout := flag.Duration("timeout", 500*time.Millisecond, "timeout for request")
-	instantaneousStats := flag.Bool("instantaneousStats", false, "show per second stats")
+	instantaneousStats := flag.Bool("instantaneousStats", true, "show per second stats")
 	warmup := flag.Duration("warmup", 1*time.Second, "warmup duration")
+	testPromotion := flag.Bool("testPromotion", false, "to test using promotion requests or not")
 	flag.Parse()
 
 	var wg sync.WaitGroup // wait group
@@ -226,12 +310,13 @@ func main() {
 			&ticksAcrossWorkersWrite[i],
 			*instantaneousStats,
 			*warmup,
-			i)
+			i,
+			*testPromotion)
 	}
 	wg.Wait()
 
-	tp_r, p50_r, p99_r := extractStats(ticksAcrossWorkersRead, *duration)
-	tp_w, p50_w, p99_w := extractStats(ticksAcrossWorkersWrite, *duration)
+	tp_r, p50_r, p99_r := extractStats(ticksAcrossWorkersRead, *duration, *batch)
+	tp_w, p50_w, p99_w := extractStats(ticksAcrossWorkersWrite, *duration, *batch)
 
 	log.Printf("Read throughput / p50 / p99 %+v qps / %+v / %+v\n",
 		tp_r, p50_r, p99_r)

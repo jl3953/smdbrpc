@@ -105,6 +105,7 @@ class TestTriggerDemotion(unittest.TestCase):
             smdbrpc_pb2.TriggerDemotionRequest(
                 key=self.key,
                 testLocking=False,
+                do_not_contact_crdb=True,
             )
         )
         self.assertEqual(1, len(response.triggerDemotionStatuses))
@@ -199,6 +200,28 @@ class TestTriggerDemotion(unittest.TestCase):
             )
         )
         self.assertTrue(response.is_committed)
+
+    def testDemotionAfterDemotionFails(self):
+        # demote the key
+        key = smdbrpc_pb2.Key(
+            table=53,
+            index=1,
+            key_cols=[self.demotedkey],
+            key=self.demotedval,
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=self.now,
+                logicaltime=1000,
+            )
+        )
+        response = self.stub.TriggerDemotion(
+            smdbrpc_pb2.TriggerDemotionRequest(
+                key=key,
+                testLocking=False,
+                do_not_contact_crdb=True,
+            )
+        )
+        self.assertEqual(1, len(response.triggerDemotionStatuses))
+        self.assertTrue(response.triggerDemotionStatuses[0].isDemotionTriggered)
 
 
 class TestTriggerDemotionLock(unittest.TestCase):

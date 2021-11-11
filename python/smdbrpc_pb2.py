@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto2',
   serialized_options=b'Z\013execinfrapb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rsmdbrpc.proto\x12\x07smdbrpc\"5\n\x0cHLCTimestamp\x12\x10\n\x08walltime\x18\x01 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x02 \x01(\x05\"K\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x10\n\x08walltime\x18\x03 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x04 \x01(\x05\"P\n\nCRDBTxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"G\n\x0b\x43RDBTxnResp\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"U\n\x13TestPromotionKeyReq\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x31\n\x12promotionTimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"\'\n\x14TestPromotionKeyResp\x12\x0f\n\x07isKeyIn\x18\x01 \x01(\x08\"l\n\x03Key\x12\r\n\x05table\x18\x01 \x01(\x03\x12\r\n\x05index\x18\x02 \x01(\x03\x12\x10\n\x08key_cols\x18\x03 \x03(\x03\x12\x0b\n\x03key\x18\x04 \x01(\x0c\x12(\n\ttimestamp\x18\x05 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"k\n\x02Op\x12\x19\n\x03\x63md\x18\x01 \x01(\x0e\x32\x0c.smdbrpc.Cmd\x12\r\n\x05table\x18\x02 \x01(\x03\x12\r\n\x05index\x18\x03 \x01(\x03\x12\x10\n\x08key_cols\x18\x04 \x03(\x03\x12\x0b\n\x03key\x18\x05 \x01(\x0c\x12\r\n\x05value\x18\x06 \x01(\x0c\"\x92\x01\n\x06TxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x14\n\x0cis_promotion\x18\x03 \x01(\x08\x12\x0f\n\x07is_test\x18\x04 \x01(\x08\x12\x1d\n\x15is_demoted_test_field\x18\x05 \x01(\x08\"C\n\x07TxnResp\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"\xcc\x01\n\x12\x43\x61lculateCicadaReq\x12\x12\n\ncpu_target\x18\x01 \x01(\x01\x12\x13\n\x0b\x63pu_ceiling\x18\x02 \x01(\x01\x12\x11\n\tcpu_floor\x18\x03 \x01(\x01\x12\x12\n\nmem_target\x18\x04 \x01(\x01\x12\x13\n\x0bmem_ceiling\x18\x05 \x01(\x01\x12\x11\n\tmem_floor\x18\x06 \x01(\x01\x12\x14\n\x0cpercentile_n\x18\x07 \x01(\x01\x12(\n\ttimestamp\x18\x08 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"\x97\x01\n\x18\x43\x61lculateCicadaStatsResp\x12\x15\n\rdemotion_only\x18\x01 \x01(\x08\x12\x1f\n\x17qps_avail_for_promotion\x18\x02 \x01(\x04\x12$\n\x1cnum_keys_avail_for_promotion\x18\x03 \x01(\x04\x12\x1d\n\x15qps_at_nth_percentile\x18\x04 \x01(\x02\"]\n\x13\x43icadaStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\x12\x10\n\x08\x63puusage\x18\x02 \x01(\x04\x12\x10\n\x08memusage\x18\x03 \x01(\x04\":\n\x14\x43RDBKeyStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\"z\n\x0fHotshardRequest\x12+\n\x0chlctimestamp\x18\x01 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12%\n\x0cwrite_keyset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x13\n\x0bread_keyset\x18\x03 \x03(\x04\"M\n\rHotshardReply\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12&\n\rread_valueset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"b\n\tKVVersion\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12(\n\ttimestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0f\n\x07hotness\x18\x04 \x01(\x04\"K\n\x0fKeyMigrationReq\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x0e\n\x06isTest\x18\x03 \x01(\x08\"4\n\x10KeyMigrationResp\x12 \n\x18is_successfully_migrated\x18\x01 \x01(\x08\"5\n\x07KeyStat\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x0b\n\x03qps\x18\x02 \x01(\x02\x12\x10\n\x08writeQps\x18\x03 \x01(\x02\"&\n\x0fKeyStatsRequest\x12\x13\n\x0bplaceholder\x18\x01 \x01(\x08\"$\n\x14MultiKeyMigrationReq\x12\x0c\n\x04keys\x18\x01 \x03(\x0c\"D\n\x15MultiKeyMigrationResp\x12+\n\x08statuses\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"\x90\x01\n\x18TriggerDemotionByNumsReq\x12\x15\n\rqps_in_excess\x18\x01 \x01(\x04\x12\x1a\n\x12num_keys_in_excess\x18\x02 \x01(\x04\x12\x31\n\x12\x64\x65motion_timestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0e\n\x06isTest\x18\x04 \x01(\x08\"l\n\x19TriggerDemotionByNumsResp\x12 \n\x18were_demotions_triggered\x18\x01 \x01(\x08\x12\x13\n\x0bqps_demoted\x18\x02 \x01(\x04\x12\x18\n\x10num_keys_demoted\x18\x03 \x01(\x04\"H\n\x16TriggerDemotionRequest\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x13\n\x0btestLocking\x18\x02 \x01(\x08\"W\n\x14TriggerDemotionReply\x12?\n\x17triggerDemotionStatuses\x18\x01 \x03(\x0b\x32\x1e.smdbrpc.TriggerDemotionStatus\"O\n\x15TriggerDemotionStatus\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x1b\n\x13isDemotionTriggered\x18\x02 \x01(\x08\"2\n\x0ePromoteKeysReq\x12 \n\x04keys\x18\x01 \x03(\x0b\x32\x12.smdbrpc.KVVersion\"P\n\x0fPromoteKeysResp\x12=\n\x1awere_successfully_migrated\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp*!\n\x03\x43md\x12\x07\n\x03GET\x10\x00\x12\x08\n\x04SCAN\x10\x01\x12\x07\n\x03PUT\x10\x02\x32\xcb\x08\n\x0fHotshardGateway\x12X\n\x14\x43\x61lculateCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a!.smdbrpc.CalculateCicadaStatsResp\"\x00\x12\x45\n\x0f\x43ontactHotshard\x12\x18.smdbrpc.HotshardRequest\x1a\x16.smdbrpc.HotshardReply\"\x00\x12\x42\n\tDemoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12M\n\nDemoteKeys\x12\x1d.smdbrpc.MultiKeyMigrationReq\x1a\x1e.smdbrpc.MultiKeyMigrationResp\"\x00\x12\x43\n\nPromoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12\x42\n\x0bPromoteKeys\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12P\n\x13RequestCRDBKeyStats\x12\x18.smdbrpc.KeyStatsRequest\x1a\x1d.smdbrpc.CRDBKeyStatsResponse\"\x00\x12.\n\x07SendTxn\x12\x0f.smdbrpc.TxnReq\x1a\x10.smdbrpc.TxnResp\"\x00\x12`\n\x15TriggerDemotionByNums\x12!.smdbrpc.TriggerDemotionByNumsReq\x1a\".smdbrpc.TriggerDemotionByNumsResp\"\x00\x12S\n\x0fTriggerDemotion\x12\x1f.smdbrpc.TriggerDemotionRequest\x1a\x1d.smdbrpc.TriggerDemotionReply\"\x00\x12Y\n\x18TestAddKeyToPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12X\n\x17TestIsKeyInPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12:\n\x0bTestSendTxn\x12\x13.smdbrpc.CRDBTxnReq\x1a\x14.smdbrpc.CRDBTxnResp\"\x00\x12Q\n\x12RequestCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a\x1c.smdbrpc.CicadaStatsResponse\"\x00\x42\rZ\x0b\x65xecinfrapb'
+  serialized_pb=b'\n\rsmdbrpc.proto\x12\x07smdbrpc\"5\n\x0cHLCTimestamp\x12\x10\n\x08walltime\x18\x01 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x02 \x01(\x05\"[\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x10\n\x08walltime\x18\x03 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x04 \x01(\x05\x12\x0e\n\x06isZero\x18\x05 \x01(\x0c\"P\n\nCRDBTxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"G\n\x0b\x43RDBTxnResp\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"U\n\x13TestPromotionKeyReq\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x31\n\x12promotionTimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"\'\n\x14TestPromotionKeyResp\x12\x0f\n\x07isKeyIn\x18\x01 \x01(\x08\"{\n\x03Key\x12\r\n\x05table\x18\x01 \x01(\x03\x12\r\n\x05index\x18\x02 \x01(\x03\x12\x10\n\x08key_cols\x18\x03 \x03(\x03\x12\x0b\n\x03key\x18\x04 \x01(\x0c\x12(\n\ttimestamp\x18\x05 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\r\n\x05value\x18\x06 \x01(\x0c\"k\n\x02Op\x12\x19\n\x03\x63md\x18\x01 \x01(\x0e\x32\x0c.smdbrpc.Cmd\x12\r\n\x05table\x18\x02 \x01(\x03\x12\r\n\x05index\x18\x03 \x01(\x03\x12\x10\n\x08key_cols\x18\x04 \x03(\x03\x12\x0b\n\x03key\x18\x05 \x01(\x0c\x12\r\n\x05value\x18\x06 \x01(\x0c\"\x92\x01\n\x06TxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x14\n\x0cis_promotion\x18\x03 \x01(\x08\x12\x0f\n\x07is_test\x18\x04 \x01(\x08\x12\x1d\n\x15is_demoted_test_field\x18\x05 \x01(\x08\"C\n\x07TxnResp\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"\xcc\x01\n\x12\x43\x61lculateCicadaReq\x12\x12\n\ncpu_target\x18\x01 \x01(\x01\x12\x13\n\x0b\x63pu_ceiling\x18\x02 \x01(\x01\x12\x11\n\tcpu_floor\x18\x03 \x01(\x01\x12\x12\n\nmem_target\x18\x04 \x01(\x01\x12\x13\n\x0bmem_ceiling\x18\x05 \x01(\x01\x12\x11\n\tmem_floor\x18\x06 \x01(\x01\x12\x14\n\x0cpercentile_n\x18\x07 \x01(\x01\x12(\n\ttimestamp\x18\x08 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"\x97\x01\n\x18\x43\x61lculateCicadaStatsResp\x12\x15\n\rdemotion_only\x18\x01 \x01(\x08\x12\x1f\n\x17qps_avail_for_promotion\x18\x02 \x01(\x04\x12$\n\x1cnum_keys_avail_for_promotion\x18\x03 \x01(\x04\x12\x1d\n\x15qps_at_nth_percentile\x18\x04 \x01(\x02\"]\n\x13\x43icadaStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\x12\x10\n\x08\x63puusage\x18\x02 \x01(\x04\x12\x10\n\x08memusage\x18\x03 \x01(\x04\":\n\x14\x43RDBKeyStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\"z\n\x0fHotshardRequest\x12+\n\x0chlctimestamp\x18\x01 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12%\n\x0cwrite_keyset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x13\n\x0bread_keyset\x18\x03 \x03(\x04\"M\n\rHotshardReply\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12&\n\rread_valueset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"b\n\tKVVersion\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12(\n\ttimestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0f\n\x07hotness\x18\x04 \x01(\x04\"K\n\x0fKeyMigrationReq\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x0e\n\x06isTest\x18\x03 \x01(\x08\"4\n\x10KeyMigrationResp\x12 \n\x18is_successfully_migrated\x18\x01 \x01(\x08\"5\n\x07KeyStat\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x0b\n\x03qps\x18\x02 \x01(\x02\x12\x10\n\x08writeQps\x18\x03 \x01(\x02\"&\n\x0fKeyStatsRequest\x12\x13\n\x0bplaceholder\x18\x01 \x01(\x08\"$\n\x14MultiKeyMigrationReq\x12\x0c\n\x04keys\x18\x01 \x03(\x0c\"D\n\x15MultiKeyMigrationResp\x12+\n\x08statuses\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"\x90\x01\n\x18TriggerDemotionByNumsReq\x12\x15\n\rqps_in_excess\x18\x01 \x01(\x04\x12\x1a\n\x12num_keys_in_excess\x18\x02 \x01(\x04\x12\x31\n\x12\x64\x65motion_timestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0e\n\x06isTest\x18\x04 \x01(\x08\"l\n\x19TriggerDemotionByNumsResp\x12 \n\x18were_demotions_triggered\x18\x01 \x01(\x08\x12\x13\n\x0bqps_demoted\x18\x02 \x01(\x04\x12\x18\n\x10num_keys_demoted\x18\x03 \x01(\x04\"e\n\x16TriggerDemotionRequest\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x13\n\x0btestLocking\x18\x02 \x01(\x08\x12\x1b\n\x13\x64o_not_contact_crdb\x18\x03 \x01(\x08\"W\n\x14TriggerDemotionReply\x12?\n\x17triggerDemotionStatuses\x18\x01 \x03(\x0b\x32\x1e.smdbrpc.TriggerDemotionStatus\"O\n\x15TriggerDemotionStatus\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x1b\n\x13isDemotionTriggered\x18\x02 \x01(\x08\"2\n\x0ePromoteKeysReq\x12 \n\x04keys\x18\x01 \x03(\x0b\x32\x12.smdbrpc.KVVersion\"P\n\x0fPromoteKeysResp\x12=\n\x1awere_successfully_migrated\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"4\n\x16PromoteKeysToCicadaReq\x12\x1a\n\x04keys\x18\x01 \x03(\x0b\x32\x0c.smdbrpc.Key\"7\n\x17PromoteKeysToCicadaResp\x12\x1c\n\x14successfullyPromoted\x18\x01 \x03(\x08*!\n\x03\x43md\x12\x07\n\x03GET\x10\x00\x12\x08\n\x04SCAN\x10\x01\x12\x07\n\x03PUT\x10\x02\x32\xa7\t\n\x0fHotshardGateway\x12X\n\x14\x43\x61lculateCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a!.smdbrpc.CalculateCicadaStatsResp\"\x00\x12\x45\n\x0f\x43ontactHotshard\x12\x18.smdbrpc.HotshardRequest\x1a\x16.smdbrpc.HotshardReply\"\x00\x12\x42\n\tDemoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12M\n\nDemoteKeys\x12\x1d.smdbrpc.MultiKeyMigrationReq\x1a\x1e.smdbrpc.MultiKeyMigrationResp\"\x00\x12\x43\n\nPromoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12\x42\n\x0bPromoteKeys\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12Z\n\x13PromoteKeysToCicada\x12\x1f.smdbrpc.PromoteKeysToCicadaReq\x1a .smdbrpc.PromoteKeysToCicadaResp\"\x00\x12P\n\x13RequestCRDBKeyStats\x12\x18.smdbrpc.KeyStatsRequest\x1a\x1d.smdbrpc.CRDBKeyStatsResponse\"\x00\x12.\n\x07SendTxn\x12\x0f.smdbrpc.TxnReq\x1a\x10.smdbrpc.TxnResp\"\x00\x12`\n\x15TriggerDemotionByNums\x12!.smdbrpc.TriggerDemotionByNumsReq\x1a\".smdbrpc.TriggerDemotionByNumsResp\"\x00\x12S\n\x0fTriggerDemotion\x12\x1f.smdbrpc.TriggerDemotionRequest\x1a\x1d.smdbrpc.TriggerDemotionReply\"\x00\x12Y\n\x18TestAddKeyToPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12X\n\x17TestIsKeyInPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12:\n\x0bTestSendTxn\x12\x13.smdbrpc.CRDBTxnReq\x1a\x14.smdbrpc.CRDBTxnResp\"\x00\x12Q\n\x12RequestCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a\x1c.smdbrpc.CicadaStatsResponse\"\x00\x42\rZ\x0b\x65xecinfrapb'
 )
 
 _CMD = _descriptor.EnumDescriptor(
@@ -48,8 +48,8 @@ _CMD = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2666,
-  serialized_end=2699,
+  serialized_start=2837,
+  serialized_end=2870,
 )
 _sym_db.RegisterEnumDescriptor(_CMD)
 
@@ -135,6 +135,13 @@ _KVPAIR = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='isZero', full_name='smdbrpc.KVPair.isZero', index=4,
+      number=5, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -148,7 +155,7 @@ _KVPAIR = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=81,
-  serialized_end=156,
+  serialized_end=172,
 )
 
 
@@ -186,8 +193,8 @@ _CRDBTXNREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=158,
-  serialized_end=238,
+  serialized_start=174,
+  serialized_end=254,
 )
 
 
@@ -225,8 +232,8 @@ _CRDBTXNRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=240,
-  serialized_end=311,
+  serialized_start=256,
+  serialized_end=327,
 )
 
 
@@ -264,8 +271,8 @@ _TESTPROMOTIONKEYREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=313,
-  serialized_end=398,
+  serialized_start=329,
+  serialized_end=414,
 )
 
 
@@ -296,8 +303,8 @@ _TESTPROMOTIONKEYRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=400,
-  serialized_end=439,
+  serialized_start=416,
+  serialized_end=455,
 )
 
 
@@ -344,6 +351,13 @@ _KEY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='smdbrpc.Key.value', index=5,
+      number=6, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -356,8 +370,8 @@ _KEY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=441,
-  serialized_end=549,
+  serialized_start=457,
+  serialized_end=580,
 )
 
 
@@ -423,8 +437,8 @@ _OP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=551,
-  serialized_end=658,
+  serialized_start=582,
+  serialized_end=689,
 )
 
 
@@ -483,8 +497,8 @@ _TXNREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=661,
-  serialized_end=807,
+  serialized_start=692,
+  serialized_end=838,
 )
 
 
@@ -522,8 +536,8 @@ _TXNRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=809,
-  serialized_end=876,
+  serialized_start=840,
+  serialized_end=907,
 )
 
 
@@ -603,8 +617,8 @@ _CALCULATECICADAREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=879,
-  serialized_end=1083,
+  serialized_start=910,
+  serialized_end=1114,
 )
 
 
@@ -656,8 +670,8 @@ _CALCULATECICADASTATSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1086,
-  serialized_end=1237,
+  serialized_start=1117,
+  serialized_end=1268,
 )
 
 
@@ -702,8 +716,8 @@ _CICADASTATSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1239,
-  serialized_end=1332,
+  serialized_start=1270,
+  serialized_end=1363,
 )
 
 
@@ -734,8 +748,8 @@ _CRDBKEYSTATSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1334,
-  serialized_end=1392,
+  serialized_start=1365,
+  serialized_end=1423,
 )
 
 
@@ -780,8 +794,8 @@ _HOTSHARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1394,
-  serialized_end=1516,
+  serialized_start=1425,
+  serialized_end=1547,
 )
 
 
@@ -819,8 +833,8 @@ _HOTSHARDREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1518,
-  serialized_end=1595,
+  serialized_start=1549,
+  serialized_end=1626,
 )
 
 
@@ -872,8 +886,8 @@ _KVVERSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1597,
-  serialized_end=1695,
+  serialized_start=1628,
+  serialized_end=1726,
 )
 
 
@@ -918,8 +932,8 @@ _KEYMIGRATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1697,
-  serialized_end=1772,
+  serialized_start=1728,
+  serialized_end=1803,
 )
 
 
@@ -950,8 +964,8 @@ _KEYMIGRATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1774,
-  serialized_end=1826,
+  serialized_start=1805,
+  serialized_end=1857,
 )
 
 
@@ -996,8 +1010,8 @@ _KEYSTAT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1828,
-  serialized_end=1881,
+  serialized_start=1859,
+  serialized_end=1912,
 )
 
 
@@ -1028,8 +1042,8 @@ _KEYSTATSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1883,
-  serialized_end=1921,
+  serialized_start=1914,
+  serialized_end=1952,
 )
 
 
@@ -1060,8 +1074,8 @@ _MULTIKEYMIGRATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1923,
-  serialized_end=1959,
+  serialized_start=1954,
+  serialized_end=1990,
 )
 
 
@@ -1092,8 +1106,8 @@ _MULTIKEYMIGRATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1961,
-  serialized_end=2029,
+  serialized_start=1992,
+  serialized_end=2060,
 )
 
 
@@ -1145,8 +1159,8 @@ _TRIGGERDEMOTIONBYNUMSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2032,
-  serialized_end=2176,
+  serialized_start=2063,
+  serialized_end=2207,
 )
 
 
@@ -1191,8 +1205,8 @@ _TRIGGERDEMOTIONBYNUMSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2178,
-  serialized_end=2286,
+  serialized_start=2209,
+  serialized_end=2317,
 )
 
 
@@ -1218,6 +1232,13 @@ _TRIGGERDEMOTIONREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='do_not_contact_crdb', full_name='smdbrpc.TriggerDemotionRequest.do_not_contact_crdb', index=2,
+      number=3, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1230,8 +1251,8 @@ _TRIGGERDEMOTIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2288,
-  serialized_end=2360,
+  serialized_start=2319,
+  serialized_end=2420,
 )
 
 
@@ -1262,8 +1283,8 @@ _TRIGGERDEMOTIONREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2362,
-  serialized_end=2449,
+  serialized_start=2422,
+  serialized_end=2509,
 )
 
 
@@ -1301,8 +1322,8 @@ _TRIGGERDEMOTIONSTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2451,
-  serialized_end=2530,
+  serialized_start=2511,
+  serialized_end=2590,
 )
 
 
@@ -1333,8 +1354,8 @@ _PROMOTEKEYSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2532,
-  serialized_end=2582,
+  serialized_start=2592,
+  serialized_end=2642,
 )
 
 
@@ -1365,8 +1386,72 @@ _PROMOTEKEYSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2584,
-  serialized_end=2664,
+  serialized_start=2644,
+  serialized_end=2724,
+)
+
+
+_PROMOTEKEYSTOCICADAREQ = _descriptor.Descriptor(
+  name='PromoteKeysToCicadaReq',
+  full_name='smdbrpc.PromoteKeysToCicadaReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='keys', full_name='smdbrpc.PromoteKeysToCicadaReq.keys', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2726,
+  serialized_end=2778,
+)
+
+
+_PROMOTEKEYSTOCICADARESP = _descriptor.Descriptor(
+  name='PromoteKeysToCicadaResp',
+  full_name='smdbrpc.PromoteKeysToCicadaResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='successfullyPromoted', full_name='smdbrpc.PromoteKeysToCicadaResp.successfullyPromoted', index=0,
+      number=1, type=8, cpp_type=7, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2780,
+  serialized_end=2835,
 )
 
 _CRDBTXNREQ.fields_by_name['ops'].message_type = _OP
@@ -1393,6 +1478,7 @@ _TRIGGERDEMOTIONREPLY.fields_by_name['triggerDemotionStatuses'].message_type = _
 _TRIGGERDEMOTIONSTATUS.fields_by_name['key'].message_type = _KEY
 _PROMOTEKEYSREQ.fields_by_name['keys'].message_type = _KVVERSION
 _PROMOTEKEYSRESP.fields_by_name['were_successfully_migrated'].message_type = _KEYMIGRATIONRESP
+_PROMOTEKEYSTOCICADAREQ.fields_by_name['keys'].message_type = _KEY
 DESCRIPTOR.message_types_by_name['HLCTimestamp'] = _HLCTIMESTAMP
 DESCRIPTOR.message_types_by_name['KVPair'] = _KVPAIR
 DESCRIPTOR.message_types_by_name['CRDBTxnReq'] = _CRDBTXNREQ
@@ -1423,6 +1509,8 @@ DESCRIPTOR.message_types_by_name['TriggerDemotionReply'] = _TRIGGERDEMOTIONREPLY
 DESCRIPTOR.message_types_by_name['TriggerDemotionStatus'] = _TRIGGERDEMOTIONSTATUS
 DESCRIPTOR.message_types_by_name['PromoteKeysReq'] = _PROMOTEKEYSREQ
 DESCRIPTOR.message_types_by_name['PromoteKeysResp'] = _PROMOTEKEYSRESP
+DESCRIPTOR.message_types_by_name['PromoteKeysToCicadaReq'] = _PROMOTEKEYSTOCICADAREQ
+DESCRIPTOR.message_types_by_name['PromoteKeysToCicadaResp'] = _PROMOTEKEYSTOCICADARESP
 DESCRIPTOR.enum_types_by_name['Cmd'] = _CMD
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -1636,6 +1724,20 @@ PromoteKeysResp = _reflection.GeneratedProtocolMessageType('PromoteKeysResp', (_
   })
 _sym_db.RegisterMessage(PromoteKeysResp)
 
+PromoteKeysToCicadaReq = _reflection.GeneratedProtocolMessageType('PromoteKeysToCicadaReq', (_message.Message,), {
+  'DESCRIPTOR' : _PROMOTEKEYSTOCICADAREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.PromoteKeysToCicadaReq)
+  })
+_sym_db.RegisterMessage(PromoteKeysToCicadaReq)
+
+PromoteKeysToCicadaResp = _reflection.GeneratedProtocolMessageType('PromoteKeysToCicadaResp', (_message.Message,), {
+  'DESCRIPTOR' : _PROMOTEKEYSTOCICADARESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.PromoteKeysToCicadaResp)
+  })
+_sym_db.RegisterMessage(PromoteKeysToCicadaResp)
+
 
 DESCRIPTOR._options = None
 
@@ -1646,8 +1748,8 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=2702,
-  serialized_end=3801,
+  serialized_start=2873,
+  serialized_end=4064,
   methods=[
   _descriptor.MethodDescriptor(
     name='CalculateCicadaStats',
@@ -1710,9 +1812,19 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='PromoteKeysToCicada',
+    full_name='smdbrpc.HotshardGateway.PromoteKeysToCicada',
+    index=6,
+    containing_service=None,
+    input_type=_PROMOTEKEYSTOCICADAREQ,
+    output_type=_PROMOTEKEYSTOCICADARESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='RequestCRDBKeyStats',
     full_name='smdbrpc.HotshardGateway.RequestCRDBKeyStats',
-    index=6,
+    index=7,
     containing_service=None,
     input_type=_KEYSTATSREQUEST,
     output_type=_CRDBKEYSTATSRESPONSE,
@@ -1722,7 +1834,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendTxn',
     full_name='smdbrpc.HotshardGateway.SendTxn',
-    index=7,
+    index=8,
     containing_service=None,
     input_type=_TXNREQ,
     output_type=_TXNRESP,
@@ -1732,7 +1844,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TriggerDemotionByNums',
     full_name='smdbrpc.HotshardGateway.TriggerDemotionByNums',
-    index=8,
+    index=9,
     containing_service=None,
     input_type=_TRIGGERDEMOTIONBYNUMSREQ,
     output_type=_TRIGGERDEMOTIONBYNUMSRESP,
@@ -1742,7 +1854,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TriggerDemotion',
     full_name='smdbrpc.HotshardGateway.TriggerDemotion',
-    index=9,
+    index=10,
     containing_service=None,
     input_type=_TRIGGERDEMOTIONREQUEST,
     output_type=_TRIGGERDEMOTIONREPLY,
@@ -1752,7 +1864,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestAddKeyToPromotionMap',
     full_name='smdbrpc.HotshardGateway.TestAddKeyToPromotionMap',
-    index=10,
+    index=11,
     containing_service=None,
     input_type=_TESTPROMOTIONKEYREQ,
     output_type=_TESTPROMOTIONKEYRESP,
@@ -1762,7 +1874,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestIsKeyInPromotionMap',
     full_name='smdbrpc.HotshardGateway.TestIsKeyInPromotionMap',
-    index=11,
+    index=12,
     containing_service=None,
     input_type=_TESTPROMOTIONKEYREQ,
     output_type=_TESTPROMOTIONKEYRESP,
@@ -1772,7 +1884,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestSendTxn',
     full_name='smdbrpc.HotshardGateway.TestSendTxn',
-    index=12,
+    index=13,
     containing_service=None,
     input_type=_CRDBTXNREQ,
     output_type=_CRDBTXNRESP,
@@ -1782,7 +1894,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RequestCicadaStats',
     full_name='smdbrpc.HotshardGateway.RequestCicadaStats',
-    index=13,
+    index=14,
     containing_service=None,
     input_type=_CALCULATECICADAREQ,
     output_type=_CICADASTATSRESPONSE,
