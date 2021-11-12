@@ -342,6 +342,7 @@ func main() {
 		rng := rand.New(rand.NewSource(int64(i)))
 		if i == 0 && *enablePromotion{
 			promotekeyspace(address, func() uint64 { return rng.Uint64() % *keyspace }, *keyspace, *stepsize)
+			log.Printf("sleeping before testing...")
 			time.Sleep(5 * time.Second)
 		}
 		go worker(address,
