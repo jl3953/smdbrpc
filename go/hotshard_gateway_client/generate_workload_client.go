@@ -323,6 +323,7 @@ func main() {
 	warmup := flag.Duration("warmup", 1*time.Second, "warmup duration")
 	testPromotion := flag.Bool("testPromotion", false, "to test using promotion requests or not")
 	stepsize := flag.Uint64("stepsize", 100, "stepsize to use when promoting keys in warmup, NOT testPromotion")
+	enablePromotion := flag.Bool("enablePromotion", false, "enable warmup promotion")
 	flag.Parse()
 
 	var wg sync.WaitGroup // wait group
@@ -339,8 +340,9 @@ func main() {
 		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
 		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
 		rng := rand.New(rand.NewSource(int64(i)))
-		if i == 0 {
+		if i == 0 && *enablePromotion{
 			promotekeyspace(address, func() uint64 { return rng.Uint64() % *keyspace }, *keyspace, *stepsize)
+			time.Sleep(5 * time.Second)
 		}
 		go worker(address,
 			*batch,
