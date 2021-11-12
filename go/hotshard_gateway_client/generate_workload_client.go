@@ -268,6 +268,45 @@ func extractStats(ticksAcrossWorkers [][]time.Duration,
 	return throughput * float64(batch), p50, p99
 }
 
+func promotekeyspace(address string, chooseKey func() uint64, keyspace uint64, stepsize uint64) {
+	conn, err := grpc.Dial(address,
+		grpc.WithInsecure(),
+		//grpc.WithBlock(),
+	)
+	if err != nil {
+		log.Fatalf("did not connect: %+v\n", err)
+	}
+	defer func(conn *grpc.ClientConn) {
+		_ = conn.Close()
+	}(conn)
+	client := smdbrpc.NewHotshardGatewayClient(conn)
+
+	var table, index int64 = 53, 1
+	wall, logical := time.Now().UnixNano(), int32(0)
+	for key := uint64(0); key < keyspace; key += stepsize {
+		ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+		defer cancel()
+		promotionReq := smdbrpc.PromoteKeysToCicadaReq{
+			Keys: make([]*smdbrpc.Key, stepsize),
+		}
+		for i := 0; uint64(i) < stepsize; i++ {
+			k := int64(key) + int64(i)
+			promotionReq.Keys[i] = &smdbrpc.Key{
+				Table:     &table,
+				Index:     &index,
+				KeyCols:   []int64{int64(k)},
+				Key:       []byte("key"),
+				Timestamp: &smdbrpc.HLCTimestamp{
+					Walltime:    &wall,
+					Logicaltime: &logical,
+				},
+				Value:     []byte("value"),
+			}
+		}
+		_, _ = client.PromoteKeysToCicada(ctx, &promotionReq)
+	}
+}
+
 func main() {
 	log.Println("started!")
 
@@ -283,6 +322,7 @@ func main() {
 	instantaneousStats := flag.Bool("instantaneousStats", true, "show per second stats")
 	warmup := flag.Duration("warmup", 1*time.Second, "warmup duration")
 	testPromotion := flag.Bool("testPromotion", false, "to test using promotion requests or not")
+	stepsize := flag.Uint64("stepsize", 100, "stepsize to use when promoting keys in warmup, NOT testPromotion")
 	flag.Parse()
 
 	var wg sync.WaitGroup // wait group
@@ -299,6 +339,9 @@ func main() {
 		ticksAcrossWorkersRead[i] = make([]time.Duration, 0)
 		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
 		rng := rand.New(rand.NewSource(int64(i)))
+		if i == 0 {
+			promotekeyspace(address, func() uint64 { return rng.Uint64() % *keyspace }, *keyspace, *stepsize)
+		}
 		go worker(address,
 			*batch,
 			*duration,
