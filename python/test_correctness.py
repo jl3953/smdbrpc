@@ -542,6 +542,105 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
     self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
     self.now = time.time_ns()
 
+    promotionReq = smdbrpc_pb2.PromoteKeysToCicadaReq(
+      keys=[
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[994813],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[200604],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[994814],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[200605],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[994815],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[200606],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[994816],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+        smdbrpc_pb2.Key(
+          table=53,
+          index=1,
+          key_cols=[200607],
+          key="promoted".encode(),
+          timestamp=smdbrpc_pb2.HLCTimestamp(
+            walltime=self.now,
+            logicaltime=0,
+          ),
+          value="promoted".encode(),
+        ),
+      ]
+    )
+
+    promotionResp = self.stub.PromoteKeysToCicada(promotionReq)
+    self.assertEqual(len(promotionReq.keys),
+                     len(promotionResp.successfullyPromoted))
+    for promoted in promotionResp.successfullyPromoted:
+      self.assertTrue(promoted)
+
   def tearDown(self) -> None:
     self.channel.close()
 
@@ -576,299 +675,440 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
   def test_simple_write(self):
     key1 = 994813
     key2 = 200604
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 100,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-          value=str(key2).encode(),
-        ),
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 200,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    self.assertEqual(2, len(response.responses))
-    self.assertEqual(str(key1).encode(), response.responses[0].value)
-    self.assertEqual(str(key2).encode(), response.responses[1].value)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 100,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1).encode(),
+              ),
+            ],
+          ),
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 100,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+                value=str(key2).encode(),
+              ),
+            ],
+          )
+        ]
+      )
+    )
+    self.assertEqual(2, len(response.txnResps))
+    for txnResp in response.txnResps:
+      self.assertTrue(txnResp.is_committed)
+
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 200,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+              ),
+            ]
+          ),
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 200,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(2, len(response.txnResps))
+    for txnResp in response.txnResps:
+      self.assertTrue(txnResp.is_committed)
+
+    self.assertEqual(str(key1).encode(), response.txnResps[0].responses[
+      0].value)
+    self.assertEqual(str(key2).encode(), response.txnResps[1].responses[
+      0].value)
 
   def test_succeed_on_non_recent_read(self):
     key1 = 994814
     key2 = 200605
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 100,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-          value=str(key2).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 200,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1 + 1).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 150,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-        ),
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    self.assertEqual(2, len(response.responses))
-    self.assertEqual(str(key1).encode(), response.responses[0].value)
-    self.assertEqual(str(key2).encode(), response.responses[1].value)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 100,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1).encode(),
+              ),
+            ]
+          ),
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 100,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+                value=str(key2).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(2, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+    self.assertTrue(response.txnResps[1].is_committed)
+
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 200,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1 + 1).encode(),
+              )
+            ]
+          ),
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 200,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1 + 1).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(2, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+    self.assertTrue(response.txnResps[1].is_committed)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 150,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+              ),
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+              ),
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+    self.assertEqual(2, len(response.txnResps[0].responses))
+    self.assertEqual(str(key1).encode(), response.txnResps[0].responses[
+      0].value)
+    self.assertEqual(str(key2).encode(), response.txnResps[0].responses[
+      1].value)
 
   def test_succeed_on_disjoint_updates(self):
     key1 = 994815
     key2 = 200606
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 100,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-          value=str(key2).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 200,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1 + 1).encode()
-        ),
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 300,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-        ),
-      ],
-    ))
-    self.assertTrue(response.is_committed)
-    self.assertEqual(2, len(response.responses))
-    self.assertEqual(str(key1 + 1).encode(), response.responses[0].value)
-    self.assertEqual(str(key2).encode(), response.responses[1].value)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 100,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1).encode(),
+              ),
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+                value=str(key2).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 200,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1 + 1).encode()
+              ),
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 300,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+              ),
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+              ),
+            ],
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+    self.assertEqual(2, len(response.txnResps[0].responses))
+    self.assertEqual(str(key1 + 1).encode(), response.txnResps[0].responses[
+      0].value)
+    self.assertEqual(str(key2).encode(), response.txnResps[0].responses[
+      1].value)
 
   def test_fail_on_write_between_disjoint_updates(self):
     key1 = 994816
     key2 = 200607
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 100,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-          value=str(key2).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 200,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1 + 1).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 150,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-          value=str(key1 + 10).encode(),
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 100,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1).encode(),
+              ),
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+                value=str(key2).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
 
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.PUT,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-          value=str(key2 + 10).encode(),
-        )
-      ]
-    ))
-    self.assertFalse(response.is_committed)
-    response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-      timestamp=smdbrpc_pb2.HLCTimestamp(
-        walltime=self.now + 300,
-        logicaltime=0,
-      ),
-      ops=[
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key1],
-          key=str(key1).encode(),
-        ),
-        smdbrpc_pb2.Op(
-          cmd=smdbrpc_pb2.GET,
-          table=53,
-          index=1,
-          key_cols=[key2],
-          key=str(key2).encode(),
-        )
-      ]
-    ))
-    self.assertTrue(response.is_committed)
-    self.assertEqual(2, len(response.responses))
-    self.assertEqual(str(key1 + 1).encode(), response.responses[0].value)
-    self.assertEqual(str(key2).encode(), response.responses[1].value)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 200,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1 + 1).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 150,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+                value=str(key1 + 10).encode(),
+
+              ),
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.PUT,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+                value=str(key2 + 10).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertFalse(response.txnResps[0].is_committed)
+    response = self.stub.BatchSendTxns(
+      smdbrpc_pb2.BatchSendTxnsReq(
+        txns=[
+          smdbrpc_pb2.TxnReq(
+            timestamp=smdbrpc_pb2.HLCTimestamp(
+              walltime=self.now + 300,
+              logicaltime=0,
+            ),
+            ops=[
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key1],
+                key=str(key1).encode(),
+              ),
+              smdbrpc_pb2.Op(
+                cmd=smdbrpc_pb2.GET,
+                table=53,
+                index=1,
+                key_cols=[key2],
+                key=str(key2).encode(),
+              )
+            ]
+          )
+        ]
+      )
+    )
+    self.assertEqual(1, len(response.txnResps))
+    self.assertTrue(response.txnResps[0].is_committed)
+    self.assertEqual(2, len(response.txnResps[0].responses))
+    self.assertEqual(str(key1 + 1).encode(), response.txnResps[0].responses[
+      0].value)
+    self.assertEqual(str(key2).encode(), response.txnResps[0].responses[
+      1].value)
 
 
 if __name__ == '__main__':
