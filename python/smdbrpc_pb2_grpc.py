@@ -16,6 +16,11 @@ class HotshardGatewayStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.BatchSendTxns = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/BatchSendTxns',
+                request_serializer=smdbrpc__pb2.BatchSendTxnsReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.BatchSendTxnsResp.FromString,
+                )
         self.CalculateCicadaStats = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/CalculateCicadaStats',
                 request_serializer=smdbrpc__pb2.CalculateCicadaReq.SerializeToString,
@@ -97,6 +102,12 @@ class HotshardGatewayServicer(object):
     """The greeting service definition.
     Sends a greeting
     """
+
+    def BatchSendTxns(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def CalculateCicadaStats(self, request, context):
         """Asks Cicada whether it will 1) only demote keys, 2) only request CRDB promotions,
@@ -197,6 +208,11 @@ class HotshardGatewayServicer(object):
 
 def add_HotshardGatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'BatchSendTxns': grpc.unary_unary_rpc_method_handler(
+                    servicer.BatchSendTxns,
+                    request_deserializer=smdbrpc__pb2.BatchSendTxnsReq.FromString,
+                    response_serializer=smdbrpc__pb2.BatchSendTxnsResp.SerializeToString,
+            ),
             'CalculateCicadaStats': grpc.unary_unary_rpc_method_handler(
                     servicer.CalculateCicadaStats,
                     request_deserializer=smdbrpc__pb2.CalculateCicadaReq.FromString,
@@ -283,6 +299,23 @@ class HotshardGateway(object):
     """The greeting service definition.
     Sends a greeting
     """
+
+    @staticmethod
+    def BatchSendTxns(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/BatchSendTxns',
+            smdbrpc__pb2.BatchSendTxnsReq.SerializeToString,
+            smdbrpc__pb2.BatchSendTxnsResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def CalculateCicadaStats(request,

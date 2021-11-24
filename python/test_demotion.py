@@ -93,12 +93,20 @@ class TestTriggerDemotion(unittest.TestCase):
             walltime=self.now - 100,
             logicaltime=0,
         )
-        response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-            ops=[writeOp],
-            timestamp=timestamp,
-            is_promotion=True,
+        response = self.stub.PromoteKeysToCicada(smdbrpc_pb2.PromoteKeysToCicadaReq(
+            keys=[
+                smdbrpc_pb2.Key(
+                    table=self.key.table,
+                    index=self.key.index,
+                    key_cols=self.key.key_cols,
+                    key=self.key.key,
+                    timestamp=timestamp,
+                    value=self.demotedval,
+                )
+            ],
         ))
-        self.assertTrue(response.is_committed)
+        self.assertEqual(1, len(response.successfullyPromoted))
+        self.assertTrue(response.successfullyPromoted[0])
 
         # demote the key
         response = self.stub.TriggerDemotion(
@@ -128,14 +136,15 @@ class TestTriggerDemotion(unittest.TestCase):
             walltime=self.now + 2000,
             logicaltime=0,
         )
-        response = self.stub.SendTxn(
-            smdbrpc_pb2.TxnReq(
+        response = self.stub.BatchSendTxns(
+            txns=[smdbrpc_pb2.TxnReq(
                 ops=[writeOp],
                 timestamp=writeTs,
                 is_promotion=False,
-            )
+            )]
         )
-        self.assertFalse(response.is_committed)
+        self.assertEqual(1, len(response.txnResps))
+        self.assertFalse(response.txnResps[0].is_committed)
 
     def testReadTransactionSucceedsBeforeButFailsAfterDemotion(self):
         # send a read txn before it, should succeed
@@ -150,16 +159,17 @@ class TestTriggerDemotion(unittest.TestCase):
             walltime=self.now - 1,
             logicaltime=1,
         )
-        readBeforeResponse = self.stub.SendTxn(
-            smdbrpc_pb2.TxnReq(
+        readBeforeResponse = self.stub.BatchSendTxns(
+            txns=[smdbrpc_pb2.TxnReq(
                 ops=[readOp],
                 timestamp=readBeforeTs,
                 is_promotion=False,
-            )
+            )]
         )
-        self.assertTrue(readBeforeResponse.is_committed)
-        self.assertEqual(1, len(readBeforeResponse.responses))
-        self.assertEqual(self.demotedval, readBeforeResponse.responses[0].value)
+        self.assertEqual(1, len(readBeforeResponse.txnResps))
+        self.assertTrue(readBeforeResponse.txnResps[0].is_committed)
+        self.assertEqual(1, len(readBeforeResponse.txnResps[0].responses))
+        self.assertEqual(self.demotedval, readBeforeResponse.txnResps[0].responses[0].value)
 
         # send a read txn after it, should fail
         readAfterTs = smdbrpc_pb2.HLCTimestamp(
@@ -192,14 +202,22 @@ class TestTriggerDemotion(unittest.TestCase):
             walltime=self.now + 2000,
             logicaltime=0,
         )
-        response = self.stub.SendTxn(
-            smdbrpc_pb2.TxnReq(
-                ops=[writeOp],
-                timestamp=writeTs,
-                is_promotion=True,
+        response = self.stub.PromoteKeysToCicada(
+            smdbrpc_pb2.PromoteKeysToCicadaReq(
+                keys=[
+                    smdbrpc_pb2.Key(
+                        table=self.key.table,
+                        index=self.key.index,
+                        key_cols=self.key.key_cols,
+                        key=self.key.key,
+                        timestamp=writeTs,
+                        value=self.demotedval,
+                    )
+                ],
             )
         )
-        self.assertTrue(response.is_committed)
+        self.assertEqual(1, len(response.successfullyPromoted))
+        self.assertTrue(response.successfullyPromoted[0])
 
     def testDemotionAfterDemotionFails(self):
         # demote the key
@@ -249,24 +267,26 @@ class TestTriggerDemotionLock(unittest.TestCase):
     def testDemote(self):
         channel = grpc.insecure_channel("localhost:50051")
         stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
-        writeBeforeLockingOp = smdbrpc_pb2.Op(
-            cmd=smdbrpc_pb2.PUT,
-            table=self.lockedKey.table,
-            index=self.lockedKey.index,
-            key_cols=self.lockedKey.key_cols,
-            key=self.lockedKey.key,
-            value=self.demotedval,
-        )
 
-        writeBeforeLockingResp = stub.SendTxn(smdbrpc_pb2.TxnReq(
-            ops=[writeBeforeLockingOp],
-            timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now - 1000,
-                logicaltime=0,
-            ),
-            is_promotion=True,
-        ))
-        self.assertTrue(writeBeforeLockingResp.is_committed)
+        writeBeforeLockingResp = self.stub.PromoteKeysToCicada(
+            smdbrpc_pb2.PromoteKeysToCicadaReq(
+                keys=[
+                    smdbrpc_pb2.Key(
+                        table=self.lockedKey.table,
+                        index=self.lockedKey.index,
+                        key_cols=self.lockedKey.key_cols,
+                        key=self.lockedKey.key,
+                        timestamp=smdbrpc_pb2.HLCTimestamp(
+                            walltime=self.now - 1000,
+                            logicaltime=0,
+                        ),
+                        value=self.demotedval,
+                    )
+                ]
+            )
+        )
+        self.assertEqual(1, len(writeBeforeLockingResp.successfullyPromoted)
+        self.assertTrue(writeBeforeLockingResp.successfullyPromoted[0])
 
         _ = stub.TriggerDemotion(
             smdbrpc_pb2.TriggerDemotionRequest(
@@ -404,20 +424,42 @@ class TestCalculateStats(unittest.TestCase):
         self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
         self.now = time.time_ns()
 
+        promotionReq = smdbrpc_pb2.PromoteKeysToCicadaReq(
+            keys=[],
+        )
+
+        for i in range(8):
+            promotedKey = smdbrpc_pb2.Key(
+                table=53,
+                index=1,
+                key_cols=[994214 + i],
+                key="hello".encode(),
+                timestamp=smdbrpc_pb2.HLCTimestamp(
+                    walltime=time.time_ns(),
+                    logicaltime=0,
+                ),
+                value="world".encode(),
+            )
+            promotionReq.keys.append(promotedKey)
+
+        resp = self.stub.PromoteKeysToCicada(promotionReq)
+        self.assertEqual(1, len(resp.successfullyPromoted))
+        self.assertTrue(resp.successfullyPromoted[0])
+
     def tearDown(self) -> None:
         self.channel.close()
 
     def testDemotionOnly(self):
         response = self.stub.CalculateCicadaStats(smdbrpc_pb2.CalculateCicadaReq(
             cpu_target=0.0,
-            cpu_ceiling=0.1,
+            cpu_ceiling=0.0,
             cpu_floor=0.0,
             mem_target=0.0,
-            mem_ceiling=0.1,
+            mem_ceiling=0.0,
             mem_floor=0.0,
             percentile_n=0.25,
             timestamp=smdbrpc_pb2.HLCTimestamp(
-                walltime=self.now,
+                walltime=self.now + 20000,
                 logicaltime=0,
             )
         ))
