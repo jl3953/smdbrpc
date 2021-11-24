@@ -285,7 +285,7 @@ class TestTriggerDemotionLock(unittest.TestCase):
                 ]
             )
         )
-        self.assertEqual(1, len(writeBeforeLockingResp.successfullyPromoted)
+        self.assertEqual(1, len(writeBeforeLockingResp.successfullyPromoted))
         self.assertTrue(writeBeforeLockingResp.successfullyPromoted[0])
 
         _ = stub.TriggerDemotion(
