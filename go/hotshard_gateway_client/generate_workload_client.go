@@ -30,7 +30,7 @@ func sendRequest(ctx context.Context, batch int,
 	for i := 0; i < batch; i++ {
 
 		request := smdbrpc.TxnReq{
-			Ops: make([]*smdbrpc.Op, batch),
+			Ops: make([]*smdbrpc.Op, 1),
 			Timestamp: &smdbrpc.HLCTimestamp{
 				Walltime:    &walltime,
 				Logicaltime: &logical,
@@ -72,9 +72,11 @@ func sendRequest(ctx context.Context, batch int,
 				Value:   valBytes,
 			}
 		}
-		sort.Slice(request.Ops, func(i, j int) bool {
-			return request.Ops[i].KeyCols[0] < request.Ops[i].KeyCols[0]
-		})
+		if len(request.Ops) > 1 {
+			sort.Slice(request.Ops, func(i, j int) bool {
+				return request.Ops[i].KeyCols[0] < request.Ops[j].KeyCols[0]
+			})
+		}
 
 		batchReq.Txns = append(batchReq.Txns, &request)
 	}
