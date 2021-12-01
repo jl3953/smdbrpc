@@ -22,19 +22,23 @@ func sendRequest(ctx context.Context, batch int,
 	var logical int32 = logicalTime
 	f := false
 
-	request := smdbrpc.TxnReq{
-		Ops: make([]*smdbrpc.Op, batch),
-		Timestamp: &smdbrpc.HLCTimestamp{
-			Walltime:    &walltime,
-			Logicaltime: &logical,
-		},
-		IsPromotion:        &f,
-		IsTest:             &f,
-		IsDemotedTestField: &f,
+	batchReq := smdbrpc.BatchSendTxnsReq{
+		Txns: []*smdbrpc.TxnReq{},
 	}
 
 	isDuplicate := make(map[uint64]bool, 0)
 	for i := 0; i < batch; i++ {
+
+		request := smdbrpc.TxnReq{
+			Ops: make([]*smdbrpc.Op, batch),
+			Timestamp: &smdbrpc.HLCTimestamp{
+				Walltime:    &walltime,
+				Logicaltime: &logical,
+			},
+			IsPromotion:        &f,
+			IsTest:             &f,
+			IsDemotedTestField: &f,
+		}
 
 		// choose key
 		key := chooseKey()
@@ -68,20 +72,21 @@ func sendRequest(ctx context.Context, batch int,
 				Value:   valBytes,
 			}
 		}
+		sort.Slice(request.Ops, func(i, j int) bool {
+			return request.Ops[i].KeyCols[0] < request.Ops[i].KeyCols[0]
+		})
+
+		batchReq.Txns = append(batchReq.Txns, &request)
 	}
 
-	sort.Slice(request.Ops, func(i, j int) bool {
-		return request.Ops[i].KeyCols[0] < request.Ops[i].KeyCols[0]
-	})
-
 	start := time.Now()
-	reply, err := client.SendTxn(ctx, &request)
+	reply, err := client.BatchSendTxns(ctx, &batchReq)
 	elapsed := time.Since(start)
 	if err != nil {
 		log.Printf("Oops, request failed, err %+v\n", err)
 		return false, -1
 	} else {
-		return reply.GetIsCommitted(), elapsed
+		return reply.TxnResps[0].GetIsCommitted(), elapsed
 	}
 }
 
