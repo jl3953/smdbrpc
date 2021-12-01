@@ -53,7 +53,7 @@ func sendRequest(ctx context.Context, batch int,
 		keyBytes := []byte("key")
 		if isRead {
 			cmd := smdbrpc.Cmd_GET
-			request.Ops[i] = &smdbrpc.Op{
+			request.Ops[0] = &smdbrpc.Op{
 				Cmd:     &cmd,
 				Table:   &table,
 				Index:   &index,
@@ -63,7 +63,7 @@ func sendRequest(ctx context.Context, batch int,
 		} else {
 			cmd := smdbrpc.Cmd_PUT
 			valBytes := []byte("val")
-			request.Ops[i] = &smdbrpc.Op{
+			request.Ops[0] = &smdbrpc.Op{
 				Cmd:     &cmd,
 				Table:   &table,
 				Index:   &index,
