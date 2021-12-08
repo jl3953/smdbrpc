@@ -18,8 +18,8 @@ syntax = "proto2";
 // option java_package = "io.grpc.examples.helloworld";
 // option java_outer_classname = "HelloWorldProto";
 // option objc_class_prefix = "HLW";
-// option go_package = "execinfrapb";
-option go_package="./"; // UNCOMMENT IN CLOUDLAB
+option go_package = "execinfrapb";
+//option go_package="./"; // UNCOMMENT IN CLOUDLAB
 
 //package cockroach.sql.distsqlrun;
 package smdbrpc;
@@ -65,6 +65,7 @@ service HotshardGateway {
   rpc PromoteKey (KeyMigrationReq) returns (KeyMigrationResp) {}
   rpc PromoteKeys (PromoteKeysReq) returns (PromoteKeysResp) {}
   rpc PromoteKeysToCicada(PromoteKeysToCicadaReq) returns (PromoteKeysToCicadaResp) {}
+  rpc UpdatePromotionMap (PromoteKeysReq) returns (PromoteKeysResp) {}
 
   rpc RequestCRDBKeyStats(KeyStatsRequest) returns (CRDBKeyStatsResponse) {}
   rpc SendTxn(TxnReq) returns (TxnResp) {}
@@ -136,13 +137,13 @@ message TxnReq {
   optional bool is_promotion = 3;
   optional bool is_test = 4;
   optional bool is_demoted_test_field = 5;
-  optional bytes txn_id = 6;
+  optional int32 txn_id = 6;
 }
 
 message TxnResp {
   optional bool is_committed = 1;
   repeated KVPair responses = 2;
-  optional bytes txn_id = 3;
+  optional int32 txn_id = 3;
 }
 
 message CalculateCicadaReq {

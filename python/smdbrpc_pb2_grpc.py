@@ -56,6 +56,11 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.PromoteKeysToCicadaReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.PromoteKeysToCicadaResp.FromString,
                 )
+        self.UpdatePromotionMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/UpdatePromotionMap',
+                request_serializer=smdbrpc__pb2.PromoteKeysReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.PromoteKeysResp.FromString,
+                )
         self.RequestCRDBKeyStats = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/RequestCRDBKeyStats',
                 request_serializer=smdbrpc__pb2.KeyStatsRequest.SerializeToString,
@@ -157,6 +162,12 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdatePromotionMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def RequestCRDBKeyStats(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -247,6 +258,11 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.PromoteKeysToCicada,
                     request_deserializer=smdbrpc__pb2.PromoteKeysToCicadaReq.FromString,
                     response_serializer=smdbrpc__pb2.PromoteKeysToCicadaResp.SerializeToString,
+            ),
+            'UpdatePromotionMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdatePromotionMap,
+                    request_deserializer=smdbrpc__pb2.PromoteKeysReq.FromString,
+                    response_serializer=smdbrpc__pb2.PromoteKeysResp.SerializeToString,
             ),
             'RequestCRDBKeyStats': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestCRDBKeyStats,
@@ -433,6 +449,23 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/PromoteKeysToCicada',
             smdbrpc__pb2.PromoteKeysToCicadaReq.SerializeToString,
             smdbrpc__pb2.PromoteKeysToCicadaResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def UpdatePromotionMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/UpdatePromotionMap',
+            smdbrpc__pb2.PromoteKeysReq.SerializeToString,
+            smdbrpc__pb2.PromoteKeysResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
