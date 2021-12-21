@@ -62,7 +62,7 @@ func sendRequest(
 				Table:   &table,
 				Index:   &index,
 				KeyCols: []int64{int64(key)},
-				Key:     encodeToCRDB(int(key)),
+				Key:     encodeToCRDB(0),
 				Value:   nil,
 			}
 
