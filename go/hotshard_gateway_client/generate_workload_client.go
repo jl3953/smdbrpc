@@ -70,7 +70,7 @@ func sendRequest(
 				req.Txns[i].Ops[j].Cmd = &ReadCmd
 			} else {
 				req.Txns[i].Ops[j].Cmd = &WriteCmd
-				req.Txns[i].Ops[j].Value = []byte("jennifer")
+				req.Txns[i].Ops[j].Value = []byte("jenniferjenniferjennifer")
 			}
 		}
 
@@ -126,7 +126,7 @@ func sendPromotion(ctx context.Context, batch int,
 		var table, index int64 = 53, 1
 		keyCols := []int64{int64(key)}
 		keyBytes := encodeToCRDB(int(key))
-		valBytes := []byte("jennifer")
+		valBytes := []byte("jenniferjenniferjennifer")
 		request.Keys[i] = &smdbrpc.Key{
 			Table:   &table,
 			Index:   &index,
@@ -333,7 +333,7 @@ func promotekeyspace(address string, keyspace uint64, stepsize uint64) {
 					Walltime:    &wall,
 					Logicaltime: &logical,
 				},
-				Value:     []byte("jennifer"),
+				Value:     []byte("jenniferjenniferjennifer"),
 			}
 		}
 		_, _ = client.PromoteKeysToCicada(ctx, &promotionReq)
