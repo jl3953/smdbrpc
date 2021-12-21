@@ -14,92 +14,99 @@ import (
 	"time"
 )
 
-func sendRequest(ctx context.Context, keysPerTxn int, batchToCicada int,
-	client smdbrpc.HotshardGatewayClient, chooseKey func() uint64,
-	isRead bool, logicalTime int32) (bool, time.Duration) {
+func sendRequest(
+	ctx context.Context,
+	keysPerTxn int,
+	batchToCicada int64,
+	client smdbrpc.HotshardGatewayClient,
+	chooseKey func() uint64,
+	isRead bool,
+	logical int32) ([]bool, time.Duration) {
 
-	var walltime = time.Now().UnixNano()
-	var logical int32 = logicalTime
 	f := false
-
-	batchReq := smdbrpc.BatchSendTxnsReq{
-		Txns: []*smdbrpc.TxnReq{},
+	walltime := time.Now().UnixNano()
+	timestamp := smdbrpc.HLCTimestamp{
+		Walltime:    &walltime,
+		Logicaltime: &logical,
 	}
+	var table, index int64 = 53, 1
+	ReadCmd, WriteCmd := smdbrpc.Cmd_GET, smdbrpc.Cmd_PUT
+	req := smdbrpc.BatchSendTxnsReq{
+		Txns: make([]*smdbrpc.TxnReq, batchToCicada),
+	}
+	for i := 0; i < int(batchToCicada); i++ {
 
-	isDuplicate := make(map[uint64]bool, 0)
-	for i := 0; i < batchToCicada; i++ {
-
-		request := smdbrpc.TxnReq{
-			Ops: make([]*smdbrpc.Op, keysPerTxn),
-			Timestamp: &smdbrpc.HLCTimestamp{
-				Walltime:    &walltime,
-				Logicaltime: &logical,
-			},
+		// make a txn
+		req.Txns[i] = &smdbrpc.TxnReq{
+			Ops:                make([]*smdbrpc.Op, keysPerTxn),
+			Timestamp:          &timestamp,
 			IsPromotion:        &f,
 			IsTest:             &f,
 			IsDemotedTestField: &f,
+			TxnId:              nil,
 		}
 
+		isDuplicate := make(map[uint64]bool)
 		for j := 0; j < keysPerTxn; j++ {
-			// choose key
+
 			key := chooseKey()
+
+			// ensure no duplicate keys
 			for isDuplicate[key] {
 				key = chooseKey()
 			}
 			isDuplicate[key] = true
 
-			// populate read or write request list
-			var table, index int64 = 53, 1
-			keyCols := []int64{int64(key)}
-			keyBytes := encodeToCRDB(int(key))
+			req.Txns[i].Ops[j] = &smdbrpc.Op{
+				Cmd:     nil,
+				Table:   &table,
+				Index:   &index,
+				KeyCols: []int64{int64(key)},
+				Key:     encodeToCRDB(int(key)),
+				Value:   nil,
+			}
+
 			if isRead {
-				cmd := smdbrpc.Cmd_GET
-				request.Ops[j] = &smdbrpc.Op{
-					Cmd:     &cmd,
-					Table:   &table,
-					Index:   &index,
-					KeyCols: keyCols,
-					Key:     keyBytes,
-				}
+				req.Txns[i].Ops[j].Cmd = &ReadCmd
 			} else {
-				cmd := smdbrpc.Cmd_PUT
-				valBytes := []byte("jennifer")
-				request.Ops[j] = &smdbrpc.Op{
-					Cmd:     &cmd,
-					Table:   &table,
-					Index:   &index,
-					KeyCols: keyCols,
-					Key:     keyBytes,
-					Value:   valBytes,
-				}
+				req.Txns[i].Ops[j].Cmd = &WriteCmd
+				req.Txns[i].Ops[j].Value = []byte("jennifer")
 			}
 		}
-		if len(request.Ops) > 1 {
-			sort.Slice(request.Ops, func(i, j int) bool {
-				return request.Ops[i].KeyCols[0] < request.Ops[j].KeyCols[0]
+
+		// sort keys in order
+		if keysPerTxn > 1 {
+			sort.Slice(req.Txns[i].Ops, func(x, y int) bool {
+				return req.GetTxns()[i].GetOps()[x].GetKeyCols()[0] < req.
+					GetTxns()[i].GetOps()[y].GetKeyCols()[0]
 			})
 		}
-
-		batchReq.Txns = append(batchReq.Txns, &request)
 	}
 
 	start := time.Now()
-	reply, err := client.BatchSendTxns(ctx, &batchReq)
+	resp, sendErr := client.BatchSendTxns(ctx, &req)
 	elapsed := time.Since(start)
-	if err != nil {
-		log.Printf("Oops, request failed, err %+v\n", err)
-		return false, -1
+	if sendErr != nil {
+		log.Printf("Oops, request failed, err %+v\n", sendErr)
+		failureResult := make([]bool, batchToCicada)
+		for i := 0; i < int(batchToCicada); i++ {
+			failureResult[i] = false
+		}
+		return failureResult, elapsed
 	} else {
-		return reply.TxnResps[0].GetIsCommitted(), elapsed
+		successResult := make([]bool, batchToCicada)
+		for i := 0; i < int(batchToCicada); i++ {
+			successResult[i] = resp.GetTxnResps()[i].GetIsCommitted()
+		}
+		return successResult, elapsed
 	}
 }
 
 func sendPromotion(ctx context.Context, batch int,
 	client smdbrpc.HotshardGatewayClient, chooseKey func() uint64,
-	logicalTime int32) (bool, time.Duration) {
+	logical int32) (bool, time.Duration) {
 
 	var walltime = time.Now().UnixNano()
-	var logical int32 = logicalTime
 
 	request := smdbrpc.PromoteKeysToCicadaReq{
 		Keys: make([]*smdbrpc.Key, batch),
@@ -156,7 +163,7 @@ func sendPromotion(ctx context.Context, batch int,
 }
 
 func worker(address string,
-	batchToCicada int,
+	batchToCicada int64,
 	keysPerTxn int,
 	duration time.Duration,
 	readPercent int,
@@ -208,27 +215,39 @@ func worker(address string,
 				log.Println("promotion request failed")
 			}
 		} else if r := rand.Intn(100); r < readPercent {
-			if ok, elapsed := sendRequest(ctx,
+			txnsSucceeded, elapsed := sendRequest(ctx,
 				keysPerTxn,
 				batchToCicada,
 				client,
 				chooseKey,
 				true,
-				int32(workerNum)); ok {
-				if warmupOver {
-					readTicks = append(readTicks, elapsed)
+				int32(workerNum))
+			if warmupOver {
+				for _, didTxnSucceed := range txnsSucceeded {
+					if didTxnSucceed {
+						readTicks = append(readTicks, elapsed)
+					} else {
+						log.Println("read request failed")
+					}
 				}
-			} else {
-				log.Println("read request failed")
 			}
 		} else {
-			if ok, elapsed := sendRequest(ctx, keysPerTxn, batchToCicada, client,
-				chooseKey, false, int32(workerNum)); ok {
-				if warmupOver {
-					writeTicks = append(writeTicks, elapsed)
+			txnsSucceeded, elapsed := sendRequest(
+				ctx,
+				keysPerTxn,
+				batchToCicada,
+				client,
+				chooseKey,
+				false,
+				int32(workerNum))
+			if warmupOver {
+				for _, didTxnSucceed := range txnsSucceeded {
+					if didTxnSucceed {
+						writeTicks = append(writeTicks, elapsed)
+					} else {
+						log.Println("write request failed")
+					}
 				}
-			} else {
-				log.Println("write request failed")
 			}
 		}
 		cancel()
@@ -242,10 +261,12 @@ func worker(address string,
 			*durationsRead = append(*durationsRead, readTicks...)
 			*durationsWrite = append(*durationsWrite, writeTicks...)
 			if instantaneousStats && warmupOver {
-				rtp, rp50, rp99 := extractStats([][]time.Duration{readTicks},
-				time.Second, batchToCicada)
-				wtp, wp50, wp99 := extractStats([][]time.
-					Duration{writeTicks}, time.Second, batchToCicada)
+				rtp, rp50, rp99 := extractStats(
+					[][]time.Duration{readTicks},
+					time.Second)
+				wtp, wp50, wp99 := extractStats(
+					[][]time.Duration{writeTicks},
+					time.Second)
 				log.Printf("second %+v: r %+v qps / %+v / %+v || w %+v qps / %+v / %+v\n",
 					time.Duration(i)*time.Second,
 					rtp, rp50, rp99,
@@ -260,7 +281,7 @@ func worker(address string,
 }
 
 func extractStats(ticksAcrossWorkers [][]time.Duration,
-	duration time.Duration, batch int) (throughput float64, p50, p99 time.Duration) {
+	duration time.Duration) (throughput float64, p50, p99 time.Duration) {
 
 	// calculate throughput, p50, p99
 	allTicks := make([]float64, 0)
@@ -273,15 +294,15 @@ func extractStats(ticksAcrossWorkers [][]time.Duration,
 		return allTicks[i] < allTicks[j]
 	})
 	throughput = float64(len(allTicks)) / duration.Seconds()
-	p50_us, _ := stats.Median(allTicks)
-	p99_us, _ := stats.Percentile(allTicks, 99)
-	p50 = time.Duration(p50_us) * time.Microsecond
-	p99 = time.Duration(p99_us) * time.Microsecond
+	p50Us, _ := stats.Median(allTicks)
+	p99Us, _ := stats.Percentile(allTicks, 99)
+	p50 = time.Duration(p50Us) * time.Microsecond
+	p99 = time.Duration(p99Us) * time.Microsecond
 
-	return throughput * float64(batch), p50, p99
+	return throughput, p50, p99
 }
 
-func promotekeyspace(address string, chooseKey func() uint64, keyspace uint64, stepsize uint64) {
+func promotekeyspace(address string, keyspace uint64, stepsize uint64) {
 	conn, err := grpc.Dial(address,
 		grpc.WithInsecure(),
 		//grpc.WithBlock(),
@@ -298,7 +319,6 @@ func promotekeyspace(address string, chooseKey func() uint64, keyspace uint64, s
 	wall, logical := time.Now().UnixNano(), int32(0)
 	for key := uint64(0); key < keyspace; key += stepsize {
 		ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
-		defer cancel()
 		promotionReq := smdbrpc.PromoteKeysToCicadaReq{
 			Keys: make([]*smdbrpc.Key, stepsize),
 		}
@@ -307,7 +327,7 @@ func promotekeyspace(address string, chooseKey func() uint64, keyspace uint64, s
 			promotionReq.Keys[i] = &smdbrpc.Key{
 				Table:     &table,
 				Index:     &index,
-				KeyCols:   []int64{int64(k)},
+				KeyCols:   []int64{k},
 				Key:       encodeToCRDB(int(k)),
 				Timestamp: &smdbrpc.HLCTimestamp{
 					Walltime:    &wall,
@@ -317,13 +337,14 @@ func promotekeyspace(address string, chooseKey func() uint64, keyspace uint64, s
 			}
 		}
 		_, _ = client.PromoteKeysToCicada(ctx, &promotionReq)
+		cancel()
 	}
 }
 
 func main() {
 	log.Println("started!")
 
-	batchToCicada := flag.Int("batchToCicada", 25,
+	batchToCicada := flag.Int64("batchToCicada", 25,
 		"number of txns per batch to Cicada")
 	keysPerTxn := flag.Int("keysPerTxn", 1, "number of keys per txn")
 	concurrency := flag.Int("concurrency", 1, "number of concurrent clients")
@@ -357,13 +378,13 @@ func main() {
 		ticksAcrossWorkersWrite[i] = make([]time.Duration, 0)
 		rng := rand.New(rand.NewSource(int64(i)))
 		if i == 0 && *enablePromotion{
-			promotekeyspace(address, func() uint64 { return rng.Uint64() % *keyspace }, *keyspace, *stepsize)
+			promotekeyspace(address, *keyspace, *stepsize)
 			log.Printf("sleeping before testing...")
 			time.Sleep(5 * time.Second)
 		}
 		go worker(address,
-			*keysPerTxn,
 			*batchToCicada,
+			*keysPerTxn,
 			*duration,
 			*readPercent,
 			func() uint64 { return rng.Uint64() % *keyspace },
@@ -378,13 +399,11 @@ func main() {
 	}
 	wg.Wait()
 
-	tp_r, p50_r, p99_r := extractStats(ticksAcrossWorkersRead, *duration,
-		*batchToCicada)
-	tp_w, p50_w, p99_w := extractStats(ticksAcrossWorkersWrite, *duration,
-		*batchToCicada)
+	tpR, p50R, p99R := extractStats(ticksAcrossWorkersRead, *duration)
+	tpW, p50W, p99W := extractStats(ticksAcrossWorkersWrite, *duration)
 
 	log.Printf("Read throughput / p50 / p99 %+v qps / %+v / %+v\n",
-		tp_r, p50_r, p99_r)
+		tpR, p50R, p99R)
 	log.Printf("Write throughput / p50 / p99 %+v qps / %+v / %+v\n",
-		tp_w, p50_w, p99_w)
+		tpW, p50W, p99W)
 }

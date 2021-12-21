@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"flag"
 	"google.golang.org/grpc"
 	"log"
 	"math"
 	smdbrpc "smdbrpc/go/build/gen"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 )
@@ -191,30 +189,30 @@ func promoteKeys(keys []int, batch int, walltime int64, logical int32,
 	}
 }
 
-func main() {
-	batch := flag.Int("batch", 1,
-		"number of keys to promote in a single batch")
-	cicadaAddr := flag.String("cicadaAddr", "node-11:50051",
-		"cicada host machine")
-	crdbAddrs := flag.String("crdbAddrs", "node-8:50055,node-9:50055",
-		"csv of crdb addresses")
-	keyMin := flag.Int("keyMin", 0, "minimum key to promote")
-	keyMax := flag.Int("keyMax", 0, "one over the maximum key to promote")
-	flag.Parse()
-
-	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
-
-	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
-		crdbAddrsSlice)
-
-	walltime := time.Now().UnixNano()
-	var logical int32 = 0
-
-	if *keyMax - *keyMin > 0 {
-		keys := make([]int, *keyMax-*keyMin)
-		for i := *keyMin; i < *keyMax; i++ {
-			keys[i] = i
-		}
-		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)
-	}
-}
+//func main() {
+//	batch := flag.Int("batch", 1,
+//		"number of keys to promote in a single batch")
+//	cicadaAddr := flag.String("cicadaAddr", "node-11:50051",
+//		"cicada host machine")
+//	crdbAddrs := flag.String("crdbAddrs", "node-8:50055,node-9:50055",
+//		"csv of crdb addresses")
+//	keyMin := flag.Int("keyMin", 0, "minimum key to promote")
+//	keyMax := flag.Int("keyMax", 0, "one over the maximum key to promote")
+//	flag.Parse()
+//
+//	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
+//
+//	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
+//		crdbAddrsSlice)
+//
+//	walltime := time.Now().UnixNano()
+//	var logical int32 = 0
+//
+//	if *keyMax - *keyMin > 0 {
+//		keys := make([]int, *keyMax-*keyMin)
+//		for i := *keyMin; i < *keyMax; i++ {
+//			keys[i] = i
+//		}
+//		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)
+//	}
+//}
