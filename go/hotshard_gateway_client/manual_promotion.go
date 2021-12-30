@@ -78,7 +78,7 @@ func jenkyFixedBytes(key int64, keyspace int64) int64 {
 
 func transformKey(basekey int64, keyspace int64) (key int64) {
 	//key = randomizeHash(basekey, keyspace)
-	//key = jenkyFixedBytes(key, keyspace)
+	key = jenkyFixedBytes(key, keyspace)
 
 	return key
 }
