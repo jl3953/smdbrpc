@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/binary"
 	"flag"
 	"google.golang.org/grpc"
 	"log"
@@ -50,15 +52,47 @@ func encodeToCRDB(key int64) (encoding []byte) {
 	return encoding
 }
 
+func randomizeHash(key int64, keyspace int64) int64 {
+	byteKey := make([]byte, 8)
+	binary.BigEndian.PutUint64(byteKey, uint64(key))
+	hashed32Bytes := sha256.Sum256(byteKey)
+	hashed := make([]byte, 32)
+	for i, b := range hashed32Bytes {
+		hashed[i] = b
+	}
+	hashedUint64 := binary.BigEndian.Uint64(hashed)
+	hashedModulo := hashedUint64 % uint64(keyspace+1)
+	return int64(hashedModulo)
+}
+
+func jenkyFixedBytes(key int64, keyspace int64) int64 {
+	var constant int64 = 256
+	for keyspace > constant {
+		constant *= 256
+	}
+
+	constant = int64(math.Pow(256, 5))
+
+	return key + constant
+}
+
+func transformKey(basekey int64, keyspace int64) (key int64) {
+	key = randomizeHash(basekey, keyspace)
+	key = jenkyFixedBytes(key, keyspace)
+
+	return key
+}
+
 func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
-	client smdbrpc.HotshardGatewayClient) {
+	client smdbrpc.HotshardGatewayClient, total_keyspace int64) {
 
 	request := smdbrpc.PromoteKeysToCicadaReq{
 		Keys: make([]*smdbrpc.Key, len(keys)),
 	}
-	for i, key := range keys {
+	for i, basekey := range keys {
+		key := transformKey(basekey, total_keyspace)
 		var table, index int64 = 53, 1
-		keyCols := []int64{int64(key)}
+		keyCols := []int64{key}
 		keyBytes := encodeToCRDB(key)
 		jennifer := []int{82, 196, 81, 94, 10, 38, 8, 106, 101, 110, 110, 105,
 			102, 101, 114} // 4-byte checksum, 10, 38, valLen=8, jennifer
@@ -160,7 +194,7 @@ func grpcConnect(wrapper *Wrapper) {
 }
 
 func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
-	cicadaAddr string, crdbAddresses []string) {
+	cicadaAddr string, crdbAddresses []string, total_keyspace int64) {
 
 	// connect to Cicada
 	cicadaWrapper := Wrapper{
@@ -182,10 +216,11 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	}
 
 	// promote keys in batches
+
 	for i := 0; i < len(keys); i += batch {
 		max := math.Min(float64(i+batch), float64(len(keys)))
 		promoteKeysToCicada(keys[i:int(max)], walltime, logical,
-			cicadaWrapper.Client)
+			cicadaWrapper.Client, total_keyspace)
 		updateCRDBPromotionMaps(keys[i:int(max)], walltime, logical,
 			crdbClients)
 	}
@@ -200,6 +235,7 @@ func main() {
 		"csv of crdb addresses")
 	keyMin := flag.Int64("keyMin", 0, "minimum key to promote")
 	keyMax := flag.Int64("keyMax", 0, "one over the maximum key to promote")
+	keyspace := flag.Int64("keyspace", 400000000, "total keyspace")
 	flag.Parse()
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
@@ -215,6 +251,7 @@ func main() {
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
 			keys[i] = i + *keyMin
 		}
-		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)
+		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
+			crdbAddrsSlice, *keyspace)
 	}
 }
