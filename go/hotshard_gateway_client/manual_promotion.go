@@ -140,13 +140,13 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 	}
 	for i, key := range keys {
 		updateMapReq.Keys[i] = &smdbrpc.KVVersion{
-			Key:       encodeToCRDB(key),
-			Value:     nil,
+			Key:   encodeToCRDB(key),
+			Value: nil,
 			Timestamp: &smdbrpc.HLCTimestamp{
 				Walltime:    &walltime,
 				Logicaltime: &logical,
 			},
-			Hotness:   nil,
+			Hotness: nil,
 		}
 	}
 
@@ -162,7 +162,7 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 
 			resp, err := client.UpdatePromotionMap(crdbCtx, &updateMapReq)
 			if err != nil {
-				log.Fatalf("cannot send updatePromoMapReq CRDB node %d" +
+				log.Fatalf("cannot send updatePromoMapReq CRDB node %d"+
 					"err %+v\n", clientIdx, err)
 			}
 
@@ -179,9 +179,9 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 }
 
 type Wrapper struct {
-	Addr string
+	Addr    string
 	ConnPtr *grpc.ClientConn
-	Client smdbrpc.HotshardGatewayClient
+	Client  smdbrpc.HotshardGatewayClient
 }
 
 func grpcConnect(wrapper *Wrapper) {
@@ -197,16 +197,20 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	cicadaAddr string, crdbAddresses []string, total_keyspace int64) {
 
 	// connect to Cicada
-	cicadaWrapper := Wrapper{
-		Addr:    cicadaAddr,
+	numClients := 16
+	cicadaWrappers := make([]Wrapper, numClients)
+	for i := 0; i < numClients; i++ {
+		cicadaWrappers[i] = Wrapper{
+			Addr: cicadaAddr,
+		}
+		grpcConnect(&cicadaWrappers[i])
 	}
-	grpcConnect(&cicadaWrapper)
 
 	// connect to CRDB
 	crdbWrappers := make([]Wrapper, len(crdbAddresses))
 	for i, crdbAddr := range crdbAddresses {
 		crdbWrappers[i] = Wrapper{
-			Addr:    crdbAddr,
+			Addr: crdbAddr,
 		}
 		grpcConnect(&crdbWrappers[i])
 	}
@@ -216,13 +220,26 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	}
 
 	// promote keys in batches
-
-	for i := 0; i < len(keys); i += batch {
-		max := math.Min(float64(i+batch), float64(len(keys)))
-		promoteKeysToCicada(keys[i:int(max)], walltime, logical,
-			cicadaWrapper.Client, total_keyspace)
-		updateCRDBPromotionMaps(keys[i:int(max)], walltime, logical,
-			crdbClients)
+	inflightBatches := 0
+	var wg sync.WaitGroup
+	for batchFloor := 0; batchFloor < len(keys); batchFloor += batch {
+		batchCeiling := math.Min(float64(batchFloor+batch), float64(len(keys)))
+		wg.Add(1)
+		go func(i int, max int, clientIdx int) {
+			defer wg.Done()
+			promoteKeysToCicada(keys[i:max], walltime, logical,
+				cicadaWrappers[clientIdx].Client, total_keyspace)
+			updateCRDBPromotionMaps(keys[i:max], walltime, logical,
+				crdbClients)
+		}(batchFloor, int(batchCeiling), inflightBatches)
+		inflightBatches++
+		if inflightBatches%numClients == 0 {
+			wg.Wait()
+			inflightBatches = 0
+		}
+	}
+	if inflightBatches > 0 {
+		wg.Wait()
 	}
 }
 
@@ -246,7 +263,7 @@ func main() {
 	walltime := time.Now().UnixNano()
 	var logical int32 = 0
 
-	if *keyMax - *keyMin > 0 {
+	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
 			keys[i] = i + *keyMin
