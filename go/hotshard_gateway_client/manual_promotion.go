@@ -90,7 +90,8 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 		Keys: make([]*smdbrpc.Key, len(keys)),
 	}
 	for i, basekey := range keys {
-		key := transformKey(basekey, total_keyspace)
+		//key := transformKey(basekey, total_keyspace)
+		key := basekey
 		var table, index int64 = 53, 1
 		keyCols := []int64{key}
 		keyBytes := encodeToCRDB(key)
@@ -266,8 +267,12 @@ func main() {
 	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
-			keys[i] = i + *keyMin
+			keys[i] = transformKey(i + *keyMin, *keyspace)
 		}
+
+		sort.Slice(keys, func(i, j int) bool {
+			return keys[i] < keys[j]
+		})
 		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
 			crdbAddrsSlice, *keyspace)
 	}
