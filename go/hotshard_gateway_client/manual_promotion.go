@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/binary"
+    //"fmt"
 	"flag"
 	"google.golang.org/grpc"
 	"log"
@@ -77,8 +78,9 @@ func jenkyFixedBytes(key int64, keyspace int64) int64 {
 }
 
 func transformKey(basekey int64, keyspace int64) (key int64) {
+    key = basekey
 	key = randomizeHash(basekey, keyspace)
-	//key = jenkyFixedBytes(key, keyspace)
+	key = jenkyFixedBytes(key, keyspace)
 
 	return key
 }
@@ -90,7 +92,6 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 		Keys: make([]*smdbrpc.Key, len(keys)),
 	}
 	for i, basekey := range keys {
-		//key := transformKey(basekey, total_keyspace)
 		key := basekey
 		var table, index int64 = 53, 1
 		keyCols := []int64{key}
@@ -198,7 +199,8 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	cicadaAddr string, crdbAddresses []string, total_keyspace int64) {
 
 	// connect to Cicada
-	numClients := 16
+	//numClients := 16
+    numClients := 1
 	cicadaWrappers := make([]Wrapper, numClients)
 	for i := 0; i < numClients; i++ {
 		cicadaWrappers[i] = Wrapper{
@@ -264,16 +266,18 @@ func main() {
 	walltime := time.Now().UnixNano()
 	var logical int32 = 0
 
+    tic := time.Now()
 	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
 			keys[i] = transformKey(i + *keyMin, *keyspace)
 		}
-
 		sort.Slice(keys, func(i, j int) bool {
 			return keys[i] < keys[j]
 		})
 		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
 			crdbAddrsSlice, *keyspace)
 	}
+    toc := time.Since(tic)
+    log.Printf("elapsed %+v\n", toc)
 }
