@@ -285,6 +285,10 @@ func main() {
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
 			keys[i] = transformKey(i + *keyMin, *keyspace,
 				*hash_randomize_keyspace, *enable_fixed_sized_encoding)
+			log.Fatalf("keys[%d]=%d, keyMin %d, keyspace %d, " +
+				"hash_randomize_keyspace %v, " +
+				"enable_fixed_sized_encoding %v\n", i, keys[i], *keyMin,
+				*keyspace, hash_randomize_keyspace, enable_fixed_sized_encoding)
 		}
 		sort.Slice(keys, func(i, j int) bool {
 			return keys[i] < keys[j]
