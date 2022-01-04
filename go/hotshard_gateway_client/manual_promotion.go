@@ -77,10 +77,17 @@ func jenkyFixedBytes(key int64, keyspace int64) int64 {
 	return key + constant
 }
 
-func transformKey(basekey int64, keyspace int64) (key int64) {
+func transformKey(basekey int64, keyspace int64,
+	hash_randomize_keyspace bool, allow_variable_sized_encoding bool) (
+	key int64) {
     key = basekey
-	key = randomizeHash(basekey, keyspace)
-	key = jenkyFixedBytes(key, keyspace)
+    if hash_randomize_keyspace {
+		key = randomizeHash(basekey, keyspace)
+	}
+
+	if !allow_variable_sized_encoding {
+		key = jenkyFixedBytes(key, keyspace)
+	}
 
 	return key
 }
@@ -256,6 +263,12 @@ func main() {
 	keyMin := flag.Int64("keyMin", 0, "minimum key to promote")
 	keyMax := flag.Int64("keyMax", 0, "one over the maximum key to promote")
 	keyspace := flag.Int64("keyspace", 400000000, "total keyspace")
+	hash_randomize_keyspace := flag.Bool("hash_randomize_keyspace", true,
+		"whether to hash the keyspace so hotkeys aren't contiguous")
+	allow_variable_sized_encoding := flag.Bool(
+		"allow_variable_sized_encoding", false,
+		"whether to disable adding a constant to keyspace to keep all keys" +
+			" the same size")
 	flag.Parse()
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
@@ -270,7 +283,8 @@ func main() {
 	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
-			keys[i] = transformKey(i + *keyMin, *keyspace)
+			keys[i] = transformKey(i + *keyMin, *keyspace,
+				*hash_randomize_keyspace, *allow_variable_sized_encoding)
 		}
 		sort.Slice(keys, func(i, j int) bool {
 			return keys[i] < keys[j]
