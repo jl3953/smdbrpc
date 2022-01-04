@@ -4,3 +4,4 @@ cpp/cmake/build
 go/build/gen/*
 .idea
 __pycache__
+*.tmp
