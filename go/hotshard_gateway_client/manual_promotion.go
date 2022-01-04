@@ -78,14 +78,14 @@ func jenkyFixedBytes(key int64, keyspace int64) int64 {
 }
 
 func transformKey(basekey int64, keyspace int64,
-	hash_randomize_keyspace bool, allow_variable_sized_encoding bool) (
+	hash_randomize_keyspace bool, enable_fixed_sized_encoding bool) (
 	key int64) {
     key = basekey
     if hash_randomize_keyspace {
 		key = randomizeHash(basekey, keyspace)
 	}
 
-	if !allow_variable_sized_encoding {
+	if enable_fixed_sized_encoding {
 		key = jenkyFixedBytes(key, keyspace)
 	}
 
@@ -265,8 +265,8 @@ func main() {
 	keyspace := flag.Int64("keyspace", 400000000, "total keyspace")
 	hash_randomize_keyspace := flag.Bool("hash_randomize_keyspace", true,
 		"whether to hash the keyspace so hotkeys aren't contiguous")
-	allow_variable_sized_encoding := flag.Bool(
-		"allow_variable_sized_encoding", false,
+	enable_fixed_sized_encoding := flag.Bool(
+		"enable_fixed_sized_encoding", true,
 		"whether to disable adding a constant to keyspace to keep all keys" +
 			" the same size")
 	flag.Parse()
@@ -284,7 +284,7 @@ func main() {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
 			keys[i] = transformKey(i + *keyMin, *keyspace,
-				*hash_randomize_keyspace, *allow_variable_sized_encoding)
+				*hash_randomize_keyspace, *enable_fixed_sized_encoding)
 		}
 		sort.Slice(keys, func(i, j int) bool {
 			return keys[i] < keys[j]
