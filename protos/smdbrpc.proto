@@ -18,8 +18,8 @@ syntax = "proto2";
 // option java_package = "io.grpc.examples.helloworld";
 // option java_outer_classname = "HelloWorldProto";
 // option objc_class_prefix = "HLW";
-//option go_package = ".;execinfrapb";
-option go_package="./"; // UNCOMMENT IN CLOUDLAB
+option go_package = ".;execinfrapb";
+//option go_package="./"; // UNCOMMENT IN CLOUDLAB
 
 //package cockroach.sql.distsqlrun;
 package smdbrpc;
@@ -99,12 +99,14 @@ message CRDBTxnResp {
 }
 
 message TestPromotionKeyReq {
-  optional bytes key = 1;
-  optional HLCTimestamp promotionTimestamp = 2;
+  required bytes key = 1;
+  required HLCTimestamp promotionTimestamp = 2;
+  repeated int64 cicada_key_cols = 3;
 }
 
 message TestPromotionKeyResp {
-  optional bool isKeyIn = 1;
+  required bool isKeyIn = 1;
+  repeated int64 cicada_key_cols = 2;
 }
 
 enum Cmd {
@@ -116,19 +118,21 @@ enum Cmd {
 message Key {
   optional int64 table = 1;
   optional int64 index = 2;
-  repeated int64 key_cols = 3;
+  repeated int64 cicada_key_cols = 3;
   optional bytes key = 4;
   optional HLCTimestamp timestamp = 5;
   optional bytes value = 6;
+  repeated int64 crdb_key_cols = 7;
 }
 
 message Op {
   required Cmd cmd = 1;
   required int64 table = 2;
   required int64 index = 3;
-  repeated int64 key_cols = 4;
+  repeated int64 cicada_key_cols = 4;
   required bytes key = 5;
   optional bytes value = 6;
+  repeated int64 crdb_key_cols = 7;
 }
 
 message TxnReq {
@@ -195,6 +199,7 @@ message KVVersion {
   optional bytes value = 2;
   optional HLCTimestamp timestamp = 3;
   optional uint64 hotness = 4;
+  repeated int64 cicada_key_cols = 5;
 }
 
 message KeyMigrationReq {

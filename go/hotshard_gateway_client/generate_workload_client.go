@@ -61,7 +61,7 @@ func sendRequest(
 				Cmd:     nil,
 				Table:   &table,
 				Index:   &index,
-				KeyCols: []int64{int64(key)},
+				CicadaKeyCols: []int64{int64(key)},
 				Key:     encodeToCRDB(0),
 				Value:   nil,
 			}
@@ -77,8 +77,8 @@ func sendRequest(
 		// sort keys in order
 		if keysPerTxn > 1 {
 			sort.Slice(req.Txns[i].Ops, func(x, y int) bool {
-				return req.GetTxns()[i].GetOps()[x].GetKeyCols()[0] < req.
-					GetTxns()[i].GetOps()[y].GetKeyCols()[0]
+				return req.GetTxns()[i].GetOps()[x].GetCicadaKeyCols()[0] < req.
+					GetTxns()[i].GetOps()[y].GetCicadaKeyCols()[0]
 			})
 		}
 	}
@@ -125,12 +125,12 @@ func sendPromotion(ctx context.Context, batch int,
 		// populate read or write request list
 		var table, index int64 = 53, 1
 		keyCols := []int64{int64(key)}
-		keyBytes := encodeToCRDB(int(key))
+		keyBytes := encodeToCRDB(int64(key))
 		valBytes := []byte("j")
 		request.Keys[i] = &smdbrpc.Key{
 			Table:   &table,
 			Index:   &index,
-			KeyCols: keyCols,
+			CicadaKeyCols: keyCols,
 			Key:     keyBytes,
 			Timestamp: &smdbrpc.HLCTimestamp{
 				Walltime:    &walltime,
@@ -141,7 +141,8 @@ func sendPromotion(ctx context.Context, batch int,
 	}
 
 	sort.Slice(request.Keys, func(i, j int) bool {
-		return request.Keys[i].KeyCols[0] < request.Keys[i].KeyCols[0]
+		return request.Keys[i].CicadaKeyCols[0] < request.Keys[j].
+			CicadaKeyCols[0]
 	})
 
 	start := time.Now()
@@ -327,8 +328,8 @@ func promotekeyspace(address string, keyspace uint64, stepsize uint64) {
 			promotionReq.Keys[i] = &smdbrpc.Key{
 				Table:     &table,
 				Index:     &index,
-				KeyCols:   []int64{k},
-				Key:       encodeToCRDB(int(k)),
+				CicadaKeyCols:   []int64{k},
+				Key:       encodeToCRDB(int64(k)),
 				Timestamp: &smdbrpc.HLCTimestamp{
 					Walltime:    &wall,
 					Logicaltime: &logical,

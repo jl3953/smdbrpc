@@ -26,7 +26,8 @@ class TestCRDBPromotionMap(unittest.TestCase):
                 promotionTimestamp=smdbrpc_pb2.HLCTimestamp(
                     walltime=self.now + 10,
                     logicaltime=0,
-                )
+                ),
+                cicada_key_cols=[214],
             )
         )
         self.assertFalse(response.isKeyIn)
@@ -39,7 +40,8 @@ class TestCRDBPromotionMap(unittest.TestCase):
                 promotionTimestamp=smdbrpc_pb2.HLCTimestamp(
                     walltime=self.now + 10,
                     logicaltime=0,
-                )
+                ),
+                cicada_key_cols=[214],
             )
         )
         self.assertTrue(response.isKeyIn)
@@ -54,6 +56,8 @@ class TestCRDBPromotionMap(unittest.TestCase):
             )
         )
         self.assertTrue(response.isKeyIn)
+        self.assertEqual(1, len(response.cicada_key_cols))
+        self.assertEqual(214, response.cicada_key_cols[0])
 
     def test_smaller_commit_false(self):
         key=1994216

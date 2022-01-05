@@ -93,16 +93,18 @@ func transformKey(basekey int64, keyspace int64,
 }
 
 func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
-	client smdbrpc.HotshardGatewayClient, total_keyspace int64) {
+	client smdbrpc.HotshardGatewayClient, totalKeyspace int64,
+	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
 
 	request := smdbrpc.PromoteKeysToCicadaReq{
 		Keys: make([]*smdbrpc.Key, len(keys)),
 	}
-	for i, basekey := range keys {
-		key := basekey
+	for i, cicadaKey := range keys {
+		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
+			enableFixedSizedEncoding)
 		var table, index int64 = 53, 1
-		keyCols := []int64{key}
-		keyBytes := encodeToCRDB(key)
+		cicadaKeyCols := []int64{cicadaKey}
+		keyBytes := encodeToCRDB(crdbKey)
 		jennifer := []int{82, 196, 81, 94, 10, 38, 8, 106, 101, 110, 110, 105,
 			102, 101, 114} // 4-byte checksum, 10, 38, valLen=8, jennifer
 		valBytes := make([]byte, len(jennifer))
@@ -111,20 +113,22 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 		}
 
 		request.Keys[i] = &smdbrpc.Key{
-			Table:   &table,
-			Index:   &index,
-			KeyCols: keyCols,
-			Key:     keyBytes,
+			Table:         &table,
+			Index:         &index,
+			CicadaKeyCols: cicadaKeyCols,
+			Key:           keyBytes,
 			Timestamp: &smdbrpc.HLCTimestamp{
 				Walltime:    &walltime,
 				Logicaltime: &logical,
 			},
 			Value: valBytes,
+			CrdbKeyCols: []int64{crdbKey},
 		}
 	}
 
 	sort.Slice(request.Keys, func(i, j int) bool {
-		return request.Keys[i].KeyCols[0] < request.Keys[i].KeyCols[0]
+		return request.Keys[i].CicadaKeyCols[0] < request.Keys[j].
+			CicadaKeyCols[0]
 	})
 
 	// promote to cicada
@@ -141,21 +145,25 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 }
 
 func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
-	clients []smdbrpc.HotshardGatewayClient) {
+	clients []smdbrpc.HotshardGatewayClient, totalKeyspace int64,
+	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
 
 	// populate promotion request
 	updateMapReq := smdbrpc.PromoteKeysReq{
 		Keys: make([]*smdbrpc.KVVersion, len(keys)),
 	}
-	for i, key := range keys {
+	for i, cicadaKey := range keys {
+		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
+			enableFixedSizedEncoding)
 		updateMapReq.Keys[i] = &smdbrpc.KVVersion{
-			Key:   encodeToCRDB(key),
+			Key:   encodeToCRDB(crdbKey),
 			Value: nil,
 			Timestamp: &smdbrpc.HLCTimestamp{
 				Walltime:    &walltime,
 				Logicaltime: &logical,
 			},
 			Hotness: nil,
+			CicadaKeyCols: []int64{cicadaKey},
 		}
 	}
 
@@ -203,7 +211,8 @@ func grpcConnect(wrapper *Wrapper) {
 }
 
 func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
-	cicadaAddr string, crdbAddresses []string, total_keyspace int64) {
+	cicadaAddr string, crdbAddresses []string, totalKeyspace int64,
+	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
 
 	// connect to Cicada
 	//numClients := 16
@@ -238,9 +247,11 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 		go func(i int, max int, clientIdx int) {
 			defer wg.Done()
 			promoteKeysToCicada(keys[i:max], walltime, logical,
-				cicadaWrappers[clientIdx].Client, total_keyspace)
+				cicadaWrappers[clientIdx].Client, totalKeyspace,
+				hashRandomizeKeyspace, enableFixedSizedEncoding)
 			updateCRDBPromotionMaps(keys[i:max], walltime, logical,
-				crdbClients)
+				crdbClients, totalKeyspace, hashRandomizeKeyspace,
+				enableFixedSizedEncoding)
 		}(batchFloor, int(batchCeiling), inflightBatches)
 		inflightBatches++
 		if inflightBatches%numClients == 0 {
@@ -283,14 +294,16 @@ func main() {
 	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
-			keys[i] = transformKey(i + *keyMin, *keyspace,
-				*hash_randomize_keyspace, *enable_fixed_sized_encoding)
+			//keys[i] = transformKey(i + *keyMin, *keyspace,
+			//	*hash_randomize_keyspace, *enable_fixed_sized_encoding)
+			keys[i] = i
 		}
 		sort.Slice(keys, func(i, j int) bool {
 			return keys[i] < keys[j]
 		})
 		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
-			crdbAddrsSlice, *keyspace)
+			crdbAddrsSlice, *keyspace, *hash_randomize_keyspace,
+			*enable_fixed_sized_encoding)
 	}
     toc := time.Since(tic)
     log.Printf("elapsed %+v\n", toc)
