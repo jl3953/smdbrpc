@@ -99,19 +99,37 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 	request := smdbrpc.PromoteKeysToCicadaReq{
 		Keys: make([]*smdbrpc.Key, len(keys)),
 	}
+	//val_len_marker := []int64{4, 4, 4, 4}
+	//key_len_marker := []int64{4, 4, 4, 4}
+	//// key goes here
+	//zero_len := []int64{1}
+	//wall_time_len := []int64{8, 8, 8, 8, 8, 8, 8, 8}
+	//logical_len := []int64{4, 4, 4, 4}
+	//timestamp_bookend_len := []int64{1}
+
+	checksum := []int64{82, 196, 81, 94}
+	who_knows := []int64{10, 38, 8}
+	jennifer := []int64{106, 101, 110, 110, 105, 102, 101, 114}
+	jennifers := []int64{}
+	for i := 0; i < 63; i ++ {
+		jennifers = append(jennifers, jennifer...)
+	}
+	var val []int64
+	val = append(val, checksum...)
+	val = append(val, who_knows...)
+	val = append(val, jennifers...)
+	valBytes := make([]byte, len(val))
+
+	for i, b := range val {
+		valBytes[i] = byte(b)
+	}
+
 	for i, cicadaKey := range keys {
 		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
 			enableFixedSizedEncoding)
 		var table, index int64 = 53, 1
 		cicadaKeyCols := []int64{cicadaKey}
 		keyBytes := encodeToCRDB(crdbKey)
-		jennifer := []int{82, 196, 81, 94, 10, 38, 8, 106, 101, 110, 110, 105,
-			102, 101, 114} // 4-byte checksum, 10, 38, valLen=8, jennifer
-		valBytes := make([]byte, len(jennifer))
-		for j, b := range jennifer {
-			valBytes[j] = byte(b)
-		}
-
 		request.Keys[i] = &smdbrpc.Key{
 			Table:         &table,
 			Index:         &index,
