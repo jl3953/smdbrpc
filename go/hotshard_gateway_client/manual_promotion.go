@@ -249,9 +249,9 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 			promoteKeysToCicada(keys[i:max], walltime, logical,
 				cicadaWrappers[clientIdx].Client, totalKeyspace,
 				hashRandomizeKeyspace, enableFixedSizedEncoding)
-			updateCRDBPromotionMaps(keys[i:max], walltime, logical,
-				crdbClients, totalKeyspace, hashRandomizeKeyspace,
-				enableFixedSizedEncoding)
+			//updateCRDBPromotionMaps(keys[i:max], walltime, logical,
+			//	crdbClients, totalKeyspace, hashRandomizeKeyspace,
+			//	enableFixedSizedEncoding)
 		}(batchFloor, int(batchCeiling), inflightBatches)
 		inflightBatches++
 		if inflightBatches%numClients == 0 {
