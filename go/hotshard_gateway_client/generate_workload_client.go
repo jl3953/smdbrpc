@@ -34,6 +34,16 @@ func sendRequest(
 	req := smdbrpc.BatchSendTxnsReq{
 		Txns: make([]*smdbrpc.TxnReq, batchToCicada),
 	}
+    jennifers := []int64{}
+    jennifer := []int64{106, 101, 110, 110, 105, 102, 101, 114}
+    for i := 0; i < 64; i++ {
+        jennifers = append(jennifers, jennifer...)
+    }
+    valBytes := make([]byte, len(jennifers))
+    for i, b := range valBytes {
+        valBytes[i] = byte(b)
+    }
+
 	for i := 0; i < int(batchToCicada); i++ {
 
 		// make a txn
@@ -70,7 +80,7 @@ func sendRequest(
 				req.Txns[i].Ops[j].Cmd = &ReadCmd
 			} else {
 				req.Txns[i].Ops[j].Cmd = &WriteCmd
-				req.Txns[i].Ops[j].Value = []byte("j")
+				req.Txns[i].Ops[j].Value = valBytes
 			}
 		}
 
