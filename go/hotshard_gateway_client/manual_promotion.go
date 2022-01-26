@@ -193,7 +193,7 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 			defer wg.Done()
 			client := clients[clientIdx]
 			crdbCtx, crdbCancel := context.WithTimeout(context.Background(),
-				time.Second)
+				time.Minute)
 			defer crdbCancel()
 
 			resp, err := client.UpdatePromotionMap(crdbCtx, &updateMapReq)
