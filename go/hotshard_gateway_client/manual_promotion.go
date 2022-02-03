@@ -234,8 +234,8 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
 
 	// connect to Cicada
-	numClients := 16
-    //numClients := 1
+	//numClients := 16
+    numClients := 1
 	cicadaWrappers := make([]Wrapper, numClients)
 	for i := 0; i < numClients; i++ {
 		cicadaWrappers[i] = Wrapper{
