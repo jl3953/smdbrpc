@@ -127,7 +127,7 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 	for i, cicadaKey := range keys {
 		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
 			enableFixedSizedEncoding)
-		var table, index int64 = 53, 1
+		var table, index int64 = 54, 1
 		cicadaKeyCols := []int64{cicadaKey}
 		keyBytes := encodeToCRDB(crdbKey)
 		request.Keys[i] = &smdbrpc.Key{
