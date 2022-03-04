@@ -111,7 +111,7 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 	who_knows := []int64{10, 38, 8}
 	jennifer := []int64{106, 101, 110, 110, 105, 102, 101, 114}
 	jennifers := []int64{}
-	for i := 0; i < 63; i ++ {
+	for i := 0; i < 64; i ++ {
 		jennifers = append(jennifers, jennifer...)
 	}
 	var val []int64
@@ -160,6 +160,7 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 			}
 		}
 	}
+    //log.Printf("up to %lu\n", keys[0])
 }
 
 func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
@@ -192,7 +193,7 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 			defer wg.Done()
 			client := clients[clientIdx]
 			crdbCtx, crdbCancel := context.WithTimeout(context.Background(),
-				time.Second)
+				time.Minute)
 			defer crdbCancel()
 
 			resp, err := client.UpdatePromotionMap(crdbCtx, &updateMapReq)
@@ -233,8 +234,8 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
 
 	// connect to Cicada
-	//numClients := 16
-    numClients := 1
+	numClients := 16
+    //numClients := 1
 	cicadaWrappers := make([]Wrapper, numClients)
 	for i := 0; i < numClients; i++ {
 		cicadaWrappers[i] = Wrapper{
