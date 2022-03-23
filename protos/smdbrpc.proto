@@ -62,6 +62,7 @@ service HotshardGateway {
   rpc DemoteKey (KeyMigrationReq) returns (KeyMigrationResp) {}
   rpc DemoteKeys (MultiKeyMigrationReq) returns (MultiKeyMigrationResp) {}
 
+  rpc PopulateCRDBTableNumMapping (PopulateCRDBTableNumMappingReq) returns (PopulateCRDBTableNumMappingResp) {}
   rpc PromoteKey (KeyMigrationReq) returns (KeyMigrationResp) {}
   rpc PromoteKeys (PromoteKeysReq) returns (PromoteKeysResp) {}
   rpc PromoteKeysToCicada(PromoteKeysToCicadaReq) returns (PromoteKeysToCicadaResp) {}
@@ -96,6 +97,18 @@ message CRDBTxnReq {
 message CRDBTxnResp {
   optional bool is_committed = 1;
   repeated KVPair responses = 2;
+}
+
+message TableNumMapping {
+  required string tableName = 1;
+  required int32 tableNum = 2;
+}
+message PopulateCRDBTableNumMappingReq {
+  repeated TableNumMapping tableNumMappings = 1;
+}
+
+message PopulateCRDBTableNumMappingResp {
+  required bool isPopulated = 1;
 }
 
 message TestPromotionKeyReq {
