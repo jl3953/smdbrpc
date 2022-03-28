@@ -46,5 +46,6 @@ class TestTableMappingCRDB(unittest.TestCase):
             else:
                 self.assertFalse(False)
 
-    if __name__ == "__main__":
-        unittest.main()
+
+if __name__ == "__main__":
+    unittest.main()
