@@ -76,6 +76,7 @@ service HotshardGateway {
   rpc TestAddKeyToPromotionMap (TestPromotionKeyReq) returns (TestPromotionKeyResp) {}
   rpc TestIsKeyInPromotionMap(TestPromotionKeyReq) returns (TestPromotionKeyResp) {}
   rpc TestSendTxn(CRDBTxnReq) returns (CRDBTxnResp) {}
+  rpc TestQueryTableMap(QueryTableMapReq) returns (QueryTableMapResp) {}
 
   rpc RequestCicadaStats (CalculateCicadaReq) returns (CicadaStatsResponse) {}
 
@@ -109,6 +110,14 @@ message PopulateCRDBTableNumMappingReq {
 
 message PopulateCRDBTableNumMappingResp {
   required bool isPopulated = 1;
+}
+
+message QueryTableMapReq {
+  required bool placeholder = 1;
+}
+
+message QueryTableMapResp {
+  repeated TableNumMapping tableNumMappings = 1;
 }
 
 message TestPromotionKeyReq {

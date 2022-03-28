@@ -41,6 +41,11 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.MultiKeyMigrationResp.FromString,
                 )
+        self.PopulateCRDBTableNumMapping = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/PopulateCRDBTableNumMapping',
+                request_serializer=smdbrpc__pb2.PopulateCRDBTableNumMappingReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.PopulateCRDBTableNumMappingResp.FromString,
+                )
         self.PromoteKey = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/PromoteKey',
                 request_serializer=smdbrpc__pb2.KeyMigrationReq.SerializeToString,
@@ -96,6 +101,11 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.CRDBTxnReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.CRDBTxnResp.FromString,
                 )
+        self.TestQueryTableMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/TestQueryTableMap',
+                request_serializer=smdbrpc__pb2.QueryTableMapReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.QueryTableMapResp.FromString,
+                )
         self.RequestCicadaStats = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/RequestCicadaStats',
                 request_serializer=smdbrpc__pb2.CalculateCicadaReq.SerializeToString,
@@ -139,6 +149,12 @@ class HotshardGatewayServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def DemoteKeys(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def PopulateCRDBTableNumMapping(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -210,6 +226,12 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def TestQueryTableMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def RequestCicadaStats(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -243,6 +265,11 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.DemoteKeys,
                     request_deserializer=smdbrpc__pb2.MultiKeyMigrationReq.FromString,
                     response_serializer=smdbrpc__pb2.MultiKeyMigrationResp.SerializeToString,
+            ),
+            'PopulateCRDBTableNumMapping': grpc.unary_unary_rpc_method_handler(
+                    servicer.PopulateCRDBTableNumMapping,
+                    request_deserializer=smdbrpc__pb2.PopulateCRDBTableNumMappingReq.FromString,
+                    response_serializer=smdbrpc__pb2.PopulateCRDBTableNumMappingResp.SerializeToString,
             ),
             'PromoteKey': grpc.unary_unary_rpc_method_handler(
                     servicer.PromoteKey,
@@ -298,6 +325,11 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.TestSendTxn,
                     request_deserializer=smdbrpc__pb2.CRDBTxnReq.FromString,
                     response_serializer=smdbrpc__pb2.CRDBTxnResp.SerializeToString,
+            ),
+            'TestQueryTableMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.TestQueryTableMap,
+                    request_deserializer=smdbrpc__pb2.QueryTableMapReq.FromString,
+                    response_serializer=smdbrpc__pb2.QueryTableMapResp.SerializeToString,
             ),
             'RequestCicadaStats': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestCicadaStats,
@@ -398,6 +430,23 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/DemoteKeys',
             smdbrpc__pb2.MultiKeyMigrationReq.SerializeToString,
             smdbrpc__pb2.MultiKeyMigrationResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def PopulateCRDBTableNumMapping(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/PopulateCRDBTableNumMapping',
+            smdbrpc__pb2.PopulateCRDBTableNumMappingReq.SerializeToString,
+            smdbrpc__pb2.PopulateCRDBTableNumMappingResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -585,6 +634,23 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/TestSendTxn',
             smdbrpc__pb2.CRDBTxnReq.SerializeToString,
             smdbrpc__pb2.CRDBTxnResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def TestQueryTableMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/TestQueryTableMap',
+            smdbrpc__pb2.QueryTableMapReq.SerializeToString,
+            smdbrpc__pb2.QueryTableMapResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
