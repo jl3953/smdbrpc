@@ -18,9 +18,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='smdbrpc.proto',
   package='smdbrpc',
   syntax='proto2',
-  serialized_options=b'Z\r.;execinfrapb',
+  serialized_options=b'Z\013execinfrapb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rsmdbrpc.proto\x12\x07smdbrpc\"5\n\x0cHLCTimestamp\x12\x10\n\x08walltime\x18\x01 \x02(\x03\x12\x13\n\x0blogicaltime\x18\x02 \x02(\x05\"[\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x10\n\x08walltime\x18\x03 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x04 \x01(\x05\x12\x0e\n\x06isZero\x18\x05 \x01(\x0c\"1\n\x10\x42\x61tchSendTxnsReq\x12\x1d\n\x04txns\x18\x01 \x03(\x0b\x32\x0f.smdbrpc.TxnReq\"7\n\x11\x42\x61tchSendTxnsResp\x12\"\n\x08txnResps\x18\x01 \x03(\x0b\x32\x10.smdbrpc.TxnResp\"P\n\nCRDBTxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"G\n\x0b\x43RDBTxnResp\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"6\n\x0fTableNumMapping\x12\x11\n\ttableName\x18\x01 \x02(\t\x12\x10\n\x08tableNum\x18\x02 \x02(\x05\"T\n\x1ePopulateCRDBTableNumMappingReq\x12\x32\n\x10tableNumMappings\x18\x01 \x03(\x0b\x32\x18.smdbrpc.TableNumMapping\"6\n\x1fPopulateCRDBTableNumMappingResp\x12\x13\n\x0bisPopulated\x18\x01 \x02(\x08\"\'\n\x10QueryTableMapReq\x12\x13\n\x0bplaceholder\x18\x01 \x02(\x08\"G\n\x11QueryTableMapResp\x12\x32\n\x10tableNumMappings\x18\x01 \x03(\x0b\x32\x18.smdbrpc.TableNumMapping\"n\n\x13TestPromotionKeyReq\x12\x0b\n\x03key\x18\x01 \x02(\x0c\x12\x31\n\x12promotionTimestamp\x18\x02 \x02(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x17\n\x0f\x63icada_key_cols\x18\x03 \x03(\x03\"@\n\x14TestPromotionKeyResp\x12\x0f\n\x07isKeyIn\x18\x01 \x02(\x08\x12\x17\n\x0f\x63icada_key_cols\x18\x02 \x03(\x03\"\x99\x01\n\x03Key\x12\r\n\x05table\x18\x01 \x01(\x03\x12\r\n\x05index\x18\x02 \x01(\x03\x12\x17\n\x0f\x63icada_key_cols\x18\x03 \x03(\x03\x12\x0b\n\x03key\x18\x04 \x01(\x0c\x12(\n\ttimestamp\x18\x05 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\r\n\x05value\x18\x06 \x01(\x0c\x12\x15\n\rcrdb_key_cols\x18\x07 \x03(\x03\"\x89\x01\n\x02Op\x12\x19\n\x03\x63md\x18\x01 \x02(\x0e\x32\x0c.smdbrpc.Cmd\x12\r\n\x05table\x18\x02 \x02(\x03\x12\r\n\x05index\x18\x03 \x02(\x03\x12\x17\n\x0f\x63icada_key_cols\x18\x04 \x03(\x03\x12\x0b\n\x03key\x18\x05 \x02(\x0c\x12\r\n\x05value\x18\x06 \x01(\x0c\x12\x15\n\rcrdb_key_cols\x18\x07 \x03(\x03\"\xa2\x01\n\x06TxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x02(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x14\n\x0cis_promotion\x18\x03 \x01(\x08\x12\x0f\n\x07is_test\x18\x04 \x01(\x08\x12\x1d\n\x15is_demoted_test_field\x18\x05 \x01(\x08\x12\x0e\n\x06txn_id\x18\x06 \x01(\x05\"S\n\x07TxnResp\x12\x14\n\x0cis_committed\x18\x01 \x02(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x0e\n\x06txn_id\x18\x03 \x01(\x05\"\xcc\x01\n\x12\x43\x61lculateCicadaReq\x12\x12\n\ncpu_target\x18\x01 \x01(\x01\x12\x13\n\x0b\x63pu_ceiling\x18\x02 \x01(\x01\x12\x11\n\tcpu_floor\x18\x03 \x01(\x01\x12\x12\n\nmem_target\x18\x04 \x01(\x01\x12\x13\n\x0bmem_ceiling\x18\x05 \x01(\x01\x12\x11\n\tmem_floor\x18\x06 \x01(\x01\x12\x14\n\x0cpercentile_n\x18\x07 \x01(\x01\x12(\n\ttimestamp\x18\x08 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"\xab\x01\n\x18\x43\x61lculateCicadaStatsResp\x12\x15\n\rdemotion_only\x18\x01 \x01(\x08\x12\x1f\n\x17qps_avail_for_promotion\x18\x02 \x01(\x04\x12$\n\x1cnum_keys_avail_for_promotion\x18\x03 \x01(\x04\x12\x1d\n\x15qps_at_nth_percentile\x18\x04 \x01(\x02\x12\x12\n\nkeys_exist\x18\x05 \x01(\x08\"]\n\x13\x43icadaStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\x12\x10\n\x08\x63puusage\x18\x02 \x01(\x04\x12\x10\n\x08memusage\x18\x03 \x01(\x04\":\n\x14\x43RDBKeyStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\"z\n\x0fHotshardRequest\x12+\n\x0chlctimestamp\x18\x01 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12%\n\x0cwrite_keyset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x13\n\x0bread_keyset\x18\x03 \x03(\x04\"M\n\rHotshardReply\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12&\n\rread_valueset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"{\n\tKVVersion\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12(\n\ttimestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0f\n\x07hotness\x18\x04 \x01(\x04\x12\x17\n\x0f\x63icada_key_cols\x18\x05 \x03(\x03\"K\n\x0fKeyMigrationReq\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x0e\n\x06isTest\x18\x03 \x01(\x08\"4\n\x10KeyMigrationResp\x12 \n\x18is_successfully_migrated\x18\x01 \x01(\x08\"5\n\x07KeyStat\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x0b\n\x03qps\x18\x02 \x01(\x02\x12\x10\n\x08writeQps\x18\x03 \x01(\x02\"&\n\x0fKeyStatsRequest\x12\x13\n\x0bplaceholder\x18\x01 \x01(\x08\"$\n\x14MultiKeyMigrationReq\x12\x0c\n\x04keys\x18\x01 \x03(\x0c\"D\n\x15MultiKeyMigrationResp\x12+\n\x08statuses\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"\x90\x01\n\x18TriggerDemotionByNumsReq\x12\x15\n\rqps_in_excess\x18\x01 \x01(\x04\x12\x1a\n\x12num_keys_in_excess\x18\x02 \x01(\x04\x12\x31\n\x12\x64\x65motion_timestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0e\n\x06isTest\x18\x04 \x01(\x08\"l\n\x19TriggerDemotionByNumsResp\x12 \n\x18were_demotions_triggered\x18\x01 \x01(\x08\x12\x13\n\x0bqps_demoted\x18\x02 \x01(\x04\x12\x18\n\x10num_keys_demoted\x18\x03 \x01(\x04\"e\n\x16TriggerDemotionRequest\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x13\n\x0btestLocking\x18\x02 \x01(\x08\x12\x1b\n\x13\x64o_not_contact_crdb\x18\x03 \x01(\x08\"W\n\x14TriggerDemotionReply\x12?\n\x17triggerDemotionStatuses\x18\x01 \x03(\x0b\x32\x1e.smdbrpc.TriggerDemotionStatus\"O\n\x15TriggerDemotionStatus\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x1b\n\x13isDemotionTriggered\x18\x02 \x01(\x08\"2\n\x0ePromoteKeysReq\x12 \n\x04keys\x18\x01 \x03(\x0b\x32\x12.smdbrpc.KVVersion\"P\n\x0fPromoteKeysResp\x12=\n\x1awere_successfully_migrated\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"4\n\x16PromoteKeysToCicadaReq\x12\x1a\n\x04keys\x18\x01 \x03(\x0b\x32\x0c.smdbrpc.Key\"7\n\x17PromoteKeysToCicadaResp\x12\x1c\n\x14successfullyPromoted\x18\x01 \x03(\x08*!\n\x03\x43md\x12\x07\n\x03GET\x10\x00\x12\x08\n\x04SCAN\x10\x01\x12\x07\n\x03PUT\x10\x02\x32\xfe\x0b\n\x0fHotshardGateway\x12H\n\rBatchSendTxns\x12\x19.smdbrpc.BatchSendTxnsReq\x1a\x1a.smdbrpc.BatchSendTxnsResp\"\x00\x12X\n\x14\x43\x61lculateCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a!.smdbrpc.CalculateCicadaStatsResp\"\x00\x12\x45\n\x0f\x43ontactHotshard\x12\x18.smdbrpc.HotshardRequest\x1a\x16.smdbrpc.HotshardReply\"\x00\x12\x42\n\tDemoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12M\n\nDemoteKeys\x12\x1d.smdbrpc.MultiKeyMigrationReq\x1a\x1e.smdbrpc.MultiKeyMigrationResp\"\x00\x12r\n\x1bPopulateCRDBTableNumMapping\x12\'.smdbrpc.PopulateCRDBTableNumMappingReq\x1a(.smdbrpc.PopulateCRDBTableNumMappingResp\"\x00\x12\x43\n\nPromoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12\x42\n\x0bPromoteKeys\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12Z\n\x13PromoteKeysToCicada\x12\x1f.smdbrpc.PromoteKeysToCicadaReq\x1a .smdbrpc.PromoteKeysToCicadaResp\"\x00\x12I\n\x12UpdatePromotionMap\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12P\n\x13RequestCRDBKeyStats\x12\x18.smdbrpc.KeyStatsRequest\x1a\x1d.smdbrpc.CRDBKeyStatsResponse\"\x00\x12.\n\x07SendTxn\x12\x0f.smdbrpc.TxnReq\x1a\x10.smdbrpc.TxnResp\"\x00\x12`\n\x15TriggerDemotionByNums\x12!.smdbrpc.TriggerDemotionByNumsReq\x1a\".smdbrpc.TriggerDemotionByNumsResp\"\x00\x12S\n\x0fTriggerDemotion\x12\x1f.smdbrpc.TriggerDemotionRequest\x1a\x1d.smdbrpc.TriggerDemotionReply\"\x00\x12Y\n\x18TestAddKeyToPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12X\n\x17TestIsKeyInPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12:\n\x0bTestSendTxn\x12\x13.smdbrpc.CRDBTxnReq\x1a\x14.smdbrpc.CRDBTxnResp\"\x00\x12L\n\x11TestQueryTableMap\x12\x19.smdbrpc.QueryTableMapReq\x1a\x1a.smdbrpc.QueryTableMapResp\"\x00\x12Q\n\x12RequestCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a\x1c.smdbrpc.CicadaStatsResponse\"\x00\x42\x0fZ\r.;execinfrapb'
+  serialized_pb=b'\n\rsmdbrpc.proto\x12\x07smdbrpc\"5\n\x0cHLCTimestamp\x12\x10\n\x08walltime\x18\x01 \x02(\x03\x12\x13\n\x0blogicaltime\x18\x02 \x02(\x05\"n\n\x06KVPair\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x10\n\x08walltime\x18\x03 \x01(\x03\x12\x13\n\x0blogicaltime\x18\x04 \x01(\x05\x12\x0e\n\x06isZero\x18\x05 \x01(\x0c\x12\x11\n\ttableName\x18\x06 \x01(\t\"1\n\x10\x42\x61tchSendTxnsReq\x12\x1d\n\x04txns\x18\x01 \x03(\x0b\x32\x0f.smdbrpc.TxnReq\"7\n\x11\x42\x61tchSendTxnsResp\x12\"\n\x08txnResps\x18\x01 \x03(\x0b\x32\x10.smdbrpc.TxnResp\"P\n\nCRDBTxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"G\n\x0b\x43RDBTxnResp\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"6\n\x0fTableNumMapping\x12\x11\n\ttableName\x18\x01 \x02(\t\x12\x10\n\x08tableNum\x18\x02 \x02(\x05\"T\n\x1ePopulateCRDBTableNumMappingReq\x12\x32\n\x10tableNumMappings\x18\x01 \x03(\x0b\x32\x18.smdbrpc.TableNumMapping\"6\n\x1fPopulateCRDBTableNumMappingResp\x12\x13\n\x0bisPopulated\x18\x01 \x02(\x08\"\'\n\x10QueryTableMapReq\x12\x13\n\x0bplaceholder\x18\x01 \x02(\x08\".\n\x18QueryTableNumFromNameReq\x12\x12\n\ntableNames\x18\x01 \x03(\t\"(\n\x0bNameNumPair\x12\x0c\n\x04name\x18\x01 \x02(\t\x12\x0b\n\x03num\x18\x02 \x02(\x05\"B\n\x19QueryTableNumFromNameResp\x12%\n\x07mapping\x18\x01 \x03(\x0b\x32\x14.smdbrpc.NameNumPair\"G\n\x11QueryTableMapResp\x12\x32\n\x10tableNumMappings\x18\x01 \x03(\x0b\x32\x18.smdbrpc.TableNumMapping\"n\n\x13TestPromotionKeyReq\x12\x0b\n\x03key\x18\x01 \x02(\x0c\x12\x31\n\x12promotionTimestamp\x18\x02 \x02(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x17\n\x0f\x63icada_key_cols\x18\x03 \x03(\x03\"@\n\x14TestPromotionKeyResp\x12\x0f\n\x07isKeyIn\x18\x01 \x02(\x08\x12\x17\n\x0f\x63icada_key_cols\x18\x02 \x03(\x03\"(\n\x19\x44\x65leteFromPromotionMapReq\x12\x0b\n\x03key\x18\x01 \x01(\x0c\"-\n\x1a\x44\x65leteFromPromotionMapResp\x12\x0f\n\x07\x64\x65leted\x18\x01 \x01(\x08\"-\n\x1eUpdateInProgressDemotionMapReq\x12\x0b\n\x03key\x18\x01 \x01(\t\"0\n\x1fUpdateInProgressDemotionMapResp\x12\r\n\x05\x61\x64\x64\x65\x64\x18\x01 \x01(\x08\"1\n\"DeleteFromInProgressDemotionMapReq\x12\x0b\n\x03key\x18\x01 \x01(\t\"6\n#DeleteFromInProgressDemotionMapResp\x12\x0f\n\x07\x64\x65leted\x18\x01 \x01(\x08\"\xac\x01\n\x03Key\x12\r\n\x05table\x18\x01 \x01(\x03\x12\r\n\x05index\x18\x02 \x01(\x03\x12\x17\n\x0f\x63icada_key_cols\x18\x03 \x03(\x03\x12\x0b\n\x03key\x18\x04 \x01(\x0c\x12(\n\ttimestamp\x18\x05 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\r\n\x05value\x18\x06 \x01(\x0c\x12\x15\n\rcrdb_key_cols\x18\x07 \x03(\x03\x12\x11\n\ttableName\x18\x08 \x01(\t\"\x9c\x01\n\x02Op\x12\x19\n\x03\x63md\x18\x01 \x02(\x0e\x32\x0c.smdbrpc.Cmd\x12\r\n\x05table\x18\x02 \x02(\x03\x12\r\n\x05index\x18\x03 \x02(\x03\x12\x17\n\x0f\x63icada_key_cols\x18\x04 \x03(\x03\x12\x0b\n\x03key\x18\x05 \x02(\x0c\x12\r\n\x05value\x18\x06 \x01(\x0c\x12\x15\n\rcrdb_key_cols\x18\x07 \x03(\x03\x12\x11\n\ttableName\x18\x08 \x02(\t\"\xa2\x01\n\x06TxnReq\x12\x18\n\x03ops\x18\x01 \x03(\x0b\x32\x0b.smdbrpc.Op\x12(\n\ttimestamp\x18\x02 \x02(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x14\n\x0cis_promotion\x18\x03 \x01(\x08\x12\x0f\n\x07is_test\x18\x04 \x01(\x08\x12\x1d\n\x15is_demoted_test_field\x18\x05 \x01(\x08\x12\x0e\n\x06txn_id\x18\x06 \x01(\x05\"S\n\x07TxnResp\x12\x14\n\x0cis_committed\x18\x01 \x02(\x08\x12\"\n\tresponses\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x0e\n\x06txn_id\x18\x03 \x01(\x05\"\xcc\x01\n\x12\x43\x61lculateCicadaReq\x12\x12\n\ncpu_target\x18\x01 \x01(\x01\x12\x13\n\x0b\x63pu_ceiling\x18\x02 \x01(\x01\x12\x11\n\tcpu_floor\x18\x03 \x01(\x01\x12\x12\n\nmem_target\x18\x04 \x01(\x01\x12\x13\n\x0bmem_ceiling\x18\x05 \x01(\x01\x12\x11\n\tmem_floor\x18\x06 \x01(\x01\x12\x14\n\x0cpercentile_n\x18\x07 \x01(\x01\x12(\n\ttimestamp\x18\x08 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\"\xab\x01\n\x18\x43\x61lculateCicadaStatsResp\x12\x15\n\rdemotion_only\x18\x01 \x01(\x08\x12\x1f\n\x17qps_avail_for_promotion\x18\x02 \x01(\x04\x12$\n\x1cnum_keys_avail_for_promotion\x18\x03 \x01(\x04\x12\x1d\n\x15qps_at_nth_percentile\x18\x04 \x01(\x02\x12\x12\n\nkeys_exist\x18\x05 \x01(\x08\"]\n\x13\x43icadaStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\x12\x10\n\x08\x63puusage\x18\x02 \x01(\x04\x12\x10\n\x08memusage\x18\x03 \x01(\x04\":\n\x14\x43RDBKeyStatsResponse\x12\"\n\x08keystats\x18\x01 \x03(\x0b\x32\x10.smdbrpc.KeyStat\"z\n\x0fHotshardRequest\x12+\n\x0chlctimestamp\x18\x01 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12%\n\x0cwrite_keyset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\x12\x13\n\x0bread_keyset\x18\x03 \x03(\x04\"M\n\rHotshardReply\x12\x14\n\x0cis_committed\x18\x01 \x01(\x08\x12&\n\rread_valueset\x18\x02 \x03(\x0b\x32\x0f.smdbrpc.KVPair\"\x8e\x01\n\tKVVersion\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x12(\n\ttimestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0f\n\x07hotness\x18\x04 \x01(\x04\x12\x17\n\x0f\x63icada_key_cols\x18\x05 \x03(\x03\x12\x11\n\ttableName\x18\x06 \x01(\t\"K\n\x0fKeyMigrationReq\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\r\n\x05value\x18\x02 \x01(\x0c\x12\x0e\n\x06isTest\x18\x03 \x01(\x08\"4\n\x10KeyMigrationResp\x12 \n\x18is_successfully_migrated\x18\x01 \x01(\x08\"5\n\x07KeyStat\x12\x0b\n\x03key\x18\x01 \x01(\x0c\x12\x0b\n\x03qps\x18\x02 \x01(\x02\x12\x10\n\x08writeQps\x18\x03 \x01(\x02\"&\n\x0fKeyStatsRequest\x12\x13\n\x0bplaceholder\x18\x01 \x01(\x08\"$\n\x14MultiKeyMigrationReq\x12\x0c\n\x04keys\x18\x01 \x03(\x0c\"D\n\x15MultiKeyMigrationResp\x12+\n\x08statuses\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"\x90\x01\n\x18TriggerDemotionByNumsReq\x12\x15\n\rqps_in_excess\x18\x01 \x01(\x04\x12\x1a\n\x12num_keys_in_excess\x18\x02 \x01(\x04\x12\x31\n\x12\x64\x65motion_timestamp\x18\x03 \x01(\x0b\x32\x15.smdbrpc.HLCTimestamp\x12\x0e\n\x06isTest\x18\x04 \x01(\x08\"l\n\x19TriggerDemotionByNumsResp\x12 \n\x18were_demotions_triggered\x18\x01 \x01(\x08\x12\x13\n\x0bqps_demoted\x18\x02 \x01(\x04\x12\x18\n\x10num_keys_demoted\x18\x03 \x01(\x04\"e\n\x16TriggerDemotionRequest\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x13\n\x0btestLocking\x18\x02 \x01(\x08\x12\x1b\n\x13\x64o_not_contact_crdb\x18\x03 \x01(\x08\"W\n\x14TriggerDemotionReply\x12?\n\x17triggerDemotionStatuses\x18\x01 \x03(\x0b\x32\x1e.smdbrpc.TriggerDemotionStatus\"O\n\x15TriggerDemotionStatus\x12\x19\n\x03key\x18\x01 \x01(\x0b\x32\x0c.smdbrpc.Key\x12\x1b\n\x13isDemotionTriggered\x18\x02 \x01(\x08\"2\n\x0ePromoteKeysReq\x12 \n\x04keys\x18\x01 \x03(\x0b\x32\x12.smdbrpc.KVVersion\"P\n\x0fPromoteKeysResp\x12=\n\x1awere_successfully_migrated\x18\x01 \x03(\x0b\x32\x19.smdbrpc.KeyMigrationResp\"4\n\x16PromoteKeysToCicadaReq\x12\x1a\n\x04keys\x18\x01 \x03(\x0b\x32\x0c.smdbrpc.Key\"7\n\x17PromoteKeysToCicadaResp\x12\x1c\n\x14successfullyPromoted\x18\x01 \x03(\x08*!\n\x03\x43md\x12\x07\n\x03GET\x10\x00\x12\x08\n\x04SCAN\x10\x01\x12\x07\n\x03PUT\x10\x02\x32\xb9\x0f\n\x0fHotshardGateway\x12H\n\rBatchSendTxns\x12\x19.smdbrpc.BatchSendTxnsReq\x1a\x1a.smdbrpc.BatchSendTxnsResp\"\x00\x12X\n\x14\x43\x61lculateCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a!.smdbrpc.CalculateCicadaStatsResp\"\x00\x12\x45\n\x0f\x43ontactHotshard\x12\x18.smdbrpc.HotshardRequest\x1a\x16.smdbrpc.HotshardReply\"\x00\x12\x42\n\tDemoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12M\n\nDemoteKeys\x12\x1d.smdbrpc.MultiKeyMigrationReq\x1a\x1e.smdbrpc.MultiKeyMigrationResp\"\x00\x12r\n\x1bPopulateCRDBTableNumMapping\x12\'.smdbrpc.PopulateCRDBTableNumMappingReq\x1a(.smdbrpc.PopulateCRDBTableNumMappingResp\"\x00\x12\x43\n\nPromoteKey\x12\x18.smdbrpc.KeyMigrationReq\x1a\x19.smdbrpc.KeyMigrationResp\"\x00\x12\x42\n\x0bPromoteKeys\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12Z\n\x13PromoteKeysToCicada\x12\x1f.smdbrpc.PromoteKeysToCicadaReq\x1a .smdbrpc.PromoteKeysToCicadaResp\"\x00\x12`\n\x15QueryTableNumFromName\x12!.smdbrpc.QueryTableNumFromNameReq\x1a\".smdbrpc.QueryTableNumFromNameResp\"\x00\x12I\n\x12UpdatePromotionMap\x12\x17.smdbrpc.PromoteKeysReq\x1a\x18.smdbrpc.PromoteKeysResp\"\x00\x12\x63\n\x16\x44\x65leteFromPromotionMap\x12\".smdbrpc.DeleteFromPromotionMapReq\x1a#.smdbrpc.DeleteFromPromotionMapResp\"\x00\x12r\n\x1bUpdateInProgressDemotionMap\x12\'.smdbrpc.UpdateInProgressDemotionMapReq\x1a(.smdbrpc.UpdateInProgressDemotionMapResp\"\x00\x12~\n\x1f\x44\x65leteFromInProgressDemotionMap\x12+.smdbrpc.DeleteFromInProgressDemotionMapReq\x1a,.smdbrpc.DeleteFromInProgressDemotionMapResp\"\x00\x12P\n\x13RequestCRDBKeyStats\x12\x18.smdbrpc.KeyStatsRequest\x1a\x1d.smdbrpc.CRDBKeyStatsResponse\"\x00\x12.\n\x07SendTxn\x12\x0f.smdbrpc.TxnReq\x1a\x10.smdbrpc.TxnResp\"\x00\x12`\n\x15TriggerDemotionByNums\x12!.smdbrpc.TriggerDemotionByNumsReq\x1a\".smdbrpc.TriggerDemotionByNumsResp\"\x00\x12S\n\x0fTriggerDemotion\x12\x1f.smdbrpc.TriggerDemotionRequest\x1a\x1d.smdbrpc.TriggerDemotionReply\"\x00\x12Y\n\x18TestAddKeyToPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12X\n\x17TestIsKeyInPromotionMap\x12\x1c.smdbrpc.TestPromotionKeyReq\x1a\x1d.smdbrpc.TestPromotionKeyResp\"\x00\x12:\n\x0bTestSendTxn\x12\x13.smdbrpc.CRDBTxnReq\x1a\x14.smdbrpc.CRDBTxnResp\"\x00\x12L\n\x11TestQueryTableMap\x12\x19.smdbrpc.QueryTableMapReq\x1a\x1a.smdbrpc.QueryTableMapResp\"\x00\x12Q\n\x12RequestCicadaStats\x12\x1b.smdbrpc.CalculateCicadaReq\x1a\x1c.smdbrpc.CicadaStatsResponse\"\x00\x42\rZ\x0b\x65xecinfrapb'
 )
 
 _CMD = _descriptor.EnumDescriptor(
@@ -48,8 +48,8 @@ _CMD = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3446,
-  serialized_end=3479,
+  serialized_start=3974,
+  serialized_end=4007,
 )
 _sym_db.RegisterEnumDescriptor(_CMD)
 
@@ -142,6 +142,13 @@ _KVPAIR = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='tableName', full_name='smdbrpc.KVPair.tableName', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -155,7 +162,7 @@ _KVPAIR = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=81,
-  serialized_end=172,
+  serialized_end=191,
 )
 
 
@@ -186,8 +193,8 @@ _BATCHSENDTXNSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=174,
-  serialized_end=223,
+  serialized_start=193,
+  serialized_end=242,
 )
 
 
@@ -218,8 +225,8 @@ _BATCHSENDTXNSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=225,
-  serialized_end=280,
+  serialized_start=244,
+  serialized_end=299,
 )
 
 
@@ -257,8 +264,8 @@ _CRDBTXNREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=282,
-  serialized_end=362,
+  serialized_start=301,
+  serialized_end=381,
 )
 
 
@@ -296,8 +303,8 @@ _CRDBTXNRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=364,
-  serialized_end=435,
+  serialized_start=383,
+  serialized_end=454,
 )
 
 
@@ -335,8 +342,8 @@ _TABLENUMMAPPING = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=437,
-  serialized_end=491,
+  serialized_start=456,
+  serialized_end=510,
 )
 
 
@@ -367,8 +374,8 @@ _POPULATECRDBTABLENUMMAPPINGREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=493,
-  serialized_end=577,
+  serialized_start=512,
+  serialized_end=596,
 )
 
 
@@ -399,8 +406,8 @@ _POPULATECRDBTABLENUMMAPPINGRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=579,
-  serialized_end=633,
+  serialized_start=598,
+  serialized_end=652,
 )
 
 
@@ -431,8 +438,111 @@ _QUERYTABLEMAPREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=635,
-  serialized_end=674,
+  serialized_start=654,
+  serialized_end=693,
+)
+
+
+_QUERYTABLENUMFROMNAMEREQ = _descriptor.Descriptor(
+  name='QueryTableNumFromNameReq',
+  full_name='smdbrpc.QueryTableNumFromNameReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='tableNames', full_name='smdbrpc.QueryTableNumFromNameReq.tableNames', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=695,
+  serialized_end=741,
+)
+
+
+_NAMENUMPAIR = _descriptor.Descriptor(
+  name='NameNumPair',
+  full_name='smdbrpc.NameNumPair',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='smdbrpc.NameNumPair.name', index=0,
+      number=1, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='num', full_name='smdbrpc.NameNumPair.num', index=1,
+      number=2, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=743,
+  serialized_end=783,
+)
+
+
+_QUERYTABLENUMFROMNAMERESP = _descriptor.Descriptor(
+  name='QueryTableNumFromNameResp',
+  full_name='smdbrpc.QueryTableNumFromNameResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='mapping', full_name='smdbrpc.QueryTableNumFromNameResp.mapping', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=785,
+  serialized_end=851,
 )
 
 
@@ -463,8 +573,8 @@ _QUERYTABLEMAPRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=676,
-  serialized_end=747,
+  serialized_start=853,
+  serialized_end=924,
 )
 
 
@@ -509,8 +619,8 @@ _TESTPROMOTIONKEYREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=749,
-  serialized_end=859,
+  serialized_start=926,
+  serialized_end=1036,
 )
 
 
@@ -548,8 +658,200 @@ _TESTPROMOTIONKEYRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=861,
-  serialized_end=925,
+  serialized_start=1038,
+  serialized_end=1102,
+)
+
+
+_DELETEFROMPROMOTIONMAPREQ = _descriptor.Descriptor(
+  name='DeleteFromPromotionMapReq',
+  full_name='smdbrpc.DeleteFromPromotionMapReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.DeleteFromPromotionMapReq.key', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1104,
+  serialized_end=1144,
+)
+
+
+_DELETEFROMPROMOTIONMAPRESP = _descriptor.Descriptor(
+  name='DeleteFromPromotionMapResp',
+  full_name='smdbrpc.DeleteFromPromotionMapResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='deleted', full_name='smdbrpc.DeleteFromPromotionMapResp.deleted', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1146,
+  serialized_end=1191,
+)
+
+
+_UPDATEINPROGRESSDEMOTIONMAPREQ = _descriptor.Descriptor(
+  name='UpdateInProgressDemotionMapReq',
+  full_name='smdbrpc.UpdateInProgressDemotionMapReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.UpdateInProgressDemotionMapReq.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1193,
+  serialized_end=1238,
+)
+
+
+_UPDATEINPROGRESSDEMOTIONMAPRESP = _descriptor.Descriptor(
+  name='UpdateInProgressDemotionMapResp',
+  full_name='smdbrpc.UpdateInProgressDemotionMapResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='added', full_name='smdbrpc.UpdateInProgressDemotionMapResp.added', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1240,
+  serialized_end=1288,
+)
+
+
+_DELETEFROMINPROGRESSDEMOTIONMAPREQ = _descriptor.Descriptor(
+  name='DeleteFromInProgressDemotionMapReq',
+  full_name='smdbrpc.DeleteFromInProgressDemotionMapReq',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='key', full_name='smdbrpc.DeleteFromInProgressDemotionMapReq.key', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1290,
+  serialized_end=1339,
+)
+
+
+_DELETEFROMINPROGRESSDEMOTIONMAPRESP = _descriptor.Descriptor(
+  name='DeleteFromInProgressDemotionMapResp',
+  full_name='smdbrpc.DeleteFromInProgressDemotionMapResp',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='deleted', full_name='smdbrpc.DeleteFromInProgressDemotionMapResp.deleted', index=0,
+      number=1, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1341,
+  serialized_end=1395,
 )
 
 
@@ -610,6 +912,13 @@ _KEY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='tableName', full_name='smdbrpc.Key.tableName', index=7,
+      number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -622,8 +931,8 @@ _KEY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=928,
-  serialized_end=1081,
+  serialized_start=1398,
+  serialized_end=1570,
 )
 
 
@@ -684,6 +993,13 @@ _OP = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='tableName', full_name='smdbrpc.Op.tableName', index=7,
+      number=8, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -696,8 +1012,8 @@ _OP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1084,
-  serialized_end=1221,
+  serialized_start=1573,
+  serialized_end=1729,
 )
 
 
@@ -763,8 +1079,8 @@ _TXNREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1224,
-  serialized_end=1386,
+  serialized_start=1732,
+  serialized_end=1894,
 )
 
 
@@ -809,8 +1125,8 @@ _TXNRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1388,
-  serialized_end=1471,
+  serialized_start=1896,
+  serialized_end=1979,
 )
 
 
@@ -890,8 +1206,8 @@ _CALCULATECICADAREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1474,
-  serialized_end=1678,
+  serialized_start=1982,
+  serialized_end=2186,
 )
 
 
@@ -950,8 +1266,8 @@ _CALCULATECICADASTATSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1681,
-  serialized_end=1852,
+  serialized_start=2189,
+  serialized_end=2360,
 )
 
 
@@ -996,8 +1312,8 @@ _CICADASTATSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1854,
-  serialized_end=1947,
+  serialized_start=2362,
+  serialized_end=2455,
 )
 
 
@@ -1028,8 +1344,8 @@ _CRDBKEYSTATSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1949,
-  serialized_end=2007,
+  serialized_start=2457,
+  serialized_end=2515,
 )
 
 
@@ -1074,8 +1390,8 @@ _HOTSHARDREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2009,
-  serialized_end=2131,
+  serialized_start=2517,
+  serialized_end=2639,
 )
 
 
@@ -1113,8 +1429,8 @@ _HOTSHARDREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2133,
-  serialized_end=2210,
+  serialized_start=2641,
+  serialized_end=2718,
 )
 
 
@@ -1161,6 +1477,13 @@ _KVVERSION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='tableName', full_name='smdbrpc.KVVersion.tableName', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -1173,8 +1496,8 @@ _KVVERSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2212,
-  serialized_end=2335,
+  serialized_start=2721,
+  serialized_end=2863,
 )
 
 
@@ -1219,8 +1542,8 @@ _KEYMIGRATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2337,
-  serialized_end=2412,
+  serialized_start=2865,
+  serialized_end=2940,
 )
 
 
@@ -1251,8 +1574,8 @@ _KEYMIGRATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2414,
-  serialized_end=2466,
+  serialized_start=2942,
+  serialized_end=2994,
 )
 
 
@@ -1297,8 +1620,8 @@ _KEYSTAT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2468,
-  serialized_end=2521,
+  serialized_start=2996,
+  serialized_end=3049,
 )
 
 
@@ -1329,8 +1652,8 @@ _KEYSTATSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2523,
-  serialized_end=2561,
+  serialized_start=3051,
+  serialized_end=3089,
 )
 
 
@@ -1361,8 +1684,8 @@ _MULTIKEYMIGRATIONREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2563,
-  serialized_end=2599,
+  serialized_start=3091,
+  serialized_end=3127,
 )
 
 
@@ -1393,8 +1716,8 @@ _MULTIKEYMIGRATIONRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2601,
-  serialized_end=2669,
+  serialized_start=3129,
+  serialized_end=3197,
 )
 
 
@@ -1446,8 +1769,8 @@ _TRIGGERDEMOTIONBYNUMSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2672,
-  serialized_end=2816,
+  serialized_start=3200,
+  serialized_end=3344,
 )
 
 
@@ -1492,8 +1815,8 @@ _TRIGGERDEMOTIONBYNUMSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2818,
-  serialized_end=2926,
+  serialized_start=3346,
+  serialized_end=3454,
 )
 
 
@@ -1538,8 +1861,8 @@ _TRIGGERDEMOTIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2928,
-  serialized_end=3029,
+  serialized_start=3456,
+  serialized_end=3557,
 )
 
 
@@ -1570,8 +1893,8 @@ _TRIGGERDEMOTIONREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3031,
-  serialized_end=3118,
+  serialized_start=3559,
+  serialized_end=3646,
 )
 
 
@@ -1609,8 +1932,8 @@ _TRIGGERDEMOTIONSTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3120,
-  serialized_end=3199,
+  serialized_start=3648,
+  serialized_end=3727,
 )
 
 
@@ -1641,8 +1964,8 @@ _PROMOTEKEYSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3201,
-  serialized_end=3251,
+  serialized_start=3729,
+  serialized_end=3779,
 )
 
 
@@ -1673,8 +1996,8 @@ _PROMOTEKEYSRESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3253,
-  serialized_end=3333,
+  serialized_start=3781,
+  serialized_end=3861,
 )
 
 
@@ -1705,8 +2028,8 @@ _PROMOTEKEYSTOCICADAREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3335,
-  serialized_end=3387,
+  serialized_start=3863,
+  serialized_end=3915,
 )
 
 
@@ -1737,8 +2060,8 @@ _PROMOTEKEYSTOCICADARESP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3389,
-  serialized_end=3444,
+  serialized_start=3917,
+  serialized_end=3972,
 )
 
 _BATCHSENDTXNSREQ.fields_by_name['txns'].message_type = _TXNREQ
@@ -1747,6 +2070,7 @@ _CRDBTXNREQ.fields_by_name['ops'].message_type = _OP
 _CRDBTXNREQ.fields_by_name['timestamp'].message_type = _HLCTIMESTAMP
 _CRDBTXNRESP.fields_by_name['responses'].message_type = _KVPAIR
 _POPULATECRDBTABLENUMMAPPINGREQ.fields_by_name['tableNumMappings'].message_type = _TABLENUMMAPPING
+_QUERYTABLENUMFROMNAMERESP.fields_by_name['mapping'].message_type = _NAMENUMPAIR
 _QUERYTABLEMAPRESP.fields_by_name['tableNumMappings'].message_type = _TABLENUMMAPPING
 _TESTPROMOTIONKEYREQ.fields_by_name['promotionTimestamp'].message_type = _HLCTIMESTAMP
 _KEY.fields_by_name['timestamp'].message_type = _HLCTIMESTAMP
@@ -1780,9 +2104,18 @@ DESCRIPTOR.message_types_by_name['TableNumMapping'] = _TABLENUMMAPPING
 DESCRIPTOR.message_types_by_name['PopulateCRDBTableNumMappingReq'] = _POPULATECRDBTABLENUMMAPPINGREQ
 DESCRIPTOR.message_types_by_name['PopulateCRDBTableNumMappingResp'] = _POPULATECRDBTABLENUMMAPPINGRESP
 DESCRIPTOR.message_types_by_name['QueryTableMapReq'] = _QUERYTABLEMAPREQ
+DESCRIPTOR.message_types_by_name['QueryTableNumFromNameReq'] = _QUERYTABLENUMFROMNAMEREQ
+DESCRIPTOR.message_types_by_name['NameNumPair'] = _NAMENUMPAIR
+DESCRIPTOR.message_types_by_name['QueryTableNumFromNameResp'] = _QUERYTABLENUMFROMNAMERESP
 DESCRIPTOR.message_types_by_name['QueryTableMapResp'] = _QUERYTABLEMAPRESP
 DESCRIPTOR.message_types_by_name['TestPromotionKeyReq'] = _TESTPROMOTIONKEYREQ
 DESCRIPTOR.message_types_by_name['TestPromotionKeyResp'] = _TESTPROMOTIONKEYRESP
+DESCRIPTOR.message_types_by_name['DeleteFromPromotionMapReq'] = _DELETEFROMPROMOTIONMAPREQ
+DESCRIPTOR.message_types_by_name['DeleteFromPromotionMapResp'] = _DELETEFROMPROMOTIONMAPRESP
+DESCRIPTOR.message_types_by_name['UpdateInProgressDemotionMapReq'] = _UPDATEINPROGRESSDEMOTIONMAPREQ
+DESCRIPTOR.message_types_by_name['UpdateInProgressDemotionMapResp'] = _UPDATEINPROGRESSDEMOTIONMAPRESP
+DESCRIPTOR.message_types_by_name['DeleteFromInProgressDemotionMapReq'] = _DELETEFROMINPROGRESSDEMOTIONMAPREQ
+DESCRIPTOR.message_types_by_name['DeleteFromInProgressDemotionMapResp'] = _DELETEFROMINPROGRESSDEMOTIONMAPRESP
 DESCRIPTOR.message_types_by_name['Key'] = _KEY
 DESCRIPTOR.message_types_by_name['Op'] = _OP
 DESCRIPTOR.message_types_by_name['TxnReq'] = _TXNREQ
@@ -1882,6 +2215,27 @@ QueryTableMapReq = _reflection.GeneratedProtocolMessageType('QueryTableMapReq', 
   })
 _sym_db.RegisterMessage(QueryTableMapReq)
 
+QueryTableNumFromNameReq = _reflection.GeneratedProtocolMessageType('QueryTableNumFromNameReq', (_message.Message,), {
+  'DESCRIPTOR' : _QUERYTABLENUMFROMNAMEREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.QueryTableNumFromNameReq)
+  })
+_sym_db.RegisterMessage(QueryTableNumFromNameReq)
+
+NameNumPair = _reflection.GeneratedProtocolMessageType('NameNumPair', (_message.Message,), {
+  'DESCRIPTOR' : _NAMENUMPAIR,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.NameNumPair)
+  })
+_sym_db.RegisterMessage(NameNumPair)
+
+QueryTableNumFromNameResp = _reflection.GeneratedProtocolMessageType('QueryTableNumFromNameResp', (_message.Message,), {
+  'DESCRIPTOR' : _QUERYTABLENUMFROMNAMERESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.QueryTableNumFromNameResp)
+  })
+_sym_db.RegisterMessage(QueryTableNumFromNameResp)
+
 QueryTableMapResp = _reflection.GeneratedProtocolMessageType('QueryTableMapResp', (_message.Message,), {
   'DESCRIPTOR' : _QUERYTABLEMAPRESP,
   '__module__' : 'smdbrpc_pb2'
@@ -1902,6 +2256,48 @@ TestPromotionKeyResp = _reflection.GeneratedProtocolMessageType('TestPromotionKe
   # @@protoc_insertion_point(class_scope:smdbrpc.TestPromotionKeyResp)
   })
 _sym_db.RegisterMessage(TestPromotionKeyResp)
+
+DeleteFromPromotionMapReq = _reflection.GeneratedProtocolMessageType('DeleteFromPromotionMapReq', (_message.Message,), {
+  'DESCRIPTOR' : _DELETEFROMPROMOTIONMAPREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.DeleteFromPromotionMapReq)
+  })
+_sym_db.RegisterMessage(DeleteFromPromotionMapReq)
+
+DeleteFromPromotionMapResp = _reflection.GeneratedProtocolMessageType('DeleteFromPromotionMapResp', (_message.Message,), {
+  'DESCRIPTOR' : _DELETEFROMPROMOTIONMAPRESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.DeleteFromPromotionMapResp)
+  })
+_sym_db.RegisterMessage(DeleteFromPromotionMapResp)
+
+UpdateInProgressDemotionMapReq = _reflection.GeneratedProtocolMessageType('UpdateInProgressDemotionMapReq', (_message.Message,), {
+  'DESCRIPTOR' : _UPDATEINPROGRESSDEMOTIONMAPREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.UpdateInProgressDemotionMapReq)
+  })
+_sym_db.RegisterMessage(UpdateInProgressDemotionMapReq)
+
+UpdateInProgressDemotionMapResp = _reflection.GeneratedProtocolMessageType('UpdateInProgressDemotionMapResp', (_message.Message,), {
+  'DESCRIPTOR' : _UPDATEINPROGRESSDEMOTIONMAPRESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.UpdateInProgressDemotionMapResp)
+  })
+_sym_db.RegisterMessage(UpdateInProgressDemotionMapResp)
+
+DeleteFromInProgressDemotionMapReq = _reflection.GeneratedProtocolMessageType('DeleteFromInProgressDemotionMapReq', (_message.Message,), {
+  'DESCRIPTOR' : _DELETEFROMINPROGRESSDEMOTIONMAPREQ,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.DeleteFromInProgressDemotionMapReq)
+  })
+_sym_db.RegisterMessage(DeleteFromInProgressDemotionMapReq)
+
+DeleteFromInProgressDemotionMapResp = _reflection.GeneratedProtocolMessageType('DeleteFromInProgressDemotionMapResp', (_message.Message,), {
+  'DESCRIPTOR' : _DELETEFROMINPROGRESSDEMOTIONMAPRESP,
+  '__module__' : 'smdbrpc_pb2'
+  # @@protoc_insertion_point(class_scope:smdbrpc.DeleteFromInProgressDemotionMapResp)
+  })
+_sym_db.RegisterMessage(DeleteFromInProgressDemotionMapResp)
 
 Key = _reflection.GeneratedProtocolMessageType('Key', (_message.Message,), {
   'DESCRIPTOR' : _KEY,
@@ -2095,8 +2491,8 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=3482,
-  serialized_end=5016,
+  serialized_start=4010,
+  serialized_end=5987,
   methods=[
   _descriptor.MethodDescriptor(
     name='BatchSendTxns',
@@ -2189,9 +2585,19 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='QueryTableNumFromName',
+    full_name='smdbrpc.HotshardGateway.QueryTableNumFromName',
+    index=9,
+    containing_service=None,
+    input_type=_QUERYTABLENUMFROMNAMEREQ,
+    output_type=_QUERYTABLENUMFROMNAMERESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='UpdatePromotionMap',
     full_name='smdbrpc.HotshardGateway.UpdatePromotionMap',
-    index=9,
+    index=10,
     containing_service=None,
     input_type=_PROMOTEKEYSREQ,
     output_type=_PROMOTEKEYSRESP,
@@ -2199,9 +2605,39 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='DeleteFromPromotionMap',
+    full_name='smdbrpc.HotshardGateway.DeleteFromPromotionMap',
+    index=11,
+    containing_service=None,
+    input_type=_DELETEFROMPROMOTIONMAPREQ,
+    output_type=_DELETEFROMPROMOTIONMAPRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='UpdateInProgressDemotionMap',
+    full_name='smdbrpc.HotshardGateway.UpdateInProgressDemotionMap',
+    index=12,
+    containing_service=None,
+    input_type=_UPDATEINPROGRESSDEMOTIONMAPREQ,
+    output_type=_UPDATEINPROGRESSDEMOTIONMAPRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='DeleteFromInProgressDemotionMap',
+    full_name='smdbrpc.HotshardGateway.DeleteFromInProgressDemotionMap',
+    index=13,
+    containing_service=None,
+    input_type=_DELETEFROMINPROGRESSDEMOTIONMAPREQ,
+    output_type=_DELETEFROMINPROGRESSDEMOTIONMAPRESP,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='RequestCRDBKeyStats',
     full_name='smdbrpc.HotshardGateway.RequestCRDBKeyStats',
-    index=10,
+    index=14,
     containing_service=None,
     input_type=_KEYSTATSREQUEST,
     output_type=_CRDBKEYSTATSRESPONSE,
@@ -2211,7 +2647,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='SendTxn',
     full_name='smdbrpc.HotshardGateway.SendTxn',
-    index=11,
+    index=15,
     containing_service=None,
     input_type=_TXNREQ,
     output_type=_TXNRESP,
@@ -2221,7 +2657,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TriggerDemotionByNums',
     full_name='smdbrpc.HotshardGateway.TriggerDemotionByNums',
-    index=12,
+    index=16,
     containing_service=None,
     input_type=_TRIGGERDEMOTIONBYNUMSREQ,
     output_type=_TRIGGERDEMOTIONBYNUMSRESP,
@@ -2231,7 +2667,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TriggerDemotion',
     full_name='smdbrpc.HotshardGateway.TriggerDemotion',
-    index=13,
+    index=17,
     containing_service=None,
     input_type=_TRIGGERDEMOTIONREQUEST,
     output_type=_TRIGGERDEMOTIONREPLY,
@@ -2241,7 +2677,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestAddKeyToPromotionMap',
     full_name='smdbrpc.HotshardGateway.TestAddKeyToPromotionMap',
-    index=14,
+    index=18,
     containing_service=None,
     input_type=_TESTPROMOTIONKEYREQ,
     output_type=_TESTPROMOTIONKEYRESP,
@@ -2251,7 +2687,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestIsKeyInPromotionMap',
     full_name='smdbrpc.HotshardGateway.TestIsKeyInPromotionMap',
-    index=15,
+    index=19,
     containing_service=None,
     input_type=_TESTPROMOTIONKEYREQ,
     output_type=_TESTPROMOTIONKEYRESP,
@@ -2261,7 +2697,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestSendTxn',
     full_name='smdbrpc.HotshardGateway.TestSendTxn',
-    index=16,
+    index=20,
     containing_service=None,
     input_type=_CRDBTXNREQ,
     output_type=_CRDBTXNRESP,
@@ -2271,7 +2707,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TestQueryTableMap',
     full_name='smdbrpc.HotshardGateway.TestQueryTableMap',
-    index=17,
+    index=21,
     containing_service=None,
     input_type=_QUERYTABLEMAPREQ,
     output_type=_QUERYTABLEMAPRESP,
@@ -2281,7 +2717,7 @@ _HOTSHARDGATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RequestCicadaStats',
     full_name='smdbrpc.HotshardGateway.RequestCicadaStats',
-    index=18,
+    index=22,
     containing_service=None,
     input_type=_CALCULATECICADAREQ,
     output_type=_CICADASTATSRESPONSE,

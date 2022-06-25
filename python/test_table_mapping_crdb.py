@@ -1,10 +1,58 @@
+import logging
 import time
 import unittest
 
 import grpc
+import subprocess
+import sys
+import psycopg2
 
 import smdbrpc_pb2
 import smdbrpc_pb2_grpc
+
+
+def query_table_num_from_names(names, host="localhost"):
+    db_url = "postgresql://root@{}:26257?sslmode=disable".format(host)
+
+    conn = psycopg2.connect(db_url, database="tpcc")
+
+    mapping = {}
+    with conn.cursor() as cur:
+        for table_name in names:
+
+            query = "SELECT '\"{}\"'::regclass::oid;".format(table_name)
+            print(query)
+
+            cur.execute(query)
+            logging.debug("status message %s", cur.statusmessage)
+
+            rows = cur.fetchall()
+            if len(rows) > 1:
+                print("fetchall should only have one row")
+                sys.exit(-1)
+
+            mapping[table_name] = rows[0][0]
+
+        conn.commit()
+
+    return mapping
+
+
+def call(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT):
+    """
+    Calls a command in the shell.
+
+    :param cmd: (str)
+    :param stdout: set by default to subprocess.PIPE (which is standard stream)
+    :param stderr: set by default subprocess.STDOUT (combines with stdout)
+    :return: if successful, stdout stream of command.
+    """
+    print(cmd)
+    p = subprocess.run(
+        cmd, stdout=stdout, stderr=stderr, shell=True, check=True,
+        universal_newlines=True
+    )
+    return p.stdout
 
 
 class TestTableMappingCRDB(unittest.TestCase):
@@ -45,6 +93,24 @@ class TestTableMappingCRDB(unittest.TestCase):
                 continue
             else:
                 self.assertFalse(False)
+
+    def test_query_num_from_name(self):
+        tableNames = ["warehouse", "stock", "item", "history",
+                      "new_order", "order_line", "district", "customer",
+                      "order"]
+        # tableNames = ["new_order"]
+
+        mapping = query_table_num_from_names(tableNames)
+
+        self.assertEqual(len(tableNames), len(mapping))
+        nameset, numset = {}, {}
+
+        for name, num in mapping.items():
+
+            if name in nameset:
+                self.assertTrue(False)
+            elif num in numset:
+                self.assertTrue(False)
 
 
 if __name__ == "__main__":

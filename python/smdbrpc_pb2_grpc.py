@@ -61,10 +61,30 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.PromoteKeysToCicadaReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.PromoteKeysToCicadaResp.FromString,
                 )
+        self.QueryTableNumFromName = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/QueryTableNumFromName',
+                request_serializer=smdbrpc__pb2.QueryTableNumFromNameReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.QueryTableNumFromNameResp.FromString,
+                )
         self.UpdatePromotionMap = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/UpdatePromotionMap',
                 request_serializer=smdbrpc__pb2.PromoteKeysReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.PromoteKeysResp.FromString,
+                )
+        self.DeleteFromPromotionMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/DeleteFromPromotionMap',
+                request_serializer=smdbrpc__pb2.DeleteFromPromotionMapReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.DeleteFromPromotionMapResp.FromString,
+                )
+        self.UpdateInProgressDemotionMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/UpdateInProgressDemotionMap',
+                request_serializer=smdbrpc__pb2.UpdateInProgressDemotionMapReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.UpdateInProgressDemotionMapResp.FromString,
+                )
+        self.DeleteFromInProgressDemotionMap = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/DeleteFromInProgressDemotionMap',
+                request_serializer=smdbrpc__pb2.DeleteFromInProgressDemotionMapReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.DeleteFromInProgressDemotionMapResp.FromString,
                 )
         self.RequestCRDBKeyStats = channel.unary_unary(
                 '/smdbrpc.HotshardGateway/RequestCRDBKeyStats',
@@ -178,7 +198,31 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def QueryTableNumFromName(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def UpdatePromotionMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteFromPromotionMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateInProgressDemotionMap(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteFromInProgressDemotionMap(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -286,10 +330,30 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     request_deserializer=smdbrpc__pb2.PromoteKeysToCicadaReq.FromString,
                     response_serializer=smdbrpc__pb2.PromoteKeysToCicadaResp.SerializeToString,
             ),
+            'QueryTableNumFromName': grpc.unary_unary_rpc_method_handler(
+                    servicer.QueryTableNumFromName,
+                    request_deserializer=smdbrpc__pb2.QueryTableNumFromNameReq.FromString,
+                    response_serializer=smdbrpc__pb2.QueryTableNumFromNameResp.SerializeToString,
+            ),
             'UpdatePromotionMap': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdatePromotionMap,
                     request_deserializer=smdbrpc__pb2.PromoteKeysReq.FromString,
                     response_serializer=smdbrpc__pb2.PromoteKeysResp.SerializeToString,
+            ),
+            'DeleteFromPromotionMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteFromPromotionMap,
+                    request_deserializer=smdbrpc__pb2.DeleteFromPromotionMapReq.FromString,
+                    response_serializer=smdbrpc__pb2.DeleteFromPromotionMapResp.SerializeToString,
+            ),
+            'UpdateInProgressDemotionMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateInProgressDemotionMap,
+                    request_deserializer=smdbrpc__pb2.UpdateInProgressDemotionMapReq.FromString,
+                    response_serializer=smdbrpc__pb2.UpdateInProgressDemotionMapResp.SerializeToString,
+            ),
+            'DeleteFromInProgressDemotionMap': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteFromInProgressDemotionMap,
+                    request_deserializer=smdbrpc__pb2.DeleteFromInProgressDemotionMapReq.FromString,
+                    response_serializer=smdbrpc__pb2.DeleteFromInProgressDemotionMapResp.SerializeToString,
             ),
             'RequestCRDBKeyStats': grpc.unary_unary_rpc_method_handler(
                     servicer.RequestCRDBKeyStats,
@@ -502,6 +566,23 @@ class HotshardGateway(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
+    def QueryTableNumFromName(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/QueryTableNumFromName',
+            smdbrpc__pb2.QueryTableNumFromNameReq.SerializeToString,
+            smdbrpc__pb2.QueryTableNumFromNameResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
     def UpdatePromotionMap(request,
             target,
             options=(),
@@ -515,6 +596,57 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/UpdatePromotionMap',
             smdbrpc__pb2.PromoteKeysReq.SerializeToString,
             smdbrpc__pb2.PromoteKeysResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteFromPromotionMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/DeleteFromPromotionMap',
+            smdbrpc__pb2.DeleteFromPromotionMapReq.SerializeToString,
+            smdbrpc__pb2.DeleteFromPromotionMapResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def UpdateInProgressDemotionMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/UpdateInProgressDemotionMap',
+            smdbrpc__pb2.UpdateInProgressDemotionMapReq.SerializeToString,
+            smdbrpc__pb2.UpdateInProgressDemotionMapResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def DeleteFromInProgressDemotionMap(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/DeleteFromInProgressDemotionMap',
+            smdbrpc__pb2.DeleteFromInProgressDemotionMapReq.SerializeToString,
+            smdbrpc__pb2.DeleteFromInProgressDemotionMapResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
