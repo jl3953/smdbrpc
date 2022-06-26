@@ -95,10 +95,8 @@ class TestTableMappingCRDB(unittest.TestCase):
                 self.assertFalse(False)
 
     def test_query_num_from_name(self):
-        tableNames = ["warehouse", "stock", "item", "history",
-                      "new_order", "order_line", "district", "customer",
-                      "order"]
-        # tableNames = ["new_order"]
+        tableNames = ["warehouse", "stock", "item", "history", "new_order",
+                      "order_line", "district", "customer", "order"]
 
         mapping = query_table_num_from_names(tableNames)
 
@@ -111,6 +109,31 @@ class TestTableMappingCRDB(unittest.TestCase):
                 self.assertTrue(False)
             elif num in numset:
                 self.assertTrue(False)
+
+    def test_populate_tables_from_query(self):
+        tableNames = ["warehouse", "stock", "item", "history", "new_order",
+                      "order_line", "district", "customer", "order"]
+
+        mapping = query_table_num_from_names(tableNames)
+
+        req = smdbrpc_pb2.PopulateCRDBTableNumMappingReq(
+            tableNumMappings=[], )
+        for tableName, tableNum in mapping.items():
+            req.tableNumMappings.append(
+                smdbrpc_pb2.TableNumMapping(
+                    tableNum=tableNum, tableName=tableName, )
+            )
+
+        _ = self.stub.PopulateCRDBTableNumMapping(req)
+
+        checkMappingReq = smdbrpc_pb2.QueryTableMapReq(placeholder=True)
+        checkMappingResp = self.stub.TestQueryTableMap(checkMappingReq)
+
+        self.assertEqual(len(mapping), len(checkMappingResp.tableNumMappings))
+        for tableNumMapping in checkMappingResp.tableNumMappings:
+            name, num = tableNumMapping.tableName, tableNumMapping.tableNum
+            self.assertTrue(name in mapping)
+            self.assertEqual(mapping[name], num)
 
 
 if __name__ == "__main__":
