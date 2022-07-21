@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/binary"
-    //"fmt"
 	"flag"
 	"google.golang.org/grpc"
 	"log"
@@ -52,6 +51,55 @@ func encodeToCRDB(key int64) (encoding []byte) {
 	encoding = append(encoding, byte(136))
 	return encoding
 }
+
+//func ExtractPrimaryKeyCols(k []byte) (primaryKeyCols []int64) {
+//	const (
+//		DEFAULT = iota
+//		GREATER
+//		NEGATIVE
+//	)
+//
+//	state := DEFAULT
+//	hopsUntilStateReversion := 0
+//	var inProgressB256 int64 = 0
+//
+//	for i, b := range k {
+//		if i == 0 || i == 1 || i == len(k) - 1 {
+//			continue
+//		}
+//
+//		switch state {
+//		case GREATER:
+//			inProgressB256 = inProgressB256 * 256 + int64(b)
+//			hopsUntilStateReversion--
+//			if hopsUntilStateReversion == 0 {
+//				primaryKeyCols = append(primaryKeyCols, inProgressB256)
+//				inProgressB256 = 0
+//				state = DEFAULT
+//			}
+//		case NEGATIVE:
+//			inProgressB256 = inProgressB256 * 256 + (255 - int64(b))
+//			hopsUntilStateReversion--
+//			if hopsUntilStateReversion == 0 {
+//				primaryKeyCols = append(primaryKeyCols, inProgressB256)
+//				inProgressB256 = 0
+//				state = DEFAULT
+//			}
+//		default:
+//			if b < 136 {
+//				state = NEGATIVE
+//				hopsUntilStateReversion = 136 - int(b)
+//			} else if b < 245 {
+//				primaryKeyCols = append(primaryKeyCols, int64(b - 136))
+//			} else {
+//				state = GREATER
+//				hopsUntilStateReversion = int(b) - 245
+//			}
+//		}
+//	}
+//
+//	return primaryKeyCols
+//}
 
 func randomizeHash(key int64, keyspace int64) int64 {
 	byteKey := make([]byte, 8)
@@ -284,6 +332,16 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 }
 
 func main() {
+	//log.Printf("%+v\n", convertToBase256(3000))
+	//table1_1_1_3000 := ExtractPrimaryKeyCols(
+	//	[]byte{193, 137, 137, 137, 134, 244, 71, 136})
+	//log.Printf("%+v\n", table1_1_1_3000)
+	//table6_4_2000 := ExtractPrimaryKeyCols([]byte{193, 137, 142, 140, 134, 248,
+	//	47, 136})
+	//log.Printf("%+v\n", table6_4_2000)
+	//table6_7_2001 := ExtractPrimaryKeyCols([]byte{193, 137, 142, 143, 247, 7,
+	//	209, 136})
+	//log.Printf("%+v\n", table6_7_2001)
 	batch := flag.Int("batch", 1,
 		"number of keys to promote in a single batch")
 	cicadaAddr := flag.String("cicadaAddr", "node-11:50051",
@@ -309,7 +367,7 @@ func main() {
 	walltime := time.Now().UnixNano()
 	var logical int32 = 0
 
-    tic := time.Now()
+ tic := time.Now()
 	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
@@ -324,6 +382,6 @@ func main() {
 			crdbAddrsSlice, *keyspace, *hash_randomize_keyspace,
 			*enable_fixed_sized_encoding)
 	}
-    toc := time.Since(tic)
-    log.Printf("elapsed %+v\n", toc)
+ toc := time.Since(tic)
+ log.Printf("elapsed %+v\n", toc)
 }
