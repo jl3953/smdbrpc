@@ -1,3 +1,4 @@
+import time
 import unittest
 
 import grpc
@@ -14,18 +15,20 @@ class PromoteTPCC(unittest.TestCase):
 
     def test_promote_warehouse_table(self):
         req = smdbrpc_pb2.TestPromoteTPCCTablesReq(
-            num_warehouses=3,
-            warehouse=True,
-            district=False,
-            customer=False,
-            order=False,
-            neworder=False,
-            orderline=False,
-            stock=False,
-            item=False,
-            history=False
+            num_warehouses=3, warehouse=True, district=False, customer=False,
+            order=False, neworder=False, orderline=False, stock=False,
+            item=False, history=False
         )
         _ = self.stub.TestPromoteTPCCTables(req)
+
+        promotionKeyReq = smdbrpc_pb2.TestPromotionKeyReq(
+            key=bytes([136 + 53, 136 + 1, 136 + 1, 136]),
+            promotionTimestamp=smdbrpc_pb2.HLCTimestamp(
+                walltime=time.time_ns() + 5*10**9, logicaltime=0, ),
+            cicada_key_cols=[1]
+        )
+        promotionKeyResp = self.stub.TestIsKeyInPromotionMap(promotionKeyReq)
+        self.assertTrue(promotionKeyResp.isKeyIn)
 
 
 if __name__ == '__main__':
