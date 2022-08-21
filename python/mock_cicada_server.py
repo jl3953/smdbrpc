@@ -71,6 +71,12 @@ class MockCicadaServer(smdbrpc_pb2_grpc.HotshardGatewayServicer):
 
         return reply
 
+    def ReplicateLogSegment(self, request, context):
+        reply = smdbrpc_pb2.ReplicateLogSegmentResp(
+            areReplicated=True
+        )
+        return reply
+
     def PromoteKeysToCicada(self, request, context):
         for key in request.keys:
             print(

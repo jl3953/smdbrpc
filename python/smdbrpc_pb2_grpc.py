@@ -151,6 +151,11 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.CalculateCicadaReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.CicadaStatsResponse.FromString,
                 )
+        self.ReplicateLogSegment = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/ReplicateLogSegment',
+                request_serializer=smdbrpc__pb2.ReplicateLogSegmentReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.ReplicateLogSegmentResp.FromString,
+                )
 
 
 class HotshardGatewayServicer(object):
@@ -326,6 +331,12 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ReplicateLogSegment(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_HotshardGatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -463,6 +474,11 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.RequestCicadaStats,
                     request_deserializer=smdbrpc__pb2.CalculateCicadaReq.FromString,
                     response_serializer=smdbrpc__pb2.CicadaStatsResponse.SerializeToString,
+            ),
+            'ReplicateLogSegment': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReplicateLogSegment,
+                    request_deserializer=smdbrpc__pb2.ReplicateLogSegmentReq.FromString,
+                    response_serializer=smdbrpc__pb2.ReplicateLogSegmentResp.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -932,5 +948,22 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/RequestCicadaStats',
             smdbrpc__pb2.CalculateCicadaReq.SerializeToString,
             smdbrpc__pb2.CicadaStatsResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ReplicateLogSegment(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/ReplicateLogSegment',
+            smdbrpc__pb2.ReplicateLogSegmentReq.SerializeToString,
+            smdbrpc__pb2.ReplicateLogSegmentResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

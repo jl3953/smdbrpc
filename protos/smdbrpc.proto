@@ -92,6 +92,9 @@ service HotshardGateway {
 
   rpc RequestCicadaStats (CalculateCicadaReq) returns (CicadaStatsResponse) {}
 
+  rpc ReplicateLogSegment (ReplicateLogSegmentReq) returns
+      (ReplicateLogSegmentResp) {}
+
 }
 
 message BatchSendTxnsReq {
@@ -143,6 +146,14 @@ message QueryTableNumFromNameResp {
 
 message QueryTableMapResp {
   repeated TableNumMapping tableNumMappings = 1;
+}
+
+message ReplicateLogSegmentReq {
+  repeated TxnReq txns = 1;
+}
+
+message ReplicateLogSegmentResp {
+  required bool areReplicated = 1;
 }
 
 message TestPromotionKeyReq {
