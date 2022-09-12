@@ -92,8 +92,9 @@ service HotshardGateway {
 
   rpc RequestCicadaStats (CalculateCicadaReq) returns (CicadaStatsResponse) {}
 
-  rpc ReplicateLogSegment (ReplicateLogSegmentReq) returns
-      (ReplicateLogSegmentResp) {}
+  rpc ReplicateLog (ReplicateLogReq) returns (ReplicateLogResp) {}
+  rpc AckReplicateLog (AckReplicateLogReq) returns (AckReplicateLogResp) {}
+  rpc Replay (ReplayReq) returns (ReplayResp) {}
 
 }
 
@@ -148,12 +149,38 @@ message QueryTableMapResp {
   repeated TableNumMapping tableNumMappings = 1;
 }
 
-message ReplicateLogSegmentReq {
+message ReplicateLogReq {
   repeated TxnReq txns = 1;
+  required HLCTimestamp currentRT = 2;
 }
 
-message ReplicateLogSegmentResp {
-  required bool areReplicated = 1;
+message ReplicateLogResp {
+  required HLCTimestamp watermark = 1;
+}
+
+message AckReplicateLogReq {
+  required int32 thread = 1;
+  required HLCTimestamp watermark = 2;
+}
+
+message AckReplicateLogResp {
+  // nothing
+}
+
+message ReplayReq {
+  required HLCTimestamp RT = 1;
+}
+
+message ReplayResp {
+  required bool succeeded = 1;
+}
+
+message AckReplayReq {
+  required bool succeeded = 1;
+}
+
+message AckReplayResp {
+  // nothing, this is an async request
 }
 
 message TestPromotionKeyReq {
