@@ -95,7 +95,27 @@ service HotshardGateway {
   rpc ReplicateLog (ReplicateLogReq) returns (ReplicateLogResp) {}
   rpc AckReplicateLog (AckReplicateLogReq) returns (AckReplicateLogResp) {}
   rpc Replay (ReplayReq) returns (ReplayResp) {}
+  rpc QueryThreadMetas (QueryThreadMetasReq) returns (QueryThreadMetasResp) {}
 
+}
+
+message QueryThreadMetasReq {
+  required bool include_global_watermark = 1;
+  required bool include_watermarks = 2;
+  required bool include_logs = 3;
+  repeated int32 thread_ids = 4;
+
+}
+
+message ThreadMeta {
+  required int32 thread_id = 1;
+  optional HLCTimestamp watermark = 2;
+  repeated TxnReq log = 3;
+}
+
+message QueryThreadMetasResp {
+   optional HLCTimestamp global_watermark = 1;
+   repeated ThreadMeta thread_metas = 2;
 }
 
 message BatchSendTxnsReq {

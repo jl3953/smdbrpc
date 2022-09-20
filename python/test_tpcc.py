@@ -176,6 +176,42 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
             str(key3).encode(), response.txnResps[2].responses[0].value
         )
 
+        print("jenndebug ===== hello?")
+
+        response2 = self.stub.BatchSendTxns(
+            smdbrpc_pb2.BatchSendTxnsReq(
+                txns=[smdbrpc_pb2.TxnReq(
+                    timestamp=smdbrpc_pb2.HLCTimestamp(
+                        walltime=self.now + 300, logicaltime=0, ),
+                    ops=[smdbrpc_pb2.Op(
+                        cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
+                        index=1, cicada_key_cols=[key1],
+                        key=str(key1).encode(), ), ]
+                )]
+            )
+        )
+
+        self.assertEqual(1, len(response2.txnResps))
+        for txnResp in response2.txnResps:
+            self.assertTrue(txnResp.is_committed)
+
+        response3 = self.stub.BatchSendTxns(
+            smdbrpc_pb2.BatchSendTxnsReq(
+                txns=[smdbrpc_pb2.TxnReq(
+                    timestamp=smdbrpc_pb2.HLCTimestamp(
+                        walltime=self.now + 400, logicaltime=0, ),
+                    ops=[smdbrpc_pb2.Op(
+                        cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
+                        index=1, cicada_key_cols=[key1],
+                        key=str(key1).encode(), ), ]
+                )]
+            )
+        )
+
+        self.assertEqual(1, len(response3.txnResps))
+        for txnResp in response3.txnResps:
+            self.assertTrue(txnResp.is_committed)
+
     def test_succeed_on_non_recent_read(self):
         key1 = 994814
         key2 = 200605
