@@ -31,7 +31,7 @@ class TestReplication(unittest.TestCase):
 
         req = smdbrpc_pb2.QueryThreadMetasReq(
             include_global_watermark=True,
-            include_watermark=True,
+            include_watermarks=True,
             include_logs=True,
         )
         resp = stub.QueryThreadMetas(req)
