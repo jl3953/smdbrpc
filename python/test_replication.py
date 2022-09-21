@@ -26,26 +26,26 @@ class TestReplication(unittest.TestCase):
 
             req = smdbrpc_pb2.ReplicateLogReq(
                 txns=[smdbrpc_pb2.TxnReq(
-                    op=smdbrpc_pb2.Op(
+                    ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT,
                         table=53,
                         index=1,
                         key="hello".encode(),
                         value="hello".encode(),
                         tableName="warehouse",
-                    ), timestamp=smdbrpc_pb2.HLCTimestamp(
+                    )], timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now,
                         logicaltime=0,
                     )
                 ), smdbrpc_pb2.TxnReq(
-                    op=smdbrpc_pb2.Op(
+                    ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT,
                         table=53,
                         index=1,
                         key="world".encode(),
                         value="world".encode(),
                         tableName="warehouse",
-                    ), timestamp=smdbrpc_pb2.HLCTimestamp(
+                    )], timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now,
                         logicaltime=1994,
                     )
