@@ -24,6 +24,12 @@ class TestReplication(unittest.TestCase):
 
             self.assertTrue(resp.areReplicated)
 
+    def test_query_thread_meta(self):
+
+        channel = grpc.insecure_channel("localhost:50051")
+        stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
+
+
 
 if __name__ == '__main__':
     unittest.main()
