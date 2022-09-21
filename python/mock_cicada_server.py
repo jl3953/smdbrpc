@@ -1,4 +1,5 @@
 import logging
+import time
 
 import grpc
 
@@ -71,9 +72,16 @@ class MockCicadaServer(smdbrpc_pb2_grpc.HotshardGatewayServicer):
 
         return reply
 
-    def ReplicateLogSegment(self, request, context):
-        reply = smdbrpc_pb2.ReplicateLogSegmentResp(
-            areReplicated=True
+    def ReplicateLog(self, request, context):
+        print(request.currentRT)
+        for txn in request.txns:
+            print("-----------------------------------------------")
+            print("jennifer", txn)
+        reply = smdbrpc_pb2.ReplicateLogResp(
+            watermark=smdbrpc_pb2.HLCTimestamp(
+                walltime=time.time_ns(),
+                logicaltime=0,
+            )
         )
         return reply
 
@@ -95,7 +103,7 @@ def serve():
     smdbrpc_pb2_grpc.add_HotshardGatewayServicer_to_server(
         MockCicadaServer(), server
     )
-    server.add_insecure_port('localhost:50051')
+    server.add_insecure_port('localhost:60061')
     server.start()
     server.wait_for_termination()
 

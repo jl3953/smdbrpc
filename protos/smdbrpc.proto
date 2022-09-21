@@ -18,7 +18,7 @@ syntax = "proto2";
 // option java_package = "io.grpc.examples.helloworld";
 // option java_outer_classname = "HelloWorldProto";
 // option objc_class_prefix = "HLW";
-option go_package = "execinfrapb";
+option go_package = "./execinfrapb";
 
 //package cockroach.sql.distsqlrun;
 package smdbrpc;

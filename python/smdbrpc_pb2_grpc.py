@@ -151,10 +151,25 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.CalculateCicadaReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.CicadaStatsResponse.FromString,
                 )
-        self.ReplicateLogSegment = channel.unary_unary(
-                '/smdbrpc.HotshardGateway/ReplicateLogSegment',
-                request_serializer=smdbrpc__pb2.ReplicateLogSegmentReq.SerializeToString,
-                response_deserializer=smdbrpc__pb2.ReplicateLogSegmentResp.FromString,
+        self.ReplicateLog = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/ReplicateLog',
+                request_serializer=smdbrpc__pb2.ReplicateLogReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.ReplicateLogResp.FromString,
+                )
+        self.AckReplicateLog = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/AckReplicateLog',
+                request_serializer=smdbrpc__pb2.AckReplicateLogReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.AckReplicateLogResp.FromString,
+                )
+        self.Replay = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/Replay',
+                request_serializer=smdbrpc__pb2.ReplayReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.ReplayResp.FromString,
+                )
+        self.QueryThreadMetas = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/QueryThreadMetas',
+                request_serializer=smdbrpc__pb2.QueryThreadMetasReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.QueryThreadMetasResp.FromString,
                 )
 
 
@@ -331,7 +346,25 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ReplicateLogSegment(self, request, context):
+    def ReplicateLog(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AckReplicateLog(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Replay(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def QueryThreadMetas(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -475,10 +508,25 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     request_deserializer=smdbrpc__pb2.CalculateCicadaReq.FromString,
                     response_serializer=smdbrpc__pb2.CicadaStatsResponse.SerializeToString,
             ),
-            'ReplicateLogSegment': grpc.unary_unary_rpc_method_handler(
-                    servicer.ReplicateLogSegment,
-                    request_deserializer=smdbrpc__pb2.ReplicateLogSegmentReq.FromString,
-                    response_serializer=smdbrpc__pb2.ReplicateLogSegmentResp.SerializeToString,
+            'ReplicateLog': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReplicateLog,
+                    request_deserializer=smdbrpc__pb2.ReplicateLogReq.FromString,
+                    response_serializer=smdbrpc__pb2.ReplicateLogResp.SerializeToString,
+            ),
+            'AckReplicateLog': grpc.unary_unary_rpc_method_handler(
+                    servicer.AckReplicateLog,
+                    request_deserializer=smdbrpc__pb2.AckReplicateLogReq.FromString,
+                    response_serializer=smdbrpc__pb2.AckReplicateLogResp.SerializeToString,
+            ),
+            'Replay': grpc.unary_unary_rpc_method_handler(
+                    servicer.Replay,
+                    request_deserializer=smdbrpc__pb2.ReplayReq.FromString,
+                    response_serializer=smdbrpc__pb2.ReplayResp.SerializeToString,
+            ),
+            'QueryThreadMetas': grpc.unary_unary_rpc_method_handler(
+                    servicer.QueryThreadMetas,
+                    request_deserializer=smdbrpc__pb2.QueryThreadMetasReq.FromString,
+                    response_serializer=smdbrpc__pb2.QueryThreadMetasResp.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -952,7 +1000,7 @@ class HotshardGateway(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def ReplicateLogSegment(request,
+    def ReplicateLog(request,
             target,
             options=(),
             channel_credentials=None,
@@ -962,8 +1010,59 @@ class HotshardGateway(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/ReplicateLogSegment',
-            smdbrpc__pb2.ReplicateLogSegmentReq.SerializeToString,
-            smdbrpc__pb2.ReplicateLogSegmentResp.FromString,
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/ReplicateLog',
+            smdbrpc__pb2.ReplicateLogReq.SerializeToString,
+            smdbrpc__pb2.ReplicateLogResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AckReplicateLog(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/AckReplicateLog',
+            smdbrpc__pb2.AckReplicateLogReq.SerializeToString,
+            smdbrpc__pb2.AckReplicateLogResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def Replay(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/Replay',
+            smdbrpc__pb2.ReplayReq.SerializeToString,
+            smdbrpc__pb2.ReplayResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def QueryThreadMetas(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/QueryThreadMetas',
+            smdbrpc__pb2.QueryThreadMetasReq.SerializeToString,
+            smdbrpc__pb2.QueryThreadMetasResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
