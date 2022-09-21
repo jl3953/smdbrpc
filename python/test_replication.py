@@ -19,8 +19,8 @@ class TestReplication(unittest.TestCase):
             channel = grpc.insecure_channel("localhost:{}".format(port))
             stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
 
-            req = smdbrpc_pb2.ReplicateLogSegmentReq()
-            resp = stub.ReplicateLogSegment(req)
+            req = smdbrpc_pb2.ReplicateLogReq()
+            resp = stub.ReplicateLog(req)
 
             self.assertTrue(resp.areReplicated)
 
@@ -28,6 +28,15 @@ class TestReplication(unittest.TestCase):
 
         channel = grpc.insecure_channel("localhost:50051")
         stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
+
+        req = smdbrpc_pb2.QueryThreadMetasReq(
+            include_global_watermark=True,
+            include_watermark=True,
+            include_logs=True,
+        )
+        resp = stub.QueryThreadMetas(req)
+
+        self.assertEqual(self.num_threads, len(resp.thread_metas))
 
 
 
