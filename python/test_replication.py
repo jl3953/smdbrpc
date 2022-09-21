@@ -61,9 +61,10 @@ class TestReplication(unittest.TestCase):
             )
             resp = stubs[i].QueryThreadMetas(req)
 
-            self.assertEqual(self.num_threads, len(resp.thread_metas))
-            for thread_meta in resp.thread_metas:
-                self.assertEqual(len(req.txns), len(thread_meta.log))
+            self.assertEqual(1, len(resp.thread_metas))
+
+            thread_meta = resp.thread_metas[0]
+            self.assertEqual(len(req.txns), len(thread_meta.log))
 
     def test_query_thread_meta(self):
         channel = grpc.insecure_channel("localhost:50051")
