@@ -97,6 +97,15 @@ service HotshardGateway {
   rpc Replay (ReplayReq) returns (ReplayResp) {}
   rpc QueryThreadMetas (QueryThreadMetasReq) returns (QueryThreadMetasResp) {}
 
+  rpc QueryBackupMeta (QueryBackupMetaReq) returns (QueryBackupMetaResp) {}
+
+}
+
+message QueryBackupMetaReq {
+}
+
+message QueryBackupMetaResp {
+  required int32 num_pending_txns = 1;
 }
 
 message QueryThreadMetasReq {

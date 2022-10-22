@@ -171,6 +171,11 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.QueryThreadMetasReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.QueryThreadMetasResp.FromString,
                 )
+        self.QueryBackupMeta = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/QueryBackupMeta',
+                request_serializer=smdbrpc__pb2.QueryBackupMetaReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.QueryBackupMetaResp.FromString,
+                )
 
 
 class HotshardGatewayServicer(object):
@@ -370,6 +375,12 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def QueryBackupMeta(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_HotshardGatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -527,6 +538,11 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.QueryThreadMetas,
                     request_deserializer=smdbrpc__pb2.QueryThreadMetasReq.FromString,
                     response_serializer=smdbrpc__pb2.QueryThreadMetasResp.SerializeToString,
+            ),
+            'QueryBackupMeta': grpc.unary_unary_rpc_method_handler(
+                    servicer.QueryBackupMeta,
+                    request_deserializer=smdbrpc__pb2.QueryBackupMetaReq.FromString,
+                    response_serializer=smdbrpc__pb2.QueryBackupMetaResp.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -1064,5 +1080,22 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/QueryThreadMetas',
             smdbrpc__pb2.QueryThreadMetasReq.SerializeToString,
             smdbrpc__pb2.QueryThreadMetasResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def QueryBackupMeta(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/QueryBackupMeta',
+            smdbrpc__pb2.QueryBackupMetaReq.SerializeToString,
+            smdbrpc__pb2.QueryBackupMetaResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
