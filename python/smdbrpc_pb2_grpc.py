@@ -176,6 +176,16 @@ class HotshardGatewayStub(object):
                 request_serializer=smdbrpc__pb2.QueryBackupMetaReq.SerializeToString,
                 response_deserializer=smdbrpc__pb2.QueryBackupMetaResp.FromString,
                 )
+        self.TriggerReplay = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/TriggerReplay',
+                request_serializer=smdbrpc__pb2.TriggerReplayReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.TriggerReplayResp.FromString,
+                )
+        self.ReplayOnTail = channel.unary_unary(
+                '/smdbrpc.HotshardGateway/ReplayOnTail',
+                request_serializer=smdbrpc__pb2.ReplayOnTailReq.SerializeToString,
+                response_deserializer=smdbrpc__pb2.ReplayOnTailResp.FromString,
+                )
 
 
 class HotshardGatewayServicer(object):
@@ -381,6 +391,18 @@ class HotshardGatewayServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def TriggerReplay(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReplayOnTail(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_HotshardGatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -543,6 +565,16 @@ def add_HotshardGatewayServicer_to_server(servicer, server):
                     servicer.QueryBackupMeta,
                     request_deserializer=smdbrpc__pb2.QueryBackupMetaReq.FromString,
                     response_serializer=smdbrpc__pb2.QueryBackupMetaResp.SerializeToString,
+            ),
+            'TriggerReplay': grpc.unary_unary_rpc_method_handler(
+                    servicer.TriggerReplay,
+                    request_deserializer=smdbrpc__pb2.TriggerReplayReq.FromString,
+                    response_serializer=smdbrpc__pb2.TriggerReplayResp.SerializeToString,
+            ),
+            'ReplayOnTail': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReplayOnTail,
+                    request_deserializer=smdbrpc__pb2.ReplayOnTailReq.FromString,
+                    response_serializer=smdbrpc__pb2.ReplayOnTailResp.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -1097,5 +1129,39 @@ class HotshardGateway(object):
         return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/QueryBackupMeta',
             smdbrpc__pb2.QueryBackupMetaReq.SerializeToString,
             smdbrpc__pb2.QueryBackupMetaResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def TriggerReplay(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/TriggerReplay',
+            smdbrpc__pb2.TriggerReplayReq.SerializeToString,
+            smdbrpc__pb2.TriggerReplayResp.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ReplayOnTail(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/smdbrpc.HotshardGateway/ReplayOnTail',
+            smdbrpc__pb2.ReplayOnTailReq.SerializeToString,
+            smdbrpc__pb2.ReplayOnTailResp.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

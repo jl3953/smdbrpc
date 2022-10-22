@@ -18,7 +18,7 @@ syntax = "proto2";
 // option java_package = "io.grpc.examples.helloworld";
 // option java_outer_classname = "HelloWorldProto";
 // option objc_class_prefix = "HLW";
-option go_package = "./execinfrapb";
+option go_package = "execinfrapb";
 
 //package cockroach.sql.distsqlrun;
 package smdbrpc;
@@ -99,11 +99,19 @@ service HotshardGateway {
 
   rpc QueryBackupMeta (QueryBackupMetaReq) returns (QueryBackupMetaResp) {}
 
+  rpc TriggerReplay (TriggerReplayReq) returns (TriggerReplayResp) {}
+  rpc ReplayOnTail (ReplayOnTailReq) returns (ReplayOnTailResp) {}
 }
 
-message QueryBackupMetaReq {
-}
+message TriggerReplayReq {}
+message TriggerReplayResp{}
 
+message ReplayOnTailReq {
+  required HLCTimestamp global_watermark = 1;
+}
+message ReplayOnTailResp {}
+
+message QueryBackupMetaReq {}
 message QueryBackupMetaResp {
   required int32 num_pending_txns = 1;
 }
