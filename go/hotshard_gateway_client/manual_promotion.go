@@ -3,12 +3,15 @@ package main
 import (
 	"context"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/binary"
 	"flag"
 	"google.golang.org/grpc"
 	"log"
 	"math"
 	smdbrpc "smdbrpc/go/build/gen"
+
+	_ "github.com/lib/pq"
 	"sort"
 	"strings"
 	"sync"
@@ -128,8 +131,8 @@ func jenkyFixedBytes(key int64, keyspace int64) int64 {
 func transformKey(basekey int64, keyspace int64,
 	hash_randomize_keyspace bool, enable_fixed_sized_encoding bool) (
 	key int64) {
-    key = basekey
-    if hash_randomize_keyspace {
+	key = basekey
+	if hash_randomize_keyspace {
 		key = randomizeHash(basekey, keyspace)
 	}
 
@@ -159,7 +162,7 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 	who_knows := []int64{10, 38, 8}
 	jennifer := []int64{106, 101, 110, 110, 105, 102, 101, 114}
 	jennifers := []int64{}
-	for i := 0; i < 64; i ++ {
+	for i := 0; i < 64; i++ {
 		jennifers = append(jennifers, jennifer...)
 	}
 	var val []int64
@@ -178,6 +181,7 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 		var table, index int64 = 53, 1
 		cicadaKeyCols := []int64{cicadaKey}
 		keyBytes := encodeToCRDB(crdbKey)
+		tableName := "kv"
 		request.Keys[i] = &smdbrpc.Key{
 			Table:         &table,
 			Index:         &index,
@@ -187,8 +191,9 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 				Walltime:    &walltime,
 				Logicaltime: &logical,
 			},
-			Value: valBytes,
+			Value:       valBytes,
 			CrdbKeyCols: []int64{crdbKey},
+			TableName:   &tableName,
 		}
 	}
 
@@ -208,7 +213,58 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 			}
 		}
 	}
-    //log.Printf("up to %lu\n", keys[0])
+}
+
+func queryTableNumFromNames(host string, database string) (tableNum int32) {
+
+	dbUrl := "postgresql://root@" + host + ":26257/" + database + "?sslmode=disable"
+	db, err := sql.Open("postgres", dbUrl)
+	if err != nil {
+		panic(err)
+	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(db)
+	r, _ := db.Query("SELECT 'kv'::regclass::oid;")
+	defer func(r *sql.Rows) {
+		err := r.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(r)
+	var num int
+	for r.Next() {
+		err := r.Scan(&num)
+		if err != nil {
+			panic(err)
+			return 0
+		}
+		log.Printf("%d\n", num)
+
+	}
+	return int32(num)
+}
+
+func populateCRDBTableName2NumMapping(crdb_node string, client smdbrpc.HotshardGatewayClient) {
+
+	// populate CRDB table numbers
+	tableName := "kv"
+	host := strings.Split(crdb_node, ":")[0]
+	tableNum := queryTableNumFromNames(host, "kv")
+	log.Printf("jenndebug tableNum %d\n", tableNum)
+
+	req := smdbrpc.PopulateCRDBTableNumMappingReq{
+		TableNumMappings: []*smdbrpc.TableNumMapping{
+			{TableName: &tableName, TableNum: &tableNum},
+		},
+	}
+	_, err := client.PopulateCRDBTableNumMapping(context.Background(), &req)
+	if err != nil {
+		log.Fatalf("Could not populate on a client, err %+v\n", err)
+	}
 }
 
 func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
@@ -219,6 +275,7 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 	updateMapReq := smdbrpc.PromoteKeysReq{
 		Keys: make([]*smdbrpc.KVVersion, len(keys)),
 	}
+	tableName := "kv"
 	for i, cicadaKey := range keys {
 		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
 			enableFixedSizedEncoding)
@@ -229,8 +286,9 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 				Walltime:    &walltime,
 				Logicaltime: &logical,
 			},
-			Hotness: nil,
+			Hotness:       nil,
 			CicadaKeyCols: []int64{cicadaKey},
+			TableName:     &tableName,
 		}
 	}
 
@@ -246,7 +304,7 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 
 			resp, err := client.UpdatePromotionMap(crdbCtx, &updateMapReq)
 			if err != nil {
-				log.Fatalf("cannot send updatePromoMapReq CRDB node %d"+
+				log.Fatalf("cannot send updatePromoMapReq CRDB node %d, "+
 					"err %+v\n", clientIdx, err)
 			}
 
@@ -282,8 +340,8 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
 
 	// connect to Cicada
-	numClients := 16
-    //numClients := 1
+	//numClients := 16
+	numClients := 1
 	cicadaWrappers := make([]Wrapper, numClients)
 	for i := 0; i < numClients; i++ {
 		cicadaWrappers[i] = Wrapper{
@@ -295,6 +353,7 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	// connect to CRDB
 	crdbWrappers := make([]Wrapper, len(crdbAddresses))
 	for i, crdbAddr := range crdbAddresses {
+		log.Printf("jenndebug crdbAddr [%s]\n", crdbAddr)
 		crdbWrappers[i] = Wrapper{
 			Addr: crdbAddr,
 		}
@@ -329,6 +388,8 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	if inflightBatches > 0 {
 		wg.Wait()
 	}
+
+	populateCRDBTableName2NumMapping(crdbAddresses[0], crdbClients[0])
 }
 
 func main() {
@@ -355,11 +416,12 @@ func main() {
 		"whether to hash the keyspace so hotkeys aren't contiguous")
 	enable_fixed_sized_encoding := flag.Bool(
 		"enable_fixed_sized_encoding", true,
-		"whether to disable adding a constant to keyspace to keep all keys" +
+		"whether to disable adding a constant to keyspace to keep all keys"+
 			" the same size")
 	flag.Parse()
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
+	crdbAddrsSlice = crdbAddrsSlice[:len(crdbAddrsSlice)-1]
 
 	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
 		crdbAddrsSlice)
@@ -367,7 +429,7 @@ func main() {
 	walltime := time.Now().UnixNano()
 	var logical int32 = 0
 
- tic := time.Now()
+	tic := time.Now()
 	if *keyMax-*keyMin > 0 {
 		keys := make([]int64, *keyMax-*keyMin)
 		for i := int64(0); i < *keyMax-*keyMin; i++ {
@@ -378,10 +440,12 @@ func main() {
 		sort.Slice(keys, func(i, j int) bool {
 			return keys[i] < keys[j]
 		})
+		log.Printf("enable fixed %+v, hash %+v\n", *enable_fixed_sized_encoding, *hash_randomize_keyspace)
 		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
 			crdbAddrsSlice, *keyspace, *hash_randomize_keyspace,
 			*enable_fixed_sized_encoding)
+
 	}
- toc := time.Since(tic)
- log.Printf("elapsed %+v\n", toc)
+	toc := time.Since(tic)
+	log.Printf("elapsed %+v\n", toc)
 }
