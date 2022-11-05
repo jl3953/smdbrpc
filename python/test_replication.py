@@ -1,6 +1,7 @@
 import unittest
 
 import time
+import threading
 
 import grpc
 
@@ -11,11 +12,27 @@ import smdbrpc_pb2_grpc
 class TestReplication(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.num_threads = 12
+        self.num_threads = 1
         self.base_port = 60061
         self.now = time.time_ns()
 
+        channel = grpc.insecure_channel("localhost:60062")
+        self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
+
     def test_basic_replication(self):
+
+        def replay_on_tail():
+            time.sleep(2)
+            print("executed")
+            _ = self.stub.ReplayOnTail(smdbrpc_pb2.ReplayOnTailReq(
+                global_watermark=smdbrpc_pb2.HLCTimestamp(
+                    walltime=self.now + 1000000000,
+                    logicaltime=0,
+                )
+            ))
+
+        t = threading.Thread(target=replay_on_tail, args=())
+        t.start()
 
         stubs = []
         txnreq = smdbrpc_pb2.ReplicateLogReq(
@@ -27,6 +44,7 @@ class TestReplication(unittest.TestCase):
                     key="hello".encode(),
                     value="hello".encode(),
                     tableName="warehouse",
+                    cicada_key_cols=[1, 0]
                 )], timestamp=smdbrpc_pb2.HLCTimestamp(
                     walltime=self.now,
                     logicaltime=0,
@@ -39,6 +57,7 @@ class TestReplication(unittest.TestCase):
                     key="world".encode(),
                     value="world".encode(),
                     tableName="warehouse",
+                    cicada_key_cols=[2, 0]
                 )], timestamp=smdbrpc_pb2.HLCTimestamp(
                     walltime=self.now,
                     logicaltime=1994,
