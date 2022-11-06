@@ -14,10 +14,38 @@ class TestReplication(unittest.TestCase):
     def setUp(self) -> None:
         self.num_threads = 1
         self.base_port = 60061
-        self.now = time.time_ns()
 
         channel = grpc.insecure_channel("localhost:60062")
         self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(channel)
+
+        promotion_req = smdbrpc_pb2.PromoteKeysToCicadaReq(
+            keys=[smdbrpc_pb2.Key(
+                table=53, tableName="warehouse", index=1,
+                cicada_key_cols=[1, 0], key="promoted".encode(),
+                timestamp=smdbrpc_pb2.HLCTimestamp(
+                    walltime=time.time_ns(), logicaltime=0, ),
+                value="promoted".encode(), ), smdbrpc_pb2.Key(
+                table=53, tableName="warehouse", index=1,
+                cicada_key_cols=[2, 0], key="promoted".encode(),
+                timestamp=smdbrpc_pb2.HLCTimestamp(
+                    walltime=time.time_ns(), logicaltime=0, ),
+                value="promoted".encode(), ),
+            ]
+        )
+
+        temp_channel = grpc.insecure_channel("localhost:60061")
+        temp_stub = smdbrpc_pb2_grpc.HotshardGatewayStub(temp_channel)
+
+        promotion_resp = temp_stub.PromoteKeysToCicada(promotion_req)
+        self.assertEqual(
+            len(promotion_req.keys), len(
+                promotion_resp.successfullyPromoted
+            )
+        )
+        for promoted in promotion_resp.successfullyPromoted:
+            self.assertTrue(promoted)
+
+        self.now = time.time_ns()
 
     def test_basic_replication(self):
 
