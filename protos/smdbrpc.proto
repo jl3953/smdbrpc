@@ -102,6 +102,8 @@ service HotshardGateway {
 
   rpc TriggerReplay (TriggerReplayReq) returns (TriggerReplayResp) {}
   rpc ReplayOnTail (ReplayOnTailReq) returns (ReplayOnTailResp) {}
+
+  rpc CheckBackupState(BatchSendTxnsReq) returns (BatchSendTxnsResp) {}
 }
 
 message TriggerReplayReq {}
@@ -312,6 +314,7 @@ message TxnReq {
   optional bool is_test = 4;
   optional bool is_demoted_test_field = 5;
   optional int32 txn_id = 6;
+  optional int32 thread_id = 7;
 }
 
 message TxnResp {
@@ -385,8 +388,8 @@ message KeyMigrationReq {
 }
 
 message KeyMigrationResp {
-    //  optional bytes key = 1;
-    //  optional bool is_successfully_migrated = 2;
+  //  optional bytes key = 1;
+  //  optional bool is_successfully_migrated = 2;
   optional bool is_successfully_migrated = 1;
 }
 

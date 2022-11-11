@@ -10,9 +10,12 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
 
     def setUp(self):
         self.channel = grpc.insecure_channel("localhost:50051")
+        print("stub...")
         self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
+        print("now...")
         self.now = time.time_ns() + 500000000
 
+        print("promoting...")
         promotionReq = smdbrpc_pb2.PromoteKeysToCicadaReq(
             keys=[smdbrpc_pb2.Key(
                 table=53, tableName="warehouse", index=1,
@@ -59,7 +62,9 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                 timestamp=smdbrpc_pb2.HLCTimestamp(
                     walltime=self.now, logicaltime=0, ), ), ]
         )
+        print("sending promotion...")
         promotionResp = self.stub.PromoteKeysToCicada(promotionReq)
+        print("asserting response...")
         self.assertEqual(
             len(promotionReq.keys), len(
                 promotionResp.successfullyPromoted
@@ -71,6 +76,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
 
         time.sleep(2)
         self.now = time.time_ns()
+        print("finished setup...")
 
     def tearDown(self) -> None:
         self.channel.close()
@@ -107,6 +113,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         key1 = 994813
         key2 = 200604
         key3 = 220604
+        print("starting test...")
         response = self.stub.BatchSendTxns(
             smdbrpc_pb2.BatchSendTxnsReq(
                 txns=[smdbrpc_pb2.TxnReq(
@@ -133,6 +140,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                             ).encode(), value=str(key3).encode(), ), ], ), ]
             )
         )
+        print("sendBatchTxn...")
         self.assertEqual(3, len(response.txnResps))
         for txnResp in response.txnResps:
             self.assertTrue(txnResp.is_committed)
