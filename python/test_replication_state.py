@@ -24,6 +24,7 @@ class TestReplicationState(unittest.TestCase):
 
         self.now = time.time_ns() + 500000000
         self.i = 0
+        self.t_id = self.i
 
         promotionReq = smdbrpc_pb2.PromoteKeysToCicadaReq(
             keys=[smdbrpc_pb2.Key(
@@ -94,6 +95,7 @@ class TestReplicationState(unittest.TestCase):
         if self.i > self.threads - 1:
             self.i = 0
 
+        self.t_id = i
         return i
 
     # def test_simple_read(self):
@@ -130,7 +132,8 @@ class TestReplicationState(unittest.TestCase):
         key3 = 220604
         print("starting test...")
 
-        self.stubs[self.next()].ReplicateLog(
+        t_id = self.next()
+        self.stubs[t_id].ReplicateLog(
             smdbrpc_pb2.ReplicateLogReq(
                 txns=[smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
@@ -138,14 +141,14 @@ class TestReplicationState(unittest.TestCase):
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
                         index=1, cicada_key_cols=[key1], key=str(key1).encode(),
-                        value=str(key1).encode(), ), ], ), smdbrpc_pb2.TxnReq(
+                        value=str(key1).encode(), ), ], thread_id=t_id), smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now + 100, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=54, tableName="district",
                         index=1, cicada_key_cols=[key2, key2], key=str(
                             key2
-                        ).encode(), value=str(key2).encode(), ), ], ),
+                        ).encode(), value=str(key2).encode(), ), ], thread_id=t_id),
                     smdbrpc_pb2.TxnReq(
                         timestamp=smdbrpc_pb2.HLCTimestamp(
                             walltime=self.now + 100, logicaltime=0, ),
@@ -153,7 +156,7 @@ class TestReplicationState(unittest.TestCase):
                             cmd=smdbrpc_pb2.PUT, table=61, tableName="stock",
                             index=1, cicada_key_cols=[key3, key3], key=str(
                                 key3
-                            ).encode(), value=str(key3).encode(), ), ], ), ],
+                            ).encode(), value=str(key3).encode(), ), ], thread_id=t_id), ],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
                     logicaltime=0,
@@ -169,7 +172,8 @@ class TestReplicationState(unittest.TestCase):
         ))
 
         print("checkBackupState...")
-        response = self.stubs[self.next()].CheckBackupState(
+        t_id = self.next()
+        response = self.stubs[t_id].CheckBackupState(
             smdbrpc_pb2.BatchSendTxnsReq(
                 txns=[smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
@@ -177,21 +181,21 @@ class TestReplicationState(unittest.TestCase):
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.GET, table=53, tableName="warehouse",
                         index=1, cicada_key_cols=[key1],
-                        key=str(key1).encode(), ), ]
+                        key=str(key1).encode(), ), ], thread_id=t_id
                 ), smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now + 200, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.GET, table=54, tableName="district",
                         index=1, cicada_key_cols=[key2, key2],
-                        key=str(key2).encode(), )]
+                        key=str(key2).encode(), )], thread_id=t_id,
                 ), smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now + 200, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.GET, table=61, tableName="stock",
                         index=1, cicada_key_cols=[key3, key3],
-                        key=str(key3).encode(), )]
+                        key=str(key3).encode(), )], thread_id=t_id
                 ), ]
             )
         )
@@ -209,7 +213,8 @@ class TestReplicationState(unittest.TestCase):
             str(key3).encode(), response.txnResps[2].responses[0].value
         )
 
-        self.stubs[self.next()].ReplicateLog(
+        t_id = self.next()
+        self.stubs[t_id].ReplicateLog(
             smdbrpc_pb2.ReplicateLogReq(
                 txns=[smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
@@ -217,7 +222,7 @@ class TestReplicationState(unittest.TestCase):
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
                         index=1, cicada_key_cols=[key1],
-                        key=str(key1).encode(), ), ]
+                        key=str(key1).encode(), ), ], thread_id=t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -226,7 +231,8 @@ class TestReplicationState(unittest.TestCase):
             )
         )
 
-        self.stubs[self.next()].ReplicateLog(
+        t_id = self.next()
+        self.stubs[t_id].ReplicateLog(
             smdbrpc_pb2.ReplicateLogReq(
                 txns=[smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
@@ -234,7 +240,7 @@ class TestReplicationState(unittest.TestCase):
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
                         index=1, cicada_key_cols=[key1],
-                        key=str(key1).encode(), ), ]
+                        key=str(key1).encode(), ), ], thread_id = t_id
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -262,7 +268,7 @@ class TestReplicationState(unittest.TestCase):
                         cmd=smdbrpc_pb2.PUT, table=55, tableName="customer",
                         index=1, cicada_key_cols=[key1, key1, key1], key=str(
                             key1
-                        ).encode(), value=str(key1).encode(), ), ]
+                        ).encode(), value=str(key1).encode(), ), ], thread_id=self.t_id,
                 ), smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now + 100, logicaltime=0, ),
@@ -270,7 +276,7 @@ class TestReplicationState(unittest.TestCase):
                         cmd=smdbrpc_pb2.PUT, table=56, tableName="history",
                         index=1, cicada_key_cols=[key2], key=str(
                             key2
-                        ).encode(), value=str(key2).encode(), )]
+                        ).encode(), value=str(key2).encode(), )], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -288,14 +294,14 @@ class TestReplicationState(unittest.TestCase):
                         cmd=smdbrpc_pb2.PUT, table=55, tableName="customer",
                         index=1, cicada_key_cols=[key1, key1, key1], key=str(
                             key1
-                        ).encode(), value=str(key1 + 1).encode(), )]
+                        ).encode(), value=str(key1 + 1).encode(), )], thread_id=self.t_id,
                 ), smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now + 200, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=56, tableName="history",
                         index=1, cicada_key_cols=[key2], key=str(key2).encode(),
-                        value=str(key2 + 1).encode(), )]
+                        value=str(key2 + 1).encode(), )], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -323,7 +329,7 @@ class TestReplicationState(unittest.TestCase):
                         ).encode(), ), smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.GET, table=56, tableName="history",
                         index=1, cicada_key_cols=[key2, key2, key2, key2],
-                        key=str(key2).encode(), ), ]
+                        key=str(key2).encode(), ), ], thread_id=self.t_id,
                 )]
             )
         )
@@ -354,7 +360,7 @@ class TestReplicationState(unittest.TestCase):
                         cmd=smdbrpc_pb2.PUT, table=58, tableName="order",
                         index=1, cicada_key_cols=[key2, key2, key2], key=str(
                             key2
-                        ).encode(), value=str(key2).encode(), )]
+                        ).encode(), value=str(key2).encode(), )], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -373,7 +379,7 @@ class TestReplicationState(unittest.TestCase):
                         index=1, cicada_key_cols=[key1, key1, key1], key=str(
                             key1
                         ).encode(), value=str(key1 + 1).encode()
-                    ), ]
+                    ), ], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -399,7 +405,7 @@ class TestReplicationState(unittest.TestCase):
                         key=str(key1).encode(), ), smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.GET, table=58, tableName="order",
                         index=1, cicada_key_cols=[key2, key2, key2],
-                        key=str(key2).encode(), ), ], )]
+                        key=str(key2).encode(), ), ], thread_id=self.t_id,)]
             )
         )
         self.assertEqual(1, len(response.txnResps))
@@ -427,7 +433,7 @@ class TestReplicationState(unittest.TestCase):
                         smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=60, tableName="item",
                         index=1, cicada_key_cols=[key2], key=str(key2).encode(),
-                        value=str(key2).encode(), )]
+                        value=str(key2).encode(), )], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -444,7 +450,7 @@ class TestReplicationState(unittest.TestCase):
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=59, tableName="orderline",
                         index=1, cicada_key_cols=[key1, key1, key1, key1],
-                        key=str(key1).encode(), value=str(key1 + 1).encode(), )]
+                        key=str(key1).encode(), value=str(key1 + 1).encode(), )], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -466,7 +472,7 @@ class TestReplicationState(unittest.TestCase):
                     ), smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=60, tableName="item",
                         index=1, cicada_key_cols=[key2], key=str(key2).encode(),
-                        value=str(key2 + 10).encode(), )]
+                        value=str(key2 + 10).encode(), )], thread_id=self.t_id,
                 )],
                 currentRT=smdbrpc_pb2.HLCTimestamp(
                     walltime=0,
@@ -493,7 +499,7 @@ class TestReplicationState(unittest.TestCase):
                         key=str(key1).encode(), ), smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.GET, table=60, tableName="item",
                         index=1, cicada_key_cols=[key2],
-                        key=str(key2).encode(), )]
+                        key=str(key2).encode(), )], thread_id=self.t_id,
                 )]
             )
         )
