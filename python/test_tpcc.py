@@ -10,12 +10,9 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
 
     def setUp(self):
         self.channel = grpc.insecure_channel("localhost:50051")
-        print("stub...")
         self.stub = smdbrpc_pb2_grpc.HotshardGatewayStub(self.channel)
-        print("now...")
         self.now = time.time_ns() + 500000000
 
-        print("promoting...")
         promotionReq = smdbrpc_pb2.PromoteKeysToCicadaReq(
             keys=[smdbrpc_pb2.Key(
                 table=53, tableName="warehouse", index=1,
@@ -62,9 +59,7 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                 timestamp=smdbrpc_pb2.HLCTimestamp(
                     walltime=self.now, logicaltime=0, ), ), ]
         )
-        print("sending promotion...")
         promotionResp = self.stub.PromoteKeysToCicada(promotionReq)
-        print("asserting response...")
         self.assertEqual(
             len(promotionReq.keys), len(
                 promotionResp.successfullyPromoted
@@ -76,7 +71,6 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
 
         time.sleep(2)
         self.now = time.time_ns()
-        print("finished setup...")
 
     def tearDown(self) -> None:
         self.channel.close()
@@ -113,7 +107,6 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         key1 = 994813
         key2 = 200604
         key3 = 220604
-        print("starting test...")
         response = self.stub.BatchSendTxns(
             smdbrpc_pb2.BatchSendTxnsReq(
                 txns=[smdbrpc_pb2.TxnReq(
@@ -140,33 +133,9 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
                             ).encode(), value=str(key3).encode(), ), ], ), ]
             )
         )
-        print("sendBatchTxn...")
         self.assertEqual(3, len(response.txnResps))
         for txnResp in response.txnResps:
             self.assertTrue(txnResp.is_committed)
-
-        def following_put():
-            time.sleep(2)
-            print(self.now + 300)
-            response2 = self.stub.BatchSendTxns(
-                smdbrpc_pb2.BatchSendTxnsReq(
-                    txns=[smdbrpc_pb2.TxnReq(
-                        timestamp=smdbrpc_pb2.HLCTimestamp(
-                            walltime=self.now + 300, logicaltime=0, ),
-                        ops=[smdbrpc_pb2.Op(
-                            cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
-                            index=1, cicada_key_cols=[key1],
-                            key=str(key1).encode(), ), ]
-                    )]
-                )
-            )
-
-            self.assertEqual(1, len(response2.txnResps))
-            for txnResp in response2.txnResps:
-                self.assertTrue(txnResp.is_committed)
-
-        t = threading.Thread(target=following_put, args=())
-        t.start()
 
         response = self.stub.BatchSendTxns(
             smdbrpc_pb2.BatchSendTxnsReq(
@@ -208,7 +177,22 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
             str(key3).encode(), response.txnResps[2].responses[0].value
         )
 
-        print("jenndebug ===== hello?")
+        response2 = self.stub.BatchSendTxns(
+            smdbrpc_pb2.BatchSendTxnsReq(
+                txns=[smdbrpc_pb2.TxnReq(
+                    timestamp=smdbrpc_pb2.HLCTimestamp(
+                        walltime=self.now + 300, logicaltime=0, ),
+                    ops=[smdbrpc_pb2.Op(
+                        cmd=smdbrpc_pb2.PUT, table=53, tableName="warehouse",
+                        index=1, cicada_key_cols=[key1],
+                        key=str(key1).encode(), ), ]
+                )]
+            )
+        )
+
+        self.assertEqual(1, len(response2.txnResps))
+        for txnResp in response2.txnResps:
+            self.assertTrue(txnResp.is_committed)
 
         response3 = self.stub.BatchSendTxns(
             smdbrpc_pb2.BatchSendTxnsReq(
@@ -346,28 +330,6 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         self.assertEqual(1, len(response.txnResps))
         self.assertTrue(response.txnResps[0].is_committed)
 
-        def follow_put():
-            time.sleep(2)
-            response = self.stub.BatchSendTxns(
-                smdbrpc_pb2.BatchSendTxnsReq(
-                    txns=[smdbrpc_pb2.TxnReq(
-                        timestamp=smdbrpc_pb2.HLCTimestamp(
-                            walltime=self.now + 2000, logicaltime=0, ),
-                        ops=[smdbrpc_pb2.Op(
-                            cmd=smdbrpc_pb2.PUT, table=57, tableName="neworder",
-                            index=1, cicada_key_cols=[key1, key1, key1], key=str(
-                                key1
-                            ).encode(), value=str(key1 + 1).encode()
-                        ), ]
-                    )]
-                )
-            )
-            self.assertEqual(1, len(response.txnResps))
-            self.assertTrue(response.txnResps[0].is_committed)
-
-        t = threading.Thread(target=follow_put)
-        t.start()
-
         response = self.stub.BatchSendTxns(
             smdbrpc_pb2.BatchSendTxnsReq(
                 txns=[smdbrpc_pb2.TxnReq(
@@ -448,31 +410,6 @@ class TestCicadaMultiKeyTxns(unittest.TestCase):
         )
         self.assertEqual(1, len(response.txnResps))
         self.assertFalse(response.txnResps[0].is_committed)
-
-        def follow_put():
-            time.sleep(2)
-            response = self.stub.BatchSendTxns(
-                smdbrpc_pb2.BatchSendTxnsReq(
-                    txns=[smdbrpc_pb2.TxnReq(
-                        timestamp=smdbrpc_pb2.HLCTimestamp(
-                            walltime=self.now + 1500, logicaltime=0, ),
-                        ops=[smdbrpc_pb2.Op(
-                            cmd=smdbrpc_pb2.PUT, table=59, tableName="orderline",
-                            index=1, cicada_key_cols=[key1, key1, key1, key1],
-                            key=str(key1).encode(), value=str(key1 + 10).encode(),
-
-                        ), smdbrpc_pb2.Op(
-                            cmd=smdbrpc_pb2.PUT, table=60, tableName="item",
-                            index=1, cicada_key_cols=[key2], key=str(key2).encode(),
-                            value=str(key2 + 10).encode(), )]
-                    )]
-                )
-            )
-            self.assertEqual(1, len(response.txnResps))
-            self.assertTrue(response.txnResps[0].is_committed)
-
-        t = threading.Thread(target=follow_put)
-        t.start()
 
         response = self.stub.BatchSendTxns(
             smdbrpc_pb2.BatchSendTxnsReq(
