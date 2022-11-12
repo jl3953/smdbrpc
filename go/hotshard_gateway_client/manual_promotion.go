@@ -364,15 +364,15 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 		crdbClients[i] = wrapper.Client
 	}
 
-	var wg sync.WaitGroup
+	var wg2 sync.WaitGroup
 	for i := 0; i < len(crdbAddresses); i++ {
-		wg.Add(1)
+		wg2.Add(1)
 		go func(idx int) {
-			defer wg.Done()
+			defer wg2.Done()
 			populateCRDBTableName2NumMapping(crdbAddresses[idx], crdbClients[idx])
 		}(i)
 	}
-	wg.Wait()
+	wg2.Wait()
 
 	// promote keys in batches
 	inflightBatches := 0
