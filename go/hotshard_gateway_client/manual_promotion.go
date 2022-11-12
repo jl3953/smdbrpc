@@ -429,7 +429,6 @@ func main() {
 	flag.Parse()
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
-	crdbAddrsSlice = crdbAddrsSlice[:len(crdbAddrsSlice)-1]
 
 	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
 		crdbAddrsSlice)
