@@ -22,7 +22,8 @@ class TestReplicationWithBuffering(unittest.TestCase):
             port = self.base_port + i
             destination = "localhost:{}".format(port)
             channel = grpc.insecure_channel(destination)
-            self.backup_stubs.append(smdbrpc_pb2_grpc.HotshardGatewayStub(channel))
+            self.backup_stubs.append(
+                smdbrpc_pb2_grpc.HotshardGatewayStub(channel))
 
         # ping the head
         promotionReq = smdbrpc_pb2.PromoteKeysToCicadaReq(
@@ -80,13 +81,15 @@ class TestReplicationWithBuffering(unittest.TestCase):
                         walltime=self.now + 100, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=54, tableName="district",
-                        index=1, cicada_key_cols=[key2, key2], key=str(key2).encode(),
+                        index=1, cicada_key_cols=[key2, key2],
+                        key=str(key2).encode(),
                         value=str(key2).encode(), ), ], ), smdbrpc_pb2.TxnReq(
                     timestamp=smdbrpc_pb2.HLCTimestamp(
                         walltime=self.now + 100, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=61, tableName="stock",
-                        index=1, cicada_key_cols=[key3, key3], key=str(key3).encode(),
+                        index=1, cicada_key_cols=[key3, key3],
+                        key=str(key3).encode(),
                         value=str(key3).encode(), ), ], ), ]
             )
         )
@@ -129,7 +132,8 @@ class TestReplicationWithBuffering(unittest.TestCase):
                         walltime=self.now + 100, logicaltime=0, ),
                     ops=[smdbrpc_pb2.Op(
                         cmd=smdbrpc_pb2.PUT, table=54, tableName="district",
-                        index=1, cicada_key_cols=[key2, key2], key=str(key2).encode(),
+                        index=1, cicada_key_cols=[key2, key2],
+                        key=str(key2).encode(),
                         value=str(key2).encode(), ), ], ), ]
             )
         )
@@ -139,7 +143,6 @@ class TestReplicationWithBuffering(unittest.TestCase):
         self.assertEqual(2, len(response.txnResps))
         for txnResp in response.txnResps:
             self.assertTrue(txnResp.is_committed)
-        t.join()
 
         # check that the watermark is at that timestamp
         req = smdbrpc_pb2.QueryThreadMetasReq(
@@ -150,24 +153,30 @@ class TestReplicationWithBuffering(unittest.TestCase):
         resp = self.stub.QueryThreadMetas(req)
 
         self.assertEqual(self.num_threads, len(resp.thread_metas))
-        self.assertEqual(self.now+100, resp.global_watermark.walltime)
+        self.assertEqual(self.now + 100, resp.global_watermark.walltime)
         self.assertGreater(self.num_threads, resp.global_watermark.logicaltime)
 
         # send write to lower that watermark
-        t = threading.Thread(target=trigger_replay, args=(3,))
-        t.start()
-
-        response = self.stub.BatchSendTxns(
-            smdbrpc_pb2.BatchSendTxnsReq(
-                txns=[smdbrpc_pb2.TxnReq(
-                    timestamp=smdbrpc_pb2.HLCTimestamp(
-                        walltime=self.now + 50, logicaltime=0, ),
-                    ops=[smdbrpc_pb2.Op(
-                        cmd=smdbrpc_pb2.PUT, table=61, tableName="stock",
-                        index=1, cicada_key_cols=[key3, key3], key=str(key3).encode(),
-                        value=str(key3).encode(), ), ], ), ]
+        def put():
+            response2 = self.stub.BatchSendTxns(
+                smdbrpc_pb2.BatchSendTxnsReq(
+                    txns=[smdbrpc_pb2.TxnReq(
+                        timestamp=smdbrpc_pb2.HLCTimestamp(
+                            walltime=self.now + 50, logicaltime=0, ),
+                        ops=[smdbrpc_pb2.Op(
+                            cmd=smdbrpc_pb2.PUT, table=61, tableName="stock",
+                            index=1, cicada_key_cols=[key3, key3],
+                            key=str(key3).encode(),
+                            value=str(key3).encode(), ), ], ), ]
+                )
             )
-        )
+            self.assertEqual(1, len(response2.txnResps))
+            for txnResp in response2.txnResps:
+                self.assertTrue(txnResp.is_committed)
+
+        t = threading.Thread(target=put)
+        t.start()
+        time.sleep(1)
 
         # check that the watermark lowered
         req = smdbrpc_pb2.QueryThreadMetasReq(
@@ -178,7 +187,7 @@ class TestReplicationWithBuffering(unittest.TestCase):
         resp = self.stub.QueryThreadMetas(req)
 
         self.assertEqual(self.num_threads, len(resp.thread_metas))
-        self.assertEqual(self.now+50 -1, resp.global_watermark.walltime)
+        self.assertEqual(self.now + 50 - 1, resp.global_watermark.walltime)
         self.assertGreater(self.num_threads, resp.global_watermark.logicaltime)
 
         # release the write
@@ -186,9 +195,6 @@ class TestReplicationWithBuffering(unittest.TestCase):
         t.start()
         t.join()
 
-        self.assertEqual(1, len(response.txnResps))
-        for txnResp in response.txnResps:
-            self.assertTrue(txnResp.is_committed)
 
 if __name__ == '__main__':
     unittest.main()
