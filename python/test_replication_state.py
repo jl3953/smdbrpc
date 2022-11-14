@@ -98,34 +98,6 @@ class TestReplicationState(unittest.TestCase):
         self.t_id = i
         return i
 
-    # def test_simple_read(self):
-    #   key1 = 1994812
-    #   key2 = 20200603
-    #   response = self.stub.SendTxn(smdbrpc_pb2.TxnReq(
-    #     timestamp=smdbrpc_pb2.HLCTimestamp(
-    #       walltime=self.now + 100,
-    #       logicaltime=0,
-    #     ),
-    #     ops=[
-    #       smdbrpc_pb2.Op(
-    #         cmd=smdbrpc_pb2.GET,
-    #         table=53, tableName="warehouse",
-    #         index=1,
-    #         cicada_key_cols=[key1],
-    #         key=str(key1).encode(),
-    #       ),
-    #       smdbrpc_pb2.Op(
-    #         cmd=smdbrpc_pb2.GET,
-    #         table=53, tableName="warehouse",
-    #         index=1,
-    #         cicada_key_cols=[key2],
-    #         key=str(key2).encode(),
-    #       )
-    #     ]
-    #   ))
-    #   self.assertTrue(response.is_committed)
-    #   self.assertEqual(0, len(response.responses))
-
     def test_simple_write(self):
         key1 = 994813
         key2 = 200604
