@@ -341,7 +341,7 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 
 	// connect to Cicada
 	//numClients := 16
-	numClients := 2
+	numClients := 1
 	cicadaWrappers := make([]Wrapper, numClients)
 	for i := 0; i < numClients; i++ {
 		cicadaWrappers[i] = Wrapper{
