@@ -264,6 +264,8 @@ func populateCRDBTableName2NumMapping(crdb_node string, client smdbrpc.HotshardG
 	_, err := client.PopulateCRDBTableNumMapping(context.Background(), &req)
 	if err != nil {
 		log.Fatalf("Could not populate on a client, err %+v\n", err)
+	} else {
+		log.Printf("Populated %s with tableNum %d\n", host, tableNum)
 	}
 }
 
