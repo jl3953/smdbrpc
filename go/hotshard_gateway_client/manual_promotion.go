@@ -40,8 +40,8 @@ func convertToBase256(decimal int64) (digits []int64) {
 	return dec2baseN(decimal, 256)
 }
 
-func encodeToCRDB(key int64) (encoding []byte) {
-	encoding = append(encoding, byte(189), byte(137))
+func encodeToCRDB(key int64, tableNum int) (encoding []byte) {
+	encoding = append(encoding, byte(tableNum+136), byte(137))
 	if key < 110 {
 		encoding = append(encoding, byte(136+key))
 	} else {
@@ -145,7 +145,7 @@ func transformKey(basekey int64, keyspace int64,
 
 func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 	client smdbrpc.HotshardGatewayClient, totalKeyspace int64,
-	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
+	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool, tableNum int64) {
 
 	request := smdbrpc.PromoteKeysToCicadaReq{
 		Keys: make([]*smdbrpc.Key, len(keys)),
@@ -178,9 +178,9 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 	for i, cicadaKey := range keys {
 		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
 			enableFixedSizedEncoding)
-		var table, index int64 = 53, 1
+		var table, index int64 = tableNum, 1
 		cicadaKeyCols := []int64{cicadaKey}
-		keyBytes := encodeToCRDB(crdbKey)
+		keyBytes := encodeToCRDB(crdbKey, int(tableNum))
 		tableName := "kv"
 		request.Keys[i] = &smdbrpc.Key{
 			Table:         &table,
@@ -269,7 +269,7 @@ func populateCRDBTableName2NumMapping(crdb_node string, client smdbrpc.HotshardG
 
 func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 	clients []smdbrpc.HotshardGatewayClient, totalKeyspace int64,
-	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool) {
+	hashRandomizeKeyspace bool, enableFixedSizedEncoding bool, tableNum int) {
 
 	// populate promotion request
 	updateMapReq := smdbrpc.PromoteKeysReq{
@@ -280,7 +280,7 @@ func updateCRDBPromotionMaps(keys []int64, walltime int64, logical int32,
 		crdbKey := transformKey(cicadaKey, totalKeyspace, hashRandomizeKeyspace,
 			enableFixedSizedEncoding)
 		updateMapReq.Keys[i] = &smdbrpc.KVVersion{
-			Key:   encodeToCRDB(crdbKey),
+			Key:   encodeToCRDB(crdbKey, tableNum),
 			Value: nil,
 			Timestamp: &smdbrpc.HLCTimestamp{
 				Walltime:    &walltime,
@@ -365,6 +365,7 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	}
 
 	var wg2 sync.WaitGroup
+	tableNum := queryTableNumFromNames(crdbAddresses[0], "kv")
 	for i := 0; i < len(crdbAddresses); i++ {
 		wg2.Add(1)
 		go func(idx int) {
@@ -384,10 +385,10 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 			defer wg.Done()
 			promoteKeysToCicada(keys[i:max], walltime, logical,
 				cicadaWrappers[clientIdx].Client, totalKeyspace,
-				hashRandomizeKeyspace, enableFixedSizedEncoding)
+				hashRandomizeKeyspace, enableFixedSizedEncoding, int64(tableNum))
 			updateCRDBPromotionMaps(keys[i:max], walltime, logical,
 				crdbClients, totalKeyspace, hashRandomizeKeyspace,
-				enableFixedSizedEncoding)
+				enableFixedSizedEncoding, int(tableNum))
 		}(batchFloor, int(batchCeiling), inflightBatches)
 		inflightBatches++
 		if inflightBatches%numClients == 0 {
