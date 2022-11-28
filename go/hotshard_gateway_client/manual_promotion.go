@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"crypto/sha256"
-	"database/sql"
 	"encoding/binary"
 	"flag"
 	"google.golang.org/grpc"
@@ -217,35 +216,36 @@ func promoteKeysToCicada(keys []int64, walltime int64, logical int32,
 
 func queryTableNumFromNames(host string, database string) (tableNum int32) {
 
-	dbUrl := "postgresql://root@" + host + ":26257/" + database + "?sslmode=disable"
-	db, err := sql.Open("postgres", dbUrl)
-	if err != nil {
-		panic(err)
-	}
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(db)
-	r, _ := db.Query("SELECT 'kv'::regclass::oid;")
-	defer func(r *sql.Rows) {
-		err := r.Close()
-		if err != nil {
-			panic(err)
-		}
-	}(r)
-	var num int
-	for r.Next() {
-		err := r.Scan(&num)
-		if err != nil {
-			panic(err)
-			return 0
-		}
-		log.Printf("%d\n", num)
-
-	}
-	return int32(num)
+	//dbUrl := "postgresql://root@" + host + ":26257/" + database + "?sslmode=disable"
+	//db, err := sql.Open("postgres", dbUrl)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer func(db *sql.DB) {
+	//	err := db.Close()
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}(db)
+	//r, _ := db.Query("SELECT 'kv'::regclass::oid;")
+	//defer func(r *sql.Rows) {
+	//	err := r.Close()
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}(r)
+	//var num int
+	//for r.Next() {
+	//	err := r.Scan(&num)
+	//	if err != nil {
+	//		panic(err)
+	//		return 0
+	//	}
+	//	log.Printf("%d\n", num)
+	//
+	//}
+	//return int32(num)
+	return 54
 }
 
 func populateCRDBTableName2NumMapping(crdb_node string, client smdbrpc.HotshardGatewayClient) {
