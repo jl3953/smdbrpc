@@ -245,7 +245,7 @@ func queryTableNumFromNames(host string, database string) (tableNum int32) {
 	//
 	//}
 	//return int32(num)
-	return 53
+	return 54
 }
 
 func populateCRDBTableName2NumMapping(crdb_node string, client smdbrpc.HotshardGatewayClient) {
