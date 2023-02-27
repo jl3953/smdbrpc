@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/binary"
-	"flag"
+	//"flag"
 	"google.golang.org/grpc"
 	"log"
 	"math"
@@ -403,59 +403,59 @@ func promoteKeys(keys []int64, batch int, walltime int64, logical int32,
 	}
 }
 
-func main() {
-	//log.Printf("%+v\n", convertToBase256(3000))
-	//table1_1_1_3000 := ExtractPrimaryKeyCols(
-	//	[]byte{193, 137, 137, 137, 134, 244, 71, 136})
-	//log.Printf("%+v\n", table1_1_1_3000)
-	//table6_4_2000 := ExtractPrimaryKeyCols([]byte{193, 137, 142, 140, 134, 248,
-	//	47, 136})
-	//log.Printf("%+v\n", table6_4_2000)
-	//table6_7_2001 := ExtractPrimaryKeyCols([]byte{193, 137, 142, 143, 247, 7,
-	//	209, 136})
-	//log.Printf("%+v\n", table6_7_2001)
-	batch := flag.Int("batch", 1,
-		"number of keys to promote in a single batch")
-	cicadaAddr := flag.String("cicadaAddr", "node-11:50051",
-		"cicada host machine")
-	crdbAddrs := flag.String("crdbAddrs", "node-8:50055,node-9:50055",
-		"csv of crdb addresses")
-	keyMin := flag.Int64("keyMin", 0, "minimum key to promote")
-	keyMax := flag.Int64("keyMax", 0, "one over the maximum key to promote")
-	keyspace := flag.Int64("keyspace", 400000000, "total keyspace")
-	hash_randomize_keyspace := flag.Bool("hash_randomize_keyspace", true,
-		"whether to hash the keyspace so hotkeys aren't contiguous")
-	enable_fixed_sized_encoding := flag.Bool(
-		"enable_fixed_sized_encoding", true,
-		"whether to disable adding a constant to keyspace to keep all keys"+
-			" the same size")
-	flag.Parse()
-
-	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
-
-	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
-		crdbAddrsSlice)
-
-	walltime := time.Now().UnixNano()
-	var logical int32 = 0
-
-	tic := time.Now()
-	if *keyMax-*keyMin > 0 {
-		keys := make([]int64, *keyMax-*keyMin)
-		for i := int64(0); i < *keyMax-*keyMin; i++ {
-			//keys[i] = transformKey(i + *keyMin, *keyspace,
-			//	*hash_randomize_keyspace, *enable_fixed_sized_encoding)
-			keys[i] = i
-		}
-		sort.Slice(keys, func(i, j int) bool {
-			return keys[i] < keys[j]
-		})
-		log.Printf("enable fixed %+v, hash %+v\n", *enable_fixed_sized_encoding, *hash_randomize_keyspace)
-		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
-			crdbAddrsSlice, *keyspace, *hash_randomize_keyspace,
-			*enable_fixed_sized_encoding)
-
-	}
-	toc := time.Since(tic)
-	log.Printf("elapsed %+v\n", toc)
-}
+//func main() {
+//	//log.Printf("%+v\n", convertToBase256(3000))
+//	//table1_1_1_3000 := ExtractPrimaryKeyCols(
+//	//	[]byte{193, 137, 137, 137, 134, 244, 71, 136})
+//	//log.Printf("%+v\n", table1_1_1_3000)
+//	//table6_4_2000 := ExtractPrimaryKeyCols([]byte{193, 137, 142, 140, 134, 248,
+//	//	47, 136})
+//	//log.Printf("%+v\n", table6_4_2000)
+//	//table6_7_2001 := ExtractPrimaryKeyCols([]byte{193, 137, 142, 143, 247, 7,
+//	//	209, 136})
+//	//log.Printf("%+v\n", table6_7_2001)
+//	batch := flag.Int("batch", 1,
+//		"number of keys to promote in a single batch")
+//	cicadaAddr := flag.String("cicadaAddr", "node-11:50051",
+//		"cicada host machine")
+//	crdbAddrs := flag.String("crdbAddrs", "node-8:50055,node-9:50055",
+//		"csv of crdb addresses")
+//	keyMin := flag.Int64("keyMin", 0, "minimum key to promote")
+//	keyMax := flag.Int64("keyMax", 0, "one over the maximum key to promote")
+//	keyspace := flag.Int64("keyspace", 400000000, "total keyspace")
+//	hash_randomize_keyspace := flag.Bool("hash_randomize_keyspace", true,
+//		"whether to hash the keyspace so hotkeys aren't contiguous")
+//	enable_fixed_sized_encoding := flag.Bool(
+//		"enable_fixed_sized_encoding", true,
+//		"whether to disable adding a constant to keyspace to keep all keys"+
+//			" the same size")
+//	flag.Parse()
+//
+//	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
+//
+//	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
+//		crdbAddrsSlice)
+//
+//	walltime := time.Now().UnixNano()
+//	var logical int32 = 0
+//
+//	tic := time.Now()
+//	if *keyMax-*keyMin > 0 {
+//		keys := make([]int64, *keyMax-*keyMin)
+//		for i := int64(0); i < *keyMax-*keyMin; i++ {
+//			//keys[i] = transformKey(i + *keyMin, *keyspace,
+//			//	*hash_randomize_keyspace, *enable_fixed_sized_encoding)
+//			keys[i] = i
+//		}
+//		sort.Slice(keys, func(i, j int) bool {
+//			return keys[i] < keys[j]
+//		})
+//		log.Printf("enable fixed %+v, hash %+v\n", *enable_fixed_sized_encoding, *hash_randomize_keyspace)
+//		promoteKeys(keys, *batch, walltime, logical, *cicadaAddr,
+//			crdbAddrsSlice, *keyspace, *hash_randomize_keyspace,
+//			*enable_fixed_sized_encoding)
+//
+//	}
+//	toc := time.Since(tic)
+//	log.Printf("elapsed %+v\n", toc)
+//}

@@ -57,6 +57,7 @@ func sendRequest(
 		}
 
 		isDuplicate := make(map[uint64]bool)
+        tableName := "kv"
 		for j := 0; j < keysPerTxn; j++ {
 
 			key := chooseKey()
@@ -72,8 +73,9 @@ func sendRequest(
 				Table:   &table,
 				Index:   &index,
 				CicadaKeyCols: []int64{int64(key)},
-				Key:     encodeToCRDB(0),
+				Key:     encodeToCRDB(0, int(table)),
 				Value:   nil,
+                TableName: &tableName,
 			}
 
 			if isRead {
@@ -135,8 +137,9 @@ func sendPromotion(ctx context.Context, batch int,
 		// populate read or write request list
 		var table, index int64 = 53, 1
 		keyCols := []int64{int64(key)}
-		keyBytes := encodeToCRDB(int64(key))
-		valBytes := []byte("j")
+		keyBytes := encodeToCRDB(int64(key), int(table))
+		valBytes := []byte("jennifer")
+        tableName := "kv"
 		request.Keys[i] = &smdbrpc.Key{
 			Table:   &table,
 			Index:   &index,
@@ -147,6 +150,7 @@ func sendPromotion(ctx context.Context, batch int,
 				Logicaltime: &logical,
 			},
 			Value:   valBytes,
+            TableName: &tableName,
 		}
 	}
 
@@ -333,18 +337,20 @@ func promotekeyspace(address string, keyspace uint64, stepsize uint64) {
 		promotionReq := smdbrpc.PromoteKeysToCicadaReq{
 			Keys: make([]*smdbrpc.Key, stepsize),
 		}
+        tableName := "kv"
 		for i := 0; uint64(i) < stepsize; i++ {
 			k := int64(key) + int64(i)
 			promotionReq.Keys[i] = &smdbrpc.Key{
 				Table:     &table,
 				Index:     &index,
 				CicadaKeyCols:   []int64{k},
-				Key:       encodeToCRDB(int64(k)),
+				Key:       encodeToCRDB(int64(k), int(table)),
 				Timestamp: &smdbrpc.HLCTimestamp{
 					Walltime:    &wall,
 					Logicaltime: &logical,
 				},
 				Value:     []byte("j"),
+                TableName: &tableName,
 			}
 		}
 		_, _ = client.PromoteKeysToCicada(ctx, &promotionReq)
