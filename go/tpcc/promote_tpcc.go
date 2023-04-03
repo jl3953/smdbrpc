@@ -165,7 +165,7 @@ func promoteKeysToCicada(keys []Key, walltime int64, logical int32,
 	// promote to cicada
 	reply, err := client.PromoteKeysToCicada(context.Background(), &request)
 	if err != nil {
-		log.Fatalf("Failed to send, err %+v\n", err)
+		log.Fatalf("Failed to send to Cicada, err %+v\n", err)
 	} else {
 		for _, didKeySucceed := range reply.GetSuccessfullyPromoted() {
 			if !didKeySucceed {
@@ -328,13 +328,13 @@ func read_csv_mapping_file(csvmappingfile string) (mapping map[string]int32) {
 	}(fd)
 
 	// read csv file
+	mapping = make(map[string]int32)
 	fileReader := csv.NewReader(fd)
-	for record, _ := fileReader.Read(); record != nil; {
+	for record, _ := fileReader.Read(); record != nil; record, _ = fileReader.Read() {
 		tableName := record[0]
 		tableNum, _ := strconv.Atoi(record[1])
 		mapping[tableName] = int32(tableNum)
 	}
-
 	return mapping
 }
 
