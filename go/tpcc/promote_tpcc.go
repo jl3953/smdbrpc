@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/binary"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -21,94 +19,6 @@ import (
 	"time"
 )
 
-const (
-	WAREHOUSE = "warehouse"
-)
-
-type Key struct {
-	TableName string
-	TableNum  int32
-	Index     int
-	PkCols    []int64
-	ByteKey   []byte
-}
-
-func reverse(numbers []int64) []int64 {
-	for i := 0; i < len(numbers)/2; i++ {
-		j := len(numbers) - i - 1
-		numbers[i], numbers[j] = numbers[j], numbers[i]
-	}
-	return numbers
-}
-
-func dec2baseN(decimal int64, baseN int) (digits []int64) {
-	for decimal > 0 {
-		digit := decimal % int64(baseN)
-		digits = append(digits, digit)
-		decimal /= int64(baseN)
-	}
-	digits = reverse(digits)
-	return digits
-}
-
-func convertToBase256(decimal int64) (digits []int64) {
-	return dec2baseN(decimal, 256)
-}
-
-func encodeToCRDB(key int64, tableNum int) (encoding []byte) {
-	encoding = append(encoding, byte(tableNum+136), byte(137))
-	if key < 110 {
-		encoding = append(encoding, byte(136+key))
-	} else {
-		digits := convertToBase256(key)
-		encoding = append(encoding, byte(245+len(digits)))
-		for _, digit := range digits {
-			encoding = append(encoding, byte(digit))
-		}
-	}
-	encoding = append(encoding, byte(136))
-	return encoding
-}
-
-func randomizeHash(key int64, keyspace int64) int64 {
-	byteKey := make([]byte, 8)
-	binary.BigEndian.PutUint64(byteKey, uint64(key))
-	hashed32Bytes := sha256.Sum256(byteKey)
-	hashed := make([]byte, 32)
-	for i, b := range hashed32Bytes {
-		hashed[i] = b
-	}
-	hashedUint64 := binary.BigEndian.Uint64(hashed)
-	hashedModulo := hashedUint64 % uint64(keyspace+1)
-	return int64(hashedModulo)
-}
-
-func jenkyFixedBytes(key int64, keyspace int64) int64 {
-	var constant int64 = 256
-	for keyspace > constant {
-		constant *= 256
-	}
-
-	constant = int64(math.Pow(256, 5))
-
-	return key + constant
-}
-
-func transformKey(basekey int64, keyspace int64,
-	hash_randomize_keyspace bool, enable_fixed_sized_encoding bool) (
-	key int64) {
-	key = basekey
-	if hash_randomize_keyspace {
-		key = randomizeHash(basekey, keyspace)
-	}
-
-	if enable_fixed_sized_encoding {
-		key = jenkyFixedBytes(key, keyspace)
-	}
-
-	return key
-}
-
 func promoteKeysToCicada(keys []Key, walltime int64, logical int32,
 	client smdbrpc.HotshardGatewayClient) {
 
@@ -123,24 +33,26 @@ func promoteKeysToCicada(keys []Key, walltime int64, logical int32,
 	//logical_len := []int64{4, 4, 4, 4}
 	//timestamp_bookend_len := []int64{1}
 
-	checksum := []int64{82, 196, 81, 94}
-	who_knows := []int64{10, 38, 8}
-	jennifer := []int64{106, 101, 110, 110, 105, 102, 101, 114}
-	jennifers := []int64{}
-	for i := 0; i < 64; i++ {
-		jennifers = append(jennifers, jennifer...)
-	}
-	var val []int64
-	val = append(val, checksum...)
-	val = append(val, who_knows...)
-	val = append(val, jennifers...)
-	valBytes := make([]byte, len(val))
-
-	for i, b := range val {
-		valBytes[i] = byte(b)
-	}
+	//checksum := []int64{82, 196, 81, 94}
+	//who_knows := []int64{10, 38, 8}
+	//jennifer := []int64{106, 101, 110, 110, 105, 102, 101, 114}
+	//jennifers := []int64{}
+	//for i := 0; i < 64; i++ {
+	//	jennifers = append(jennifers, jennifer...)
+	//}
+	//var val []int64
+	//val = append(val, checksum...)
+	//val = append(val, who_knows...)
+	//val = append(val, jennifers...)
+	//valBytes := make([]byte, len(val))
+	//
+	//for i, b := range val {
+	//	valBytes[i] = byte(b)
+	//}
 
 	for i, key := range keys {
+
+		valBytes := DATA[key.hash()]
 		var table, index int64 = int64(key.TableNum), int64(key.Index)
 		request.Keys[i] = &smdbrpc.Key{
 			Table:         &table,
@@ -400,6 +312,8 @@ func main() {
 
 	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
 		crdbAddrsSlice)
+
+	ingest_tpcc_data()
 
 	walltime := time.Now().UnixNano()
 	var logical int32 = 0
