@@ -10,6 +10,7 @@ import (
 
 const (
 	WAREHOUSE = "warehouse"
+	DISTRICT  = "district"
 )
 
 type Key struct {

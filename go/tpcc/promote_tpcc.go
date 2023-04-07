@@ -266,6 +266,22 @@ func deduceWarehouseKeys(tableNum int32, index int, numWarehouses int) (warehous
 	return warehouseKeys
 }
 
+func deduceDistrictKeys(tableNum int32, index int, numWarehouses int) (districtKeys []Key) {
+	for w_id := 0; w_id < numWarehouses; w_id++ {
+		for d_id := 1; d_id <= 10; d_id++ {
+			key := Key{
+				TableName: DISTRICT,
+				TableNum:  tableNum,
+				Index:     index,
+				PkCols:    []int64{int64(w_id), int64(d_id)},
+				ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136 + d_id), byte(136)},
+			}
+			districtKeys = append(districtKeys, key)
+		}
+	}
+	return districtKeys
+}
+
 func populateAllTable2NumMappings(crdbAddrsSlice []string, tableName2NumMapping map[string]int32) {
 
 	// populate CRDB nodes with table numbers
@@ -327,9 +343,11 @@ func main() {
 	populateAllTable2NumMappings(crdbAddrsSlice, tableName2NumMapping)
 
 	// key generation--just promote the warehouse table for now
-	tableName := tableName2NumMapping[WAREHOUSE]
 	index := 1
-	keys := deduceWarehouseKeys(tableName, index, *warehouses)
+	warehouseKeys := deduceWarehouseKeys(tableName2NumMapping[WAREHOUSE], index, *warehouses)
+	//districtKeys := deduceDistrictKeys(tableName2NumMapping[DISTRICT], index, *warehouses)
+	//keys := append(warehouseKeys, districtKeys...)
+	keys := warehouseKeys
 
 	// promote keys to both CockroachDB and Cicada.
 	promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)
