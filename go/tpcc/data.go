@@ -65,10 +65,6 @@ func ingest_tpcc_data() {
 			PkCols:    pkCols,
 		}
 
-		// populate warehouse keys
-		WAREHOUSE_KEYS = append(WAREHOUSE_KEYS, key)
-
-		// handle data
 		byteDataAsStrings := strings.Split(strings.TrimSpace(data[1]), " ")
 		var byteData []byte
 		for _, byteDatumAsString := range byteDataAsStrings {
