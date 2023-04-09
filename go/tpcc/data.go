@@ -11,6 +11,7 @@ import (
 const (
 	WAREHOUSE = "warehouse"
 	DISTRICT  = "district"
+	ORDER     = "order"
 )
 
 type Key struct {
@@ -19,6 +20,7 @@ type Key struct {
 	Index     int
 	PkCols    []int64
 	ByteKey   []byte
+	ByteValue []byte
 }
 
 func (key *Key) hash() string {
@@ -29,8 +31,21 @@ func (key *Key) hash() string {
 	return result
 }
 
-var WAREHOUSE_KEYS []Key
-var DATA = map[string][]byte{}
+var DATA = map[string]Key{}
+
+func shouldStop(byteData []byte, i int) bool {
+	return byteData[i] == 136 && byteData[i+1] == 0 && byteData[i+2] == 23
+}
+
+func extractKey(byteData []byte) []byte {
+
+	key := make([]byte, 0)
+	for i := 8; shouldStop(byteData, i) == false; i++ {
+		key = append(key, byteData[i])
+	}
+	key = append(key, byte(136))
+	return key
+}
 
 func ingest_tpcc_data() {
 	cur_dir, _ := os.Getwd()
@@ -56,13 +71,9 @@ func ingest_tpcc_data() {
 		tableMeta := strings.Split(strings.TrimSpace(data[0]), ",")
 		tableName := tableMeta[0]
 		pkCols := make([]int64, 0)
-		for i := 1; i < len(tableMeta); i++ {
+		for i := 2; i < len(tableMeta); i++ {
 			pkCol, _ := strconv.Atoi(strings.TrimSpace(tableMeta[i]))
 			pkCols = append(pkCols, int64(pkCol))
-		}
-		key := Key{
-			TableName: tableName,
-			PkCols:    pkCols,
 		}
 
 		byteDataAsStrings := strings.Split(strings.TrimSpace(data[1]), " ")
@@ -72,12 +83,18 @@ func ingest_tpcc_data() {
 			byteData = append(byteData, byte(byteDatum))
 		}
 
-		// populate data
-		DATA[key.hash()] = byteData
-	}
+		key := Key{
+			TableName: tableName,
+			TableNum:  int32(byteData[8] - 136),
+			Index:     int(byteData[9] - 136),
+			PkCols:    pkCols,
+			ByteKey:   extractKey(byteData),
+			ByteValue: byteData,
+		}
 
-	for key, val := range DATA {
-		fmt.Printf("%s, %+v\n", key, val)
+		// populate data
+		DATA[key.hash()] = key
+		fmt.Printf("key %+v\n", key)
 	}
 }
 

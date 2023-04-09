@@ -52,7 +52,6 @@ func promoteKeysToCicada(keys []Key, walltime int64, logical int32,
 
 	for i, key := range keys {
 
-		valBytes := DATA[key.hash()]
 		var table, index int64 = int64(key.TableNum), int64(key.Index)
 		request.Keys[i] = &smdbrpc.Key{
 			Table:         &table,
@@ -63,7 +62,7 @@ func promoteKeysToCicada(keys []Key, walltime int64, logical int32,
 				Walltime:    &walltime,
 				Logicaltime: &logical,
 			},
-			Value:       valBytes,
+			Value:       key.ByteValue,
 			CrdbKeyCols: key.PkCols,
 			TableName:   &key.TableName,
 		}
@@ -312,6 +311,21 @@ func populateAllTable2NumMappings(crdbAddrsSlice []string, tableName2NumMapping 
 
 }
 
+func filterKeys(tableSet map[string]bool, tableName2NumMapping map[string]int32) []Key {
+	keys := make([]Key, 0)
+	for _, key := range DATA {
+		if _, exists := tableSet[key.TableName]; exists {
+			key.TableNum = tableName2NumMapping[key.TableName]
+			key.ByteKey[0] = byte(136 + tableName2NumMapping[key.TableName])
+			key.ByteValue[8] = byte(136 + tableName2NumMapping[key.TableName])
+			keys = append(keys, key)
+		} else {
+			continue
+		}
+	}
+	return keys
+}
+
 func main() {
 
 	batch := flag.Int("batch", 1,
@@ -321,7 +335,7 @@ func main() {
 	crdbAddrs := flag.String("crdbAddrs", "node-8:50055,node-9:50055",
 		"csv of crdb addresses")
 	csvmappingfile := flag.String("csvmappingfile", "", "csv mapping file, maps tables to nums")
-	warehouses := flag.Int("warehouses", 1, "number of warehouses")
+	//warehouses := flag.Int("warehouses", 1, "number of warehouses")
 	flag.Parse()
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
@@ -343,11 +357,16 @@ func main() {
 	populateAllTable2NumMappings(crdbAddrsSlice, tableName2NumMapping)
 
 	// key generation--just promote the warehouse table for now
-	index := 1
-	warehouseKeys := deduceWarehouseKeys(tableName2NumMapping[WAREHOUSE], index, *warehouses)
+	//index := 1
+	//warehouseKeys := deduceWarehouseKeys(tableName2NumMapping[WAREHOUSE], index, *warehouses)
 	//districtKeys := deduceDistrictKeys(tableName2NumMapping[DISTRICT], index, *warehouses)
 	//keys := append(warehouseKeys, districtKeys...)
-	keys := warehouseKeys
+	dontcare := true
+	tableSet := map[string]bool{
+		WAREHOUSE: dontcare,
+		ORDER:     dontcare,
+	}
+	keys := filterKeys(tableSet, tableName2NumMapping)
 
 	// promote keys to both CockroachDB and Cicada.
 	promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)
