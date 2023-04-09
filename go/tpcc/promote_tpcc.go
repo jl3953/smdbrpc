@@ -288,7 +288,7 @@ func deduceOrderKeys(tableNum int32, index int, numWarehouses int, numOrders int
 
 	for w_id := 0; w_id < numWarehouses; w_id++ {
 		for d_id := 1; d_id <= 10; d_id++ {
-			for o_id := 3002; o_id < 3002+numOrders; o_id++ {
+			for o_id := 3001; o_id < 3001+numOrders; o_id++ {
 
 				uint64Byte := bytes.Repeat([]byte("0"), 8)
 				byteKey := []byte{
