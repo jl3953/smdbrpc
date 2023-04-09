@@ -94,7 +94,6 @@ func ingest_tpcc_data() {
 
 		// populate data
 		DATA[key.hash()] = key
-		fmt.Printf("key %+v\n", key)
 	}
 }
 

@@ -323,6 +323,7 @@ func deduceOrderKeys(tableNum int32, index int, numWarehouses int, numOrders int
 				}
 
 				keys = append(keys, key)
+				fmt.Printf("future order key %+v\n", key)
 			}
 		}
 	}
@@ -384,7 +385,7 @@ func main() {
 	crdbAddrs := flag.String("crdbAddrs", "node-8:50055,node-9:50055",
 		"csv of crdb addresses")
 	csvmappingfile := flag.String("csvmappingfile", "", "csv mapping file, maps tables to nums")
-	//warehouses := flag.Int("warehouses", 1, "number of warehouses")
+	warehouses := flag.Int("warehouses", 1, "number of warehouses")
 	flag.Parse()
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
@@ -403,7 +404,7 @@ func main() {
 	tableName2NumMapping := read_csv_mapping_file(*csvmappingfile)
 
 	// populate CRDB nodes with said mapping
-	populateAllTable2NumMappings(crdbAddrsSlice, tableName2NumMapping)
+	//populateAllTable2NumMappings(crdbAddrsSlice, tableName2NumMapping)
 
 	// key generation--just promote the warehouse table for now
 	//index := 1
@@ -413,9 +414,11 @@ func main() {
 	dontcare := true
 	tableSet := map[string]bool{
 		WAREHOUSE: dontcare,
-		ORDER:     dontcare,
+		//ORDER:     dontcare,
 	}
 	keys := filterKeys(tableSet, tableName2NumMapping)
+	futureOrderKeys := deduceOrderKeys(tableName2NumMapping[ORDER], 1, *warehouses, 2000)
+	keys = append(keys, futureOrderKeys...)
 
 	// promote keys to both CockroachDB and Cicada.
 	promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)
