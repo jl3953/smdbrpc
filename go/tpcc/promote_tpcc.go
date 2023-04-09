@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -249,36 +251,83 @@ func read_csv_mapping_file(csvmappingfile string) (mapping map[string]int32) {
 	return mapping
 }
 
-func deduceWarehouseKeys(tableNum int32, index int, numWarehouses int) (warehouseKeys []Key) {
+//func deduceWarehouseKeys(tableNum int32, index int, numWarehouses int) (warehouseKeys []Key) {
+//
+//	for w_id := 0; w_id < numWarehouses; w_id++ {
+//		key := Key{
+//			TableName: WAREHOUSE,
+//			TableNum:  tableNum,
+//			Index:     index,
+//			PkCols:    []int64{int64(w_id)},
+//			ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136)},
+//		}
+//		warehouseKeys = append(warehouseKeys, key)
+//	}
+//
+//	return warehouseKeys
+//}
+//
+//func deduceDistrictKeys(tableNum int32, index int, numWarehouses int) (districtKeys []Key) {
+//	for w_id := 0; w_id < numWarehouses; w_id++ {
+//		for d_id := 1; d_id <= 10; d_id++ {
+//			key := Key{
+//				TableName: DISTRICT,
+//				TableNum:  tableNum,
+//				Index:     index,
+//				PkCols:    []int64{int64(w_id), int64(d_id)},
+//				ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136 + d_id), byte(136)},
+//			}
+//			districtKeys = append(districtKeys, key)
+//		}
+//	}
+//	return districtKeys
+//}
 
-	for w_id := 0; w_id < numWarehouses; w_id++ {
-		key := Key{
-			TableName: WAREHOUSE,
-			TableNum:  tableNum,
-			Index:     index,
-			PkCols:    []int64{int64(w_id)},
-			ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136)},
-		}
-		warehouseKeys = append(warehouseKeys, key)
-	}
+func deduceOrderKeys(tableNum int32, index int, numWarehouses int, numOrders int) []Key {
+	keys := make([]Key, numOrders)
 
-	return warehouseKeys
-}
-
-func deduceDistrictKeys(tableNum int32, index int, numWarehouses int) (districtKeys []Key) {
 	for w_id := 0; w_id < numWarehouses; w_id++ {
 		for d_id := 1; d_id <= 10; d_id++ {
-			key := Key{
-				TableName: DISTRICT,
-				TableNum:  tableNum,
-				Index:     index,
-				PkCols:    []int64{int64(w_id), int64(d_id)},
-				ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136 + d_id), byte(136)},
+			for o_id := 3002; o_id < 3002+numOrders; o_id++ {
+
+				uint64Byte := bytes.Repeat([]byte("0"), 8)
+				byteKey := []byte{
+					byte(136 + tableNum), // table
+					byte(136 + index),    // index
+					byte(136 + w_id),     // warehouse id
+					byte(136 + d_id),     // district id
+				}
+
+				neg := make([]byte, 0)
+				binary.BigEndian.PutUint64(uint64Byte, uint64(o_id))
+				for i := 0; i < 8; i++ {
+					if i == 7 {
+						neg = append(neg, 255-uint64Byte[i]+1)
+					} else if uint64Byte[i] == 0 {
+						continue
+					} else {
+						neg = append(neg, 255-uint64Byte[i])
+					}
+				}
+				byteKey = append(byteKey, byte(136-len(neg)))
+				byteKey = append(byteKey, neg...)
+				byteKey = append(byteKey, 136)
+
+				key := Key{
+					TableName: ORDER,
+					TableNum:  tableNum,
+					Index:     index,
+					PkCols:    []int64{int64(w_id), int64(d_id), int64(o_id)},
+					ByteKey:   byteKey,
+					ByteValue: bytes.Repeat([]byte("j"), 45),
+				}
+
+				keys = append(keys, key)
 			}
-			districtKeys = append(districtKeys, key)
 		}
 	}
-	return districtKeys
+
+	return keys
 }
 
 func populateAllTable2NumMappings(crdbAddrsSlice []string, tableName2NumMapping map[string]int32) {
