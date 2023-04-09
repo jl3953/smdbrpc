@@ -284,7 +284,7 @@ func read_csv_mapping_file(csvmappingfile string) (mapping map[string]int32) {
 //}
 
 func deduceOrderKeys(tableNum int32, index int, numWarehouses int, numOrders int) []Key {
-	keys := make([]Key, numOrders)
+	keys := make([]Key, 0)
 
 	for w_id := 0; w_id < numWarehouses; w_id++ {
 		for d_id := 1; d_id <= 10; d_id++ {
@@ -323,7 +323,7 @@ func deduceOrderKeys(tableNum int32, index int, numWarehouses int, numOrders int
 				}
 
 				keys = append(keys, key)
-				fmt.Printf("future order key %+v\n", key)
+				//fmt.Printf("future order key %+v\n", key)
 			}
 		}
 	}
@@ -404,7 +404,7 @@ func main() {
 	tableName2NumMapping := read_csv_mapping_file(*csvmappingfile)
 
 	// populate CRDB nodes with said mapping
-	//populateAllTable2NumMappings(crdbAddrsSlice, tableName2NumMapping)
+	populateAllTable2NumMappings(crdbAddrsSlice, tableName2NumMapping)
 
 	// key generation--just promote the warehouse table for now
 	//index := 1
