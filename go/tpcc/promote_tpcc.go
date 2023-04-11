@@ -417,7 +417,7 @@ func main() {
 		//ORDER:     dontcare,
 	}
 	keys := filterKeys(tableSet, tableName2NumMapping)
-	futureOrderKeys := deduceOrderKeys(tableName2NumMapping[ORDER], 1, *warehouses, 2000)
+	futureOrderKeys := deduceOrderKeys(tableName2NumMapping[ORDER], 1, *warehouses, 5000)
 	keys = append(keys, futureOrderKeys...)
 
 	// promote keys to both CockroachDB and Cicada.
