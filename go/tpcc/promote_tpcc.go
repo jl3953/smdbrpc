@@ -267,21 +267,21 @@ func read_csv_mapping_file(csvmappingfile string) (mapping map[string]int32) {
 //	return warehouseKeys
 //}
 //
-//func deduceDistrictKeys(tableNum int32, index int, numWarehouses int) (districtKeys []Key) {
-//	for w_id := 0; w_id < numWarehouses; w_id++ {
-//		for d_id := 1; d_id <= 10; d_id++ {
-//			key := Key{
-//				TableName: DISTRICT,
-//				TableNum:  tableNum,
-//				Index:     index,
-//				PkCols:    []int64{int64(w_id), int64(d_id)},
-//				ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136 + d_id), byte(136)},
-//			}
-//			districtKeys = append(districtKeys, key)
-//		}
-//	}
-//	return districtKeys
-//}
+func deduceDistrictKeys(tableNum int32, index int, numWarehouses int) (districtKeys []Key) {
+	for w_id := 0; w_id < numWarehouses; w_id++ {
+		for d_id := 1; d_id <= 10; d_id++ {
+			key := Key{
+				TableName: DISTRICT,
+				TableNum:  tableNum,
+				Index:     index,
+				PkCols:    []int64{int64(w_id), int64(d_id)},
+				ByteKey:   []byte{byte(136 + tableNum), byte(136 + index), byte(136 + w_id), byte(136 + d_id), byte(136)},
+			}
+			districtKeys = append(districtKeys, key)
+		}
+	}
+	return districtKeys
+}
 
 func deduceOrderKeys(tableNum int32, index int, numWarehouses int, numOrders int) []Key {
 	keys := make([]Key, 0)
@@ -361,6 +361,11 @@ func populateAllTable2NumMappings(crdbAddrsSlice []string, tableName2NumMapping 
 
 }
 
+/**
+Filters out the keys to promote from the set of all hardcoded keys.
+
+tableSet--set of tables being promoted.
+*/
 func filterKeys(tableSet map[string]bool, tableName2NumMapping map[string]int32) []Key {
 	keys := make([]Key, 0)
 	for _, key := range DATA {
@@ -388,12 +393,14 @@ func main() {
 	warehouses := flag.Int("warehouses", 1, "number of warehouses")
 	flag.Parse()
 
+	fmt.Printf("warehouses %d\n", *warehouses);
+
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
 
 	log.Printf("batch %d, cicadaAddr %s, crdbAddrs %+s\n", *batch, *cicadaAddr,
 		crdbAddrsSlice)
 
-	ingest_tpcc_data()
+	ingestTpccData()
 
 	walltime := time.Now().UnixNano()
 	var logical int32 = 0
@@ -413,12 +420,15 @@ func main() {
 	//keys := append(warehouseKeys, districtKeys...)
 	dontcare := true
 	tableSet := map[string]bool{
-		WAREHOUSE: dontcare,
+		//WAREHOUSE: dontcare,
+		DISTRICT: dontcare,
 		//ORDER:     dontcare,
 	}
 	keys := filterKeys(tableSet, tableName2NumMapping)
-	futureOrderKeys := deduceOrderKeys(tableName2NumMapping[ORDER], 1, *warehouses, 5000)
-	keys = append(keys, futureOrderKeys...)
+	//futureOrderKeys := deduceOrderKeys(tableName2NumMapping[ORDER], 1, *warehouses, 5000)
+	//districtKeys := deduceDistrictKeys(tableName2NumMapping[DISTRICT], index, *warehouses)
+	//keys = append(keys, futureOrderKeys...)
+	//keys = append(keys, districtKeys...)
 
 	// promote keys to both CockroachDB and Cicada.
 	promoteKeys(keys, *batch, walltime, logical, *cicadaAddr, crdbAddrsSlice)

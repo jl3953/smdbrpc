@@ -47,9 +47,12 @@ func extractKey(byteData []byte) []byte {
 	return key
 }
 
-func ingest_tpcc_data() {
-	cur_dir, _ := os.Getwd()
-	datafile := cur_dir + "/tpcc/tpcc_data.txt"
+/**
+Ingests data from hard coded data file.
+*/
+func ingestTpccData() {
+	curDir, _ := os.Getwd()
+	datafile := curDir + "/tpcc/tpcc_data.txt"
 	fd, err := os.Open(datafile)
 	if err != nil {
 		fmt.Printf("Opening %s error %+v\n", datafile, err)
