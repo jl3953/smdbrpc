@@ -104,6 +104,7 @@ service HotshardGateway {
   rpc ReplayOnTail (ReplayOnTailReq) returns (ReplayOnTailResp) {}
 
   rpc CheckBackupState(BatchSendTxnsReq) returns (BatchSendTxnsResp) {}
+
 }
 
 message TriggerReplayReq {}
@@ -285,6 +286,7 @@ enum Cmd {
   PUT = 2;
   CONDITIONAL_PUT = 3;
   INIT_PUT = 4;
+  INCREMENT = 5;
 }
 
 message Key {
