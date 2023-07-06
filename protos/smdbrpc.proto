@@ -105,6 +105,16 @@ service HotshardGateway {
 
   rpc CheckBackupState(BatchSendTxnsReq) returns (BatchSendTxnsResp) {}
 
+  rpc ReleaseMe(ReleaseMeReq) returns (ReleaseMeResp) {}
+
+}
+
+message ReleaseMeReq {
+  required HLCTimestamp watermark = 1;
+  required int32 threadId = 2;
+}
+
+message ReleaseMeResp {
 }
 
 message TriggerReplayReq {}
@@ -197,6 +207,7 @@ message ReplicateLogReq {
 
 message ReplicateLogResp {
   required HLCTimestamp watermark = 1;
+  repeated HLCTimestamp lowerTimestamps = 2;
 }
 
 message AckReplicateLogReq {
@@ -330,13 +341,13 @@ message TxnResp {
 }
 
 message CalculateCicadaReq {
-  optional double cpu_target = 1;    // ideal % cpu usage
-  optional double cpu_ceiling = 2;    // max allowable % cpu usage
-  optional double cpu_floor = 3;    // min allowable % cpu usage
-  optional double mem_target = 4;    // ideal mem usage
-  optional double mem_ceiling = 5;    // max allowable mem usage
-  optional double mem_floor = 6;    // min allowable mem usage
-  optional double percentile_n = 7;  // the percentile of keys newly promoted keys have to beat
+  optional double cpu_target = 1;       // ideal % cpu usage
+  optional double cpu_ceiling = 2;      // max allowable % cpu usage
+  optional double cpu_floor = 3;        // min allowable % cpu usage
+  optional double mem_target = 4;       // ideal mem usage
+  optional double mem_ceiling = 5;      // max allowable mem usage
+  optional double mem_floor = 6;        // min allowable mem usage
+  optional double percentile_n = 7;     // the percentile of keys newly promoted keys have to beat
   optional HLCTimestamp timestamp = 8;
 }
 
