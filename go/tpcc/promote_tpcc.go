@@ -366,10 +366,10 @@ Filters out the keys to promote from the set of all hardcoded keys.
 
 tableSet--set of tables being promoted.
 */
-func filterKeys(tableSet map[string]bool, tableName2NumMapping map[string]int32) []Key {
+func filterKeys(tableSet map[string]bool, tableName2NumMapping map[string]int32, warehouses int) []Key {
 	keys := make([]Key, 0)
 	for _, key := range DATA {
-		if _, exists := tableSet[key.TableName]; exists {
+		if _, exists := tableSet[key.TableName]; exists && key.PkCols[0] < int64(warehouses) {
 			key.TableNum = tableName2NumMapping[key.TableName]
 			key.ByteKey[0] = byte(136 + tableName2NumMapping[key.TableName])
 			key.ByteValue[8] = byte(136 + tableName2NumMapping[key.TableName])
@@ -392,8 +392,6 @@ func main() {
 	csvmappingfile := flag.String("csvmappingfile", "", "csv mapping file, maps tables to nums")
 	warehouses := flag.Int("warehouses", 1, "number of warehouses")
 	flag.Parse()
-
-	fmt.Printf("warehouses %d\n", *warehouses);
 
 	crdbAddrsSlice := strings.Split(*crdbAddrs, ",")
 
@@ -424,7 +422,7 @@ func main() {
 		DISTRICT: dontcare,
 		//ORDER:     dontcare,
 	}
-	keys := filterKeys(tableSet, tableName2NumMapping)
+	keys := filterKeys(tableSet, tableName2NumMapping, *warehouses)
 	//futureOrderKeys := deduceOrderKeys(tableName2NumMapping[ORDER], 1, *warehouses, 5000)
 	//districtKeys := deduceDistrictKeys(tableName2NumMapping[DISTRICT], index, *warehouses)
 	//keys = append(keys, futureOrderKeys...)
