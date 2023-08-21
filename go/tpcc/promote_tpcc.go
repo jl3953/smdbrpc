@@ -416,10 +416,9 @@ func main() {
 	//warehouseKeys := deduceWarehouseKeys(tableName2NumMapping[WAREHOUSE], index, *warehouses)
 	//districtKeys := deduceDistrictKeys(tableName2NumMapping[DISTRICT], index, *warehouses)
 	//keys := append(warehouseKeys, districtKeys...)
-	dontcare := true
 	tableSet := map[string]bool{
-		//WAREHOUSE: dontcare,
-		DISTRICT: dontcare,
+		WAREHOUSE: true,
+		DISTRICT:  true,
 		//ORDER:     dontcare,
 	}
 	keys := filterKeys(tableSet, tableName2NumMapping, *warehouses)
