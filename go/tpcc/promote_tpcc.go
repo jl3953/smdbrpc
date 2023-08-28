@@ -418,7 +418,7 @@ func main() {
 	//keys := append(warehouseKeys, districtKeys...)
 	tableSet := map[string]bool{
 		WAREHOUSE: true,
-		//DISTRICT:  true,
+		DISTRICT:  true,
 		//ORDER:     dontcare,
 	}
 	keys := filterKeys(tableSet, tableName2NumMapping, *warehouses)
